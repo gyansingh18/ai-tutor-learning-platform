@@ -1,99 +1,143 @@
 <div class="container mt-4">
   <div class="row">
     <div class="col-12">
-      <h1 class="display-4 text-primary">My Profile</h1>
-      <p class="lead">Manage your account and view your activity</p>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-8">
-      <!-- Profile Information -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Profile Information</h5>
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-user-graduate me-2"></i>
+            Student Dashboard
+          </h3>
         </div>
         <div class="card-body">
+          <!-- User Info -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5>Welcome, <%= @user.name || @user.email %>!</h5>
+              <p class="text-muted">Track your learning progress and resume where you left off.</p>
+            </div>
+            <div class="col-md-6 text-end">
+              <%= link_to "Edit Profile", edit_profile_path, class: "btn btn-outline-primary" %>
+            </div>
+          </div>
+
+          <!-- Learning Progress -->
           <div class="row">
-            <div class="col-md-6">
-              <p><strong>Name:</strong> <%= @user.display_name %></p>
-              <p><strong>Email:</strong> <%= @user.email %></p>
-              <p><strong>Role:</strong> <%= @user.role.titleize %></p>
-              <p><strong>Member since:</strong> <%= @user.created_at.strftime("%B %d, %Y") %></p>
-            </div>
-            <div class="col-md-6">
-              <div class="d-grid gap-2">
-                <%= link_to "Edit Profile", "/profile/edit", class: "btn btn-primary" %>
-                <%= link_to "Change Password", edit_user_registration_path, class: "btn btn-outline-secondary" %>
-              </div>
+            <div class="col-12">
+              <h5 class="mb-3">
+                <i class="fas fa-chart-line me-2"></i>
+                Your Learning Progress
+              </h5>
+              
+              <% if @learning_progress.any? %>
+                <div class="row">
+                  <% @learning_progress.each do |progress| %>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                      <div class="card h-100">
+                        <div class="card-header <%= progress[:is_completed] ? 'bg-success' : 'bg-info' %> text-white">
+                          <h6 class="mb-0">
+                            <i class="fas fa-<%= progress[:is_completed] ? 'trophy' : 'book' %> me-2"></i>
+                            <%= progress[:chapter].display_name %>
+                          </h6>
+                        </div>
+                        <div class="card-body">
+                          <div class="row text-center mb-3">
+                            <div class="col-4">
+                              <h6 class="text-primary"><%= progress[:completed_tasks] %>/<%= progress[:total_tasks] %></h6>
+                              <small class="text-muted">Tasks</small>
+                            </div>
+                            <div class="col-4">
+                              <h6 class="text-success"><%= progress[:progress_percentage] %>%</h6>
+                              <small class="text-muted">Progress</small>
+                            </div>
+                            <div class="col-4">
+                              <h6 class="text-warning"><%= progress[:score_percentage] %>%</h6>
+                              <small class="text-muted">Score</small>
+                            </div>
+                          </div>
+                          
+                          <!-- Progress Bar -->
+                          <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: <%= progress[:progress_percentage] %>%" 
+                                 aria-valuenow="<%= progress[:progress_percentage] %>" 
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          
+                          <!-- Action Buttons -->
+                          <div class="d-grid gap-2">
+                            <% if progress[:is_completed] %>
+                              <%= link_to "View Review", chapter_review_path(progress[:chapter]), class: "btn btn-success btn-sm" %>
+                            <% elsif progress[:completed_tasks] > 0 %>
+                              <%= link_to "Resume Learning", learning_path(progress[:chapter]), class: "btn btn-primary btn-sm" %>
+                            <% else %>
+                              <%= link_to "Start Learning", learning_path(progress[:chapter]), class: "btn btn-outline-primary btn-sm" %>
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% else %>
+                <div class="text-center py-4">
+                  <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                  <h5 class="text-muted">No learning progress yet</h5>
+                  <p class="text-muted">Start your learning journey by selecting a chapter!</p>
+                  <%= link_to "Start Learning", home_path, class: "btn btn-primary" %>
+                </div>
+              <% end %>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Recent Activity -->
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Recent Activity</h5>
-        </div>
-        <div class="card-body">
-          <% recent_questions = @user.questions.recent.limit(5) %>
-          <% if recent_questions.any? %>
-            <h6>Recent Questions</h6>
-            <% recent_questions.each do |question| %>
-              <div class="border-bottom pb-2 mb-2">
-                <h6><%= link_to question.display_content, question_path(question), class: "text-decoration-none" %></h6>
-                <small class="text-muted">
-                  Asked <%= time_ago_in_words(question.created_at) %> ago
-                  in <%= question.chapter.display_name %>
-                </small>
-                <% if question.answered? %>
-                  <span class="badge bg-success ms-2">Answered</span>
-                <% else %>
-                  <span class="badge bg-warning ms-2">Pending</span>
-                <% end %>
-              </div>
-            <% end %>
-          <% else %>
-            <p class="text-muted">No questions asked yet.</p>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <!-- Statistics -->
-      <div class="card mb-4">
-        <div class="card-header">
-          <h5 class="mb-0">Statistics</h5>
-        </div>
-        <div class="card-body">
-          <div class="row text-center">
-            <div class="col-6">
-              <h4 class="text-primary"><%= @user.questions.count %></h4>
-              <small class="text-muted">Questions Asked</small>
+          <!-- Recent Activities -->
+          <div class="row mt-4">
+            <div class="col-12">
+              <h5 class="mb-3">
+                <i class="fas fa-history me-2"></i>
+                Recent Activities
+              </h5>
+              
+              <% if @recent_activities.any? %>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Task</th>
+                        <th>Chapter</th>
+                        <th>Your Answer</th>
+                        <th>Result</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% @recent_activities.each do |activity| %>
+                        <tr>
+                          <td>
+                            <strong><%= activity.task.title %></strong>
+                          </td>
+                          <td><%= activity.task.chapter.display_name %></td>
+                          <td>
+                            <span class="text-truncate d-inline-block" style="max-width: 200px;" title="<%= activity.answer %>">
+                              <%= activity.answer %>
+                            </span>
+                          </td>
+                          <td>
+                            <span class="badge <%= activity.is_correct? ? 'bg-success' : 'bg-danger' %>">
+                              <%= activity.is_correct? ? 'Correct' : 'Incorrect' %>
+                            </span>
+                          </td>
+                          <td><%= activity.created_at.strftime("%b %d, %Y") %></td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+              <% else %>
+                <div class="text-center py-3">
+                  <p class="text-muted">No recent activities yet.</p>
+                </div>
+              <% end %>
             </div>
-            <div class="col-6">
-              <h4 class="text-success"><%= @user.questions.joins(:answer).count %></h4>
-              <small class="text-muted">Questions Answered</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Quick Actions</h5>
-        </div>
-        <div class="card-body">
-          <div class="d-grid gap-2">
-            <%= link_to "Ask a Question", new_question_path, class: "btn btn-primary" %>
-            <%= link_to "View All Questions", questions_path, class: "btn btn-outline-secondary" %>
-            <%= link_to "Back to Home", root_path, class: "btn btn-outline-info" %>
-            <% if @user.admin? %>
-              <%= link_to "Admin Dashboard", admin_dashboard_path, class: "btn btn-outline-warning" %>
-            <% end %>
           </div>
         </div>
       </div>
