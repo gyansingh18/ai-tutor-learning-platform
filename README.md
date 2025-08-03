@@ -1,17 +1,20 @@
-# AI Tutor App
+# AI Tutor Learning Platform
 
-A comprehensive AI-powered tutoring application built with Ruby on Rails that provides personalized learning experiences for students across different grades and subjects.
+A comprehensive AI-powered learning platform built with Ruby on Rails that provides personalized learning experiences with interactive tasks and progress tracking for students across different grades and subjects.
 
 ## 🚀 Features
 
 ### For Students
-- **Ask AI Doubts**: Get instant answers to questions in any subject
+- **Interactive Learning Tasks**: AI-generated tasks with detailed concept explanations
+- **Three-Panel Learning Interface**: Explanation panel, input panel, and results panel
+- **Progress Tracking**: Visual progress bar showing completion percentage
 - **Chapter-wise Learning**: AI-generated explanations for each chapter
-- **Progress Tracking**: View your learning history and progress
+- **Ask AI Doubts**: Get instant answers to questions in any subject
 - **Grade → Subject → Chapter Navigation**: Easy navigation through curriculum
 - **Personalized Experience**: Tailored responses based on your grade level
 
 ### For Admins
+- **AI Task Generation**: Automatically create comprehensive learning tasks from chapter content
 - **PDF Upload**: Upload school textbooks for RAG (Retrieval-Augmented Generation)
 - **Content Management**: Manage grades, subjects, and chapters
 - **User Management**: Monitor student activity and progress
@@ -29,6 +32,9 @@ A comprehensive AI-powered tutoring application built with Ruby on Rails that pr
 - **Frontend**: Bootstrap 5 + Hotwire
 
 ### Key Components
+- **AI Task Generator**: Creates comprehensive learning tasks with explanations, questions, and answers
+- **Three-Panel Learning Interface**: Modern UI with explanation, input, and results panels
+- **Progress Tracking System**: Visual progress indicators and completion tracking
 - **RAG System**: PDF text extraction → Vector embeddings → Similarity search → AI answers
 - **Role-based Access**: Admin-only PDF upload, student question asking
 - **Real-time Processing**: Background job processing for PDF analysis
@@ -45,8 +51,8 @@ A comprehensive AI-powered tutoring application built with Ruby on Rails that pr
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd ai_tutor_g
+   git clone https://github.com/gyansingh18/ai-tutor-learning-platform.git
+   cd ai-tutor-learning-platform
    ```
 
 2. **Install dependencies**
@@ -107,14 +113,20 @@ After running seeds, you'll have these default users:
 ### For Students
 1. Log in with student credentials
 2. Select your Grade → Subject → Chapter
-3. Ask questions and get AI-powered answers
-4. View your learning history
+3. Access interactive learning tasks with three-panel interface:
+   - **Left Panel**: Detailed concept explanations
+   - **Middle Panel**: Input fields for answers
+   - **Right Panel**: Results and feedback
+4. Track your progress with the visual progress bar
+5. Ask additional questions and get AI-powered answers
+6. View your learning history
 
 ### For Admins
 1. Log in with admin credentials
 2. Upload PDF textbooks for specific chapters
-3. Monitor student activity in the dashboard
-4. Manage content and users
+3. Generate AI-powered learning tasks automatically
+4. Monitor student activity and progress in the dashboard
+5. Manage content and users
 
 ## 🔧 Configuration
 
@@ -130,6 +142,18 @@ After running seeds, you'll have these default users:
 ### Database
 - Development: PostgreSQL with PgVector
 - Production: Configure your production database URL
+
+## 🧠 How AI Task Generation Works
+
+1. **Content Analysis**: AI analyzes chapter content from uploaded PDFs
+2. **Task Creation**: Generates 6-10 comprehensive learning tasks including:
+   - Detailed concept explanations (2-3 paragraphs)
+   - Progressive difficulty levels
+   - Multiple question types (MCQ, fill-in-blank, true/false, etc.)
+   - Correct answers with explanations
+3. **Task Storage**: Tasks are stored in the database with student progress tracking
+4. **Interactive Learning**: Students complete tasks through the three-panel interface
+5. **Progress Tracking**: Visual progress bar shows completion percentage
 
 ## 🧠 How RAG Works
 
@@ -147,18 +171,22 @@ After running seeds, you'll have these default users:
 ```
 app/
 ├── controllers/          # MVC controllers
+│   ├── learning_controller.rb    # Learning tasks and progress
+│   └── admin/           # Admin controllers
 ├── models/              # ActiveRecord models
+│   ├── task.rb          # Learning tasks
+│   ├── student_answer.rb # Student progress tracking
+│   └── chapter.rb       # Chapter content
 ├── services/            # Business logic services
+│   ├── task_generator_service.rb # AI task generation
 │   ├── openai_service.rb
 │   ├── pdf_processor_service.rb
 │   └── rag_service.rb
+├── helpers/             # View helpers
+│   └── learning_helper.rb # Task content parsing
 ├── jobs/                # Background jobs
 └── views/               # ERB templates
-
-config/
-├── routes.rb            # Application routes
-├── database.yml         # Database configuration
-└── env.example          # Environment variables template
+    └── learning/        # Learning interface views
 ```
 
 ## 🚀 Deployment
