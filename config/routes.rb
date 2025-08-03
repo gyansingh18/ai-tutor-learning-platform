@@ -43,6 +43,7 @@ Rails.application.routes.draw do
   post "learning/:chapter_id/task/:task_id/submit", to: "learning#submit_answer", as: :submit_task_answer
   get "learning/:chapter_id/task/:task_id/next", to: "learning#next_task", as: :next_task
   get "learning/:chapter_id/task/:task_id/previous", to: "learning#previous_task", as: :previous_task
+  get "learning/:chapter_id/review", to: "learning#review", as: :chapter_review
 
   # Admin routes
   get "admin", to: redirect("/admin/dashboard")

@@ -57,8 +57,13 @@ class LearningController < ApplicationController
       @chapter = @task.chapter
       render :show_task
     else
-      flash[:notice] = "Congratulations! You've completed all tasks in this chapter."
-      redirect_to chat_path(@chapter)
+      # Check if all tasks are completed
+      if all_tasks_completed?
+        redirect_to chapter_review_path(@chapter)
+      else
+        flash[:notice] = "Congratulations! You've completed all tasks in this chapter."
+        redirect_to chat_path(@chapter)
+      end
     end
   end
 
@@ -78,6 +83,16 @@ class LearningController < ApplicationController
     end
   end
 
+  def review
+    @chapter = Chapter.find(params[:chapter_id])
+    @tasks = @chapter.tasks.includes(:student_answers)
+    @student_answers = @tasks.map { |task| task.student_answers.find_by(user: current_user) }.compact
+    @total_tasks = @tasks.count
+    @completed_tasks = @student_answers.count
+    @correct_answers = @student_answers.count(&:is_correct)
+    @score_percentage = @total_tasks > 0 ? (@correct_answers.to_f / @total_tasks * 100).round : 0
+  end
+
   private
 
   def set_chapter
@@ -91,11 +106,20 @@ class LearningController < ApplicationController
   def calculate_progress
     total_tasks = @chapter.total_tasks
     completed_tasks = @chapter.tasks.joins(:student_answers)
-                              .where(student_answers: { user: current_user, is_correct: true })
+                              .where(student_answers: { user: current_user })
                               .distinct.count
 
     return 0 if total_tasks == 0
     (completed_tasks.to_f / total_tasks * 100).round
+  end
+
+  def all_tasks_completed?
+    total_tasks = @chapter.total_tasks
+    completed_tasks = @chapter.tasks.joins(:student_answers)
+                              .where(student_answers: { user: current_user })
+                              .distinct.count
+    
+    total_tasks > 0 && completed_tasks >= total_tasks
   end
 
   def evaluate_answer(task, answer)

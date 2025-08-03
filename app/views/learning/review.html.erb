@@ -1,0 +1,144 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-trophy me-2"></i>
+            Chapter Review: <%= @chapter.display_name %>
+          </h3>
+        </div>
+        <div class="card-body">
+          <!-- Progress Summary -->
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="text-center">
+                <h4 class="text-primary"><%= @total_tasks %></h4>
+                <p class="text-muted">Total Tasks</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <h4 class="text-success"><%= @completed_tasks %></h4>
+                <p class="text-muted">Completed</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <h4 class="text-info"><%= @correct_answers %></h4>
+                <p class="text-muted">Correct Answers</p>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="text-center">
+                <h4 class="text-warning"><%= @score_percentage %>%</h4>
+                <p class="text-muted">Score</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Reviews -->
+          <div class="accordion" id="taskReviewAccordion">
+            <% @tasks.each_with_index do |task, index| %>
+              <% student_answer = task.student_answers.find_by(user: current_user) %>
+              <% if student_answer %>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading<%= index %>">
+                    <button class="accordion-button <%= index == 0 ? '' : 'collapsed' %>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= index %>" aria-expanded="<%= index == 0 ? 'true' : 'false' %>" aria-controls="collapse<%= index %>">
+                      <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                        <span>
+                          <i class="fas fa-<%= student_answer.is_correct? ? 'check-circle text-success' : 'times-circle text-danger' %> me-2"></i>
+                          Task <%= task.order %>: <%= task.title %>
+                        </span>
+                        <span class="badge <%= student_answer.is_correct? ? 'bg-success' : 'bg-danger' %>">
+                          <%= student_answer.is_correct? ? 'Correct' : 'Incorrect' %>
+                        </span>
+                      </div>
+                    </button>
+                  </h2>
+                  <div id="collapse<%= index %>" class="accordion-collapse collapse <%= index == 0 ? 'show' : '' %>" aria-labelledby="heading<%= index %>" data-bs-parent="#taskReviewAccordion">
+                    <div class="accordion-body">
+                      <div class="row">
+                        <!-- Task Content -->
+                        <div class="col-md-6">
+                          <h6 class="text-primary">Task Content</h6>
+                          <div class="card">
+                            <div class="card-body">
+                              <% explanation = LearningHelper.extract_explanation(task.content) %>
+                              <% if explanation.present? %>
+                                <div class="mb-3">
+                                  <strong class="text-info">📚 Explanation:</strong>
+                                  <div class="mt-2"><%= simple_format(explanation) %></div>
+                                </div>
+                              <% end %>
+                              
+                              <% question = LearningHelper.extract_question(task.content) %>
+                              <% if question.present? %>
+                                <div class="mb-3">
+                                  <strong class="text-warning">❓ Question:</strong>
+                                  <div class="mt-2"><%= simple_format(question) %></div>
+                                </div>
+                              <% end %>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Student Answer and Feedback -->
+                        <div class="col-md-6">
+                          <h6 class="text-primary">Your Answer & Feedback</h6>
+                          <div class="card">
+                            <div class="card-body">
+                              <div class="mb-3">
+                                <strong>Your Answer:</strong>
+                                <div class="mt-2 p-2 bg-light rounded">
+                                  <%= student_answer.answer %>
+                                </div>
+                              </div>
+
+                              <% if student_answer.is_correct? %>
+                                <div class="alert alert-success">
+                                  <i class="fas fa-check-circle me-2"></i>
+                                  <strong>Correct!</strong> Great job on this task.
+                                </div>
+                              <% else %>
+                                <div class="alert alert-warning">
+                                  <i class="fas fa-exclamation-triangle me-2"></i>
+                                  <strong>Not quite right.</strong> Here's the correct answer:
+                                </div>
+                                <div class="mb-3">
+                                  <strong>Correct Answer:</strong>
+                                  <div class="mt-2 p-2 bg-success text-white rounded">
+                                    <%= LearningHelper.extract_correct_answer(task.content) %>
+                                  </div>
+                                </div>
+                                <% correct_explanation = LearningHelper.extract_explanation(task.content) %>
+                                <% if correct_explanation.present? %>
+                                  <div class="mb-3">
+                                    <strong>Why this is correct:</strong>
+                                    <div class="mt-2 p-2 bg-info text-white rounded">
+                                      <%= simple_format(correct_explanation) %>
+                                    </div>
+                                  </div>
+                                <% end %>
+                              <% end %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="text-center mt-4">
+            <%= link_to "Back to Chapter", chat_path(@chapter), class: "btn btn-primary me-2" %>
+            <%= link_to "Start New Chapter", home_path, class: "btn btn-outline-secondary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
