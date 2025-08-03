@@ -33,7 +33,7 @@ class UsersController < ApplicationController
                                    .distinct
 
     progress_data = []
-    
+
     chapters_with_progress.each do |chapter|
       total_tasks = chapter.tasks.count
       completed_tasks = chapter.tasks.joins(:student_answers)
@@ -42,10 +42,10 @@ class UsersController < ApplicationController
       correct_answers = chapter.tasks.joins(:student_answers)
                                .where(student_answers: { user: current_user, is_correct: true })
                                .distinct.count
-      
+
       progress_percentage = total_tasks > 0 ? (completed_tasks.to_f / total_tasks * 100).round : 0
       score_percentage = total_tasks > 0 ? (correct_answers.to_f / total_tasks * 100).round : 0
-      
+
       progress_data << {
         chapter: chapter,
         total_tasks: total_tasks,
@@ -56,7 +56,7 @@ class UsersController < ApplicationController
         is_completed: completed_tasks >= total_tasks && total_tasks > 0
       }
     end
-    
+
     progress_data.sort_by { |data| data[:chapter].display_name }
   end
 

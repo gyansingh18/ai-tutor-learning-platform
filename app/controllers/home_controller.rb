@@ -4,6 +4,7 @@ class HomeController < ApplicationController
   def index
     @grades = Grade.all
     @learning_stats = get_learning_stats if user_signed_in?
+    @resume_chapter = get_resume_chapter if user_signed_in?
   end
 
   private
@@ -36,5 +37,36 @@ class HomeController < ApplicationController
       correct_answers: correct_answers,
       accuracy_rate: accuracy_rate
     }
+  end
+
+  def get_resume_chapter
+    return nil unless user_signed_in?
+
+    # Find the most recent chapter with incomplete progress
+    incomplete_chapters = Chapter.joins(tasks: :student_answers)
+                                .where(student_answers: { user: current_user })
+                                .distinct
+                                .select do |chapter|
+      total_tasks = chapter.tasks.count
+      completed_tasks = chapter.tasks.joins(:student_answers)
+                               .where(student_answers: { user: current_user })
+                               .distinct.count
+      total_tasks > 0 && completed_tasks < total_tasks
+    end
+
+    # Return the most recent one (by latest student answer)
+    if incomplete_chapters.any?
+      latest_answer = StudentAnswer.where(user: current_user, task: incomplete_chapters.flat_map(&:tasks))
+                                  .order(created_at: :desc)
+                                  .first
+      
+      if latest_answer
+        latest_answer.task.chapter
+      else
+        incomplete_chapters.first
+      end
+    else
+      nil
+    end
   end
 end

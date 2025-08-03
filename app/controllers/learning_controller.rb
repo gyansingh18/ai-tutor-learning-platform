@@ -118,7 +118,7 @@ class LearningController < ApplicationController
     completed_tasks = @chapter.tasks.joins(:student_answers)
                               .where(student_answers: { user: current_user })
                               .distinct.count
-    
+
     total_tasks > 0 && completed_tasks >= total_tasks
   end
 
