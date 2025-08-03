@@ -1,0 +1,102 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="display-4 text-primary">My Profile</h1>
+      <p class="lead">Manage your account and view your activity</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <!-- Profile Information -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Profile Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Name:</strong> <%= @user.display_name %></p>
+              <p><strong>Email:</strong> <%= @user.email %></p>
+              <p><strong>Role:</strong> <%= @user.role.titleize %></p>
+              <p><strong>Member since:</strong> <%= @user.created_at.strftime("%B %d, %Y") %></p>
+            </div>
+            <div class="col-md-6">
+              <div class="d-grid gap-2">
+                <%= link_to "Edit Profile", "/profile/edit", class: "btn btn-primary" %>
+                <%= link_to "Change Password", edit_user_registration_path, class: "btn btn-outline-secondary" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Recent Activity</h5>
+        </div>
+        <div class="card-body">
+          <% recent_questions = @user.questions.recent.limit(5) %>
+          <% if recent_questions.any? %>
+            <h6>Recent Questions</h6>
+            <% recent_questions.each do |question| %>
+              <div class="border-bottom pb-2 mb-2">
+                <h6><%= link_to question.display_content, question_path(question), class: "text-decoration-none" %></h6>
+                <small class="text-muted">
+                  Asked <%= time_ago_in_words(question.created_at) %> ago
+                  in <%= question.chapter.display_name %>
+                </small>
+                <% if question.answered? %>
+                  <span class="badge bg-success ms-2">Answered</span>
+                <% else %>
+                  <span class="badge bg-warning ms-2">Pending</span>
+                <% end %>
+              </div>
+            <% end %>
+          <% else %>
+            <p class="text-muted">No questions asked yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <!-- Statistics -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Statistics</h5>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-6">
+              <h4 class="text-primary"><%= @user.questions.count %></h4>
+              <small class="text-muted">Questions Asked</small>
+            </div>
+            <div class="col-6">
+              <h4 class="text-success"><%= @user.questions.joins(:answer).count %></h4>
+              <small class="text-muted">Questions Answered</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <%= link_to "Ask a Question", new_question_path, class: "btn btn-primary" %>
+            <%= link_to "View All Questions", questions_path, class: "btn btn-outline-secondary" %>
+            <%= link_to "Back to Home", root_path, class: "btn btn-outline-info" %>
+            <% if @user.admin? %>
+              <%= link_to "Admin Dashboard", admin_dashboard_path, class: "btn btn-outline-warning" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<%= form_with model: question,
+              url: chat_path(chapter),
+              local: false,
+              data: { turbo_stream: true },
+              id: "chat_form" do |f| %>
+
+  <div class="input-group">
+    <%= f.text_area :content,
+                    class: "form-control",
+                    placeholder: "Ask me anything about #{chapter.name}...",
+                    rows: 1,
+                    style: "resize: none;",
+                    data: {
+                      chat_target: "textarea",
+                      action: "input->chat#resizeTextarea keydown->chat#handleKeydown"
+                    } %>
+
+    <button class="btn btn-primary"
+            type="submit"
+            data-chat-target="submitButton">
+      <i class="bi bi-send"></i>
+    </button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div class="text-center mt-2"
+       data-chat-target="loadingIndicator"
+       style="display: none;">
+    <div class="spinner-border spinner-border-sm text-primary" role="status">
+      <span class="visually-hidden">Sending...</span>
+    </div>
+    <small class="text-muted ms-2">AI is thinking...</small>
+  </div>
+
+  <% if question.errors.any? %>
+    <div class="alert alert-danger mt-2">
+      <ul class="mb-0">
+        <% question.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %>

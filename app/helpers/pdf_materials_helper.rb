@@ -1,0 +1,2 @@
+module PdfMaterialsHelper
+end

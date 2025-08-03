@@ -1,0 +1,269 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to "Admin Dashboard", admin_dashboard_path %></li>
+          <li class="breadcrumb-item"><%= link_to "PDF Materials", admin_pdf_materials_path %></li>
+          <li class="breadcrumb-item active" aria-current="page">Upload PDF</li>
+        </ol>
+      </nav>
+
+      <h1 class="display-4 text-primary">Upload PDF Material</h1>
+      <p class="lead">Add study materials for students</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <%= form_with model: [:admin, @pdf_material], local: true, multipart: true do |form| %>
+            <% if @pdf_material.errors.any? %>
+              <div class="alert alert-danger">
+                <h4><%= pluralize(@pdf_material.errors.count, "error") %> prohibited this PDF from being saved:</h4>
+                <ul>
+                  <% @pdf_material.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <!-- Hidden fields for grade and subject IDs -->
+            <%= form.hidden_field :grade_id, id: "grade-id-field" %>
+            <%= form.hidden_field :subject_id, id: "subject-id-field" %>
+
+            <div class="mb-3">
+              <%= form.label :title, "Title", class: "form-label" %>
+              <%= form.text_field :title, class: "form-control", placeholder: "Enter a descriptive title" %>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label for="grade-select" class="form-label">Grade</label>
+                  <select class="form-select" id="grade-select">
+                    <option value="">Select Grade</option>
+                    <% @grades.each do |grade| %>
+                      <option value="<%= grade.id %>"><%= grade.display_name %></option>
+                    <% end %>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label for="subject-select" class="form-label">Subject</label>
+                  <select class="form-select" id="subject-select" disabled>
+                    <option value="">Select Subject</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <%= form.label :chapter_id, "Chapter", class: "form-label" %>
+                  <%= form.collection_select :chapter_id, [], :id, :name, { prompt: "Select a chapter" }, { class: "form-select", id: "chapter-select", disabled: true } %>
+                </div>
+              </div>
+            </div>
+
+            <!-- New Chapter Creation Section -->
+            <div class="card mt-3" id="new-chapter-section" style="display: none;">
+              <div class="card-header">
+                <h6 class="mb-0">Create New Chapter</h6>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <%= form.label :new_chapter_name, "New Chapter Name", class: "form-label" %>
+                      <%= form.text_field :new_chapter_name, class: "form-control", placeholder: "Enter new chapter name" %>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <%= form.label :new_chapter_description, "Description (Optional)", class: "form-label" %>
+                      <%= form.text_area :new_chapter_description, class: "form-control", rows: 2, placeholder: "Brief description of the chapter" %>
+                    </div>
+                  </div>
+                </div>
+                <div class="alert alert-info">
+                  <i class="bi bi-info-circle"></i>
+                  A new chapter will be created automatically when you upload the PDF.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :pdf_file, "PDF File", class: "form-label" %>
+              <%= form.file_field :pdf_file, class: "form-control", accept: ".pdf" %>
+              <div class="form-text">Only PDF files are allowed. Maximum size: 10MB</div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+              <%= form.submit "Upload PDF", class: "btn btn-primary me-md-2" %>
+              <%= link_to "Cancel", admin_pdf_materials_path, class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Upload Guidelines</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled">
+            <li class="mb-2">• Only PDF files are accepted</li>
+            <li class="mb-2">• Maximum file size: 10MB</li>
+            <li class="mb-2">• Use descriptive titles</li>
+            <li class="mb-2">• Select the appropriate grade, subject, and chapter</li>
+            <li class="mb-2">• Create new chapters if they don't exist</li>
+            <li class="mb-2">• Files will be processed automatically</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('JavaScript loaded');
+
+  const gradeSelect = document.getElementById('grade-select');
+  const subjectSelect = document.getElementById('subject-select');
+  const chapterSelect = document.getElementById('chapter-select');
+  const newChapterSection = document.getElementById('new-chapter-section');
+  const newChapterNameField = document.querySelector('input[name="pdf_material[new_chapter_name]"]');
+  const newChapterDescriptionField = document.querySelector('textarea[name="pdf_material[new_chapter_description]"]');
+  const gradeIdField = document.getElementById('grade-id-field');
+  const subjectIdField = document.getElementById('subject-id-field');
+
+  console.log('Grade select:', gradeSelect);
+  console.log('Subject select:', subjectSelect);
+
+  // Pre-load all data with error handling
+  const gradesData = {
+    <% @grades.each do |grade| %>
+      <%= grade.id %>: {
+        subjects: [
+          <% grade.subjects.each do |subject| %>
+            {
+              id: <%= subject.id %>,
+              name: "<%= subject.name %>",
+              chapters: [
+                <% subject.chapters.each do |chapter| %>
+                  { id: <%= chapter.id %>, name: "<%= chapter.name %>" },
+                <% end %>
+              ]
+            },
+          <% end %>
+        ]
+      },
+    <% end %>
+  };
+
+  console.log('Grades data:', gradesData);
+
+  if (!gradeSelect || !subjectSelect) {
+    console.error('Required select elements not found');
+    return;
+  }
+
+  gradeSelect.addEventListener('change', function() {
+    const gradeId = this.value;
+    console.log('Grade selected:', gradeId);
+    gradeIdField.value = gradeId;
+
+    if (gradeId && gradesData[gradeId]) {
+      const grade = gradesData[gradeId];
+      console.log('Grade data found:', grade);
+
+      // Populate subjects
+      subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+      grade.subjects.forEach(subject => {
+        subjectSelect.innerHTML += `<option value="${subject.id}" data-chapters='${JSON.stringify(subject.chapters)}'>${subject.name}</option>`;
+      });
+      subjectSelect.disabled = false;
+      console.log('Subjects populated:', subjectSelect.innerHTML);
+
+      // Reset chapter
+      chapterSelect.disabled = true;
+      chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+
+      // Hide new chapter section
+      newChapterSection.style.display = 'none';
+      newChapterNameField.value = '';
+      newChapterDescriptionField.value = '';
+    } else {
+      console.log('No grade data found for ID:', gradeId);
+      subjectSelect.disabled = true;
+      chapterSelect.disabled = true;
+      subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+      chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+      newChapterSection.style.display = 'none';
+      gradeIdField.value = '';
+      subjectIdField.value = '';
+    }
+  });
+
+  subjectSelect.addEventListener('change', function() {
+    const subjectId = this.value;
+    console.log('Subject selected:', subjectId);
+    subjectIdField.value = subjectId;
+
+    const selectedOption = this.options[this.selectedIndex];
+    if (selectedOption.value) {
+      try {
+        const chapters = JSON.parse(selectedOption.getAttribute('data-chapters'));
+        console.log('Chapters data:', chapters);
+
+        // Populate chapters
+        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+        chapters.forEach(chapter => {
+          chapterSelect.innerHTML += `<option value="${chapter.id}">${chapter.name}</option>`;
+        });
+        chapterSelect.disabled = false;
+
+        // Add "Create New Chapter" option
+        chapterSelect.innerHTML += '<option value="new">➕ Create New Chapter</option>';
+
+        // Hide new chapter section initially
+        newChapterSection.style.display = 'none';
+        newChapterNameField.value = '';
+        newChapterDescriptionField.value = '';
+      } catch (error) {
+        console.error('Error parsing chapters data:', error);
+        chapterSelect.disabled = true;
+        chapterSelect.innerHTML = '<option value="">Error loading chapters</option>';
+      }
+    } else {
+      chapterSelect.disabled = true;
+      chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+      newChapterSection.style.display = 'none';
+      subjectIdField.value = '';
+    }
+  });
+
+  chapterSelect.addEventListener('change', function() {
+    if (this.value === 'new') {
+      // Show new chapter creation section
+      newChapterSection.style.display = 'block';
+      newChapterNameField.focus();
+
+      // Clear the chapter_id field
+      this.value = '';
+    } else {
+      // Hide new chapter section
+      newChapterSection.style.display = 'none';
+      newChapterNameField.value = '';
+      newChapterDescriptionField.value = '';
+    }
+  });
+});
+</script>

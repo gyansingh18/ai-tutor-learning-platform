@@ -1,0 +1,43 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to "Home", root_path %></li>
+          <li class="breadcrumb-item"><%= link_to "Grades", grades_path %></li>
+          <li class="breadcrumb-item"><%= link_to @grade.display_name, grade_path(@grade) %></li>
+          <li class="breadcrumb-item"><%= link_to "Subjects", grade_subjects_path(@grade) %></li>
+          <li class="breadcrumb-item active" aria-current="page"><%= @subject.display_name %></li>
+        </ol>
+      </nav>
+
+      <h1 class="display-4 text-primary"><%= @subject.display_name %></h1>
+      <p class="lead">Select a chapter to start learning</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <% @chapters.each do |chapter| %>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title"><%= chapter.display_name %></h5>
+            <p class="card-text">
+              <%= pluralize(chapter.questions.count, 'question') %> asked
+            </p>
+            <div class="d-grid gap-2">
+              <%= link_to "Start Learning", grade_subject_chapter_path(@grade, @subject, chapter), class: "btn btn-primary" %>
+              <%= link_to "Ask Questions", grade_subject_chapter_questions_path(@grade, @subject, chapter), class: "btn btn-outline-secondary" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <%= link_to "Back to Subject", grade_subject_path(@grade, @subject), class: "btn btn-secondary" %>
+    </div>
+  </div>
+</div>

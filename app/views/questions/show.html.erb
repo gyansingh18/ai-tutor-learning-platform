@@ -1,0 +1,145 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to "Home", root_path %></li>
+          <li class="breadcrumb-item"><%= link_to "Questions", questions_path %></li>
+          <li class="breadcrumb-item active" aria-current="page">Question Details</li>
+        </ol>
+      </nav>
+
+      <h1 class="display-4 text-primary">Question Details</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <!-- Question -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Question</h5>
+            <span class="badge bg-primary"><%= @question.chapter.display_name %></span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-text"><%= @question.content %></p>
+          <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+              Asked by <%= @question.user.display_name %>
+              <%= time_ago_in_words(@question.created_at) %> ago
+            </small>
+            <% if @question.answered? %>
+              <span class="badge bg-success">Answered</span>
+            <% else %>
+              <span class="badge bg-warning">Pending</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Answer -->
+      <% if @question.answered? %>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">AI Answer</h5>
+          </div>
+          <div class="card-body">
+            <p class="card-text"><%= @question.answer.content %></p>
+            <small class="text-muted">
+              Answered <%= time_ago_in_words(@question.answer.created_at) %> ago
+            </small>
+          </div>
+        </div>
+
+        <!-- Continue Learning Section -->
+        <div class="card mb-4 border-success">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+              <i class="bi bi-lightbulb"></i> Continue Learning
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="card-text">
+              <strong>Ready to dive deeper?</strong> Choose how you want to continue learning about this topic!
+            </p>
+            <div class="d-grid gap-2">
+              <%= link_to learning_path(@question.chapter), class: "btn btn-success mb-2" do %>
+                <i class="bi bi-play-circle"></i> Start Interactive Learning
+              <% end %>
+              <%= link_to chat_path(@question.chapter), class: "btn btn-outline-success" do %>
+                <i class="bi bi-chat-dots"></i> Start Chat Conversation
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <h5 class="card-title">Waiting for Answer</h5>
+            <p class="card-text">Your question is being processed by our AI tutor.</p>
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Related Questions -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Related Questions</h5>
+        </div>
+        <div class="card-body">
+          <% related_questions = @question.chapter.questions.where.not(id: @question.id).recent.limit(5) %>
+          <% if related_questions.any? %>
+            <% related_questions.each do |question| %>
+              <div class="border-bottom pb-2 mb-2">
+                <h6><%= link_to question.display_content, question_path(question), class: "text-decoration-none" %></h6>
+                <small class="text-muted">
+                  Asked by <%= question.user.display_name %>
+                  <%= time_ago_in_words(question.created_at) %> ago
+                </small>
+              </div>
+            <% end %>
+          <% else %>
+            <p class="text-muted">No related questions found.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <!-- Quick Actions -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <%= link_to "Ask New Question", new_question_path, class: "btn btn-primary" %>
+            <%= link_to "View All Questions", questions_path, class: "btn btn-outline-secondary" %>
+            <%= link_to "Back to Chapter", grade_subject_chapter_path(@question.chapter.subject.grade, @question.chapter.subject, @question.chapter), class: "btn btn-outline-info" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter Info -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Chapter Information</h5>
+        </div>
+        <div class="card-body">
+          <h6><%= @question.chapter.display_name %></h6>
+          <p class="card-text">
+            <small class="text-muted">
+              <%= pluralize(@question.chapter.questions.count, 'question') %> asked in this chapter
+            </small>
+          </p>
+          <%= link_to "View Chapter", grade_subject_chapter_path(@question.chapter.subject.grade, @question.chapter.subject, @question.chapter), class: "btn btn-sm btn-outline-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="display-4 text-primary">All Questions</h1>
+      <p class="lead">Browse and search through all questions</p>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-12">
+      <%= link_to "Ask New Question", new_question_path, class: "btn btn-primary" %>
+      <%= link_to "Back to Home", root_path, class: "btn btn-secondary ms-2" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <% if @questions.any? %>
+        <% @questions.each do |question| %>
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-8">
+                  <h5 class="card-title">
+                    <%= link_to question.display_content, question_path(question), class: "text-decoration-none" %>
+                  </h5>
+                  <p class="card-text">
+                    <small class="text-muted">
+                      Asked by <%= question.user.display_name %>
+                      in <%= question.chapter.display_name %>
+                      <%= time_ago_in_words(question.created_at) %> ago
+                    </small>
+                  </p>
+                </div>
+                <div class="col-md-4 text-end">
+                  <% if question.answered? %>
+                    <span class="badge bg-success">Answered</span>
+                  <% else %>
+                    <span class="badge bg-warning">Pending</span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="card">
+          <div class="card-body text-center">
+            <h5 class="card-title">No questions yet</h5>
+            <p class="card-text">Be the first to ask a question!</p>
+            <%= link_to "Ask a Question", new_question_path, class: "btn btn-primary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
