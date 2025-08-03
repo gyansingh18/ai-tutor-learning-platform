@@ -1,0 +1,45 @@
+<!-- User Message -->
+<div class="message user-message mb-3">
+  <div class="d-flex justify-content-end">
+    <div class="message-content bg-primary text-white p-3 rounded" style="max-width: 70%;">
+      <p class="mb-1"><%= question.content %></p>
+      <small class="opacity-75">
+        <%= time_ago_in_words(question.created_at) %> ago
+      </small>
+    </div>
+  </div>
+</div>
+
+<!-- AI Response -->
+<% if question.answered? %>
+  <div class="message ai-message mb-3">
+    <div class="d-flex">
+      <div class="message-content bg-light p-3 rounded" style="max-width: 70%;">
+        <div class="d-flex align-items-center mb-2">
+          <i class="bi bi-robot text-primary me-2"></i>
+          <small class="text-muted">AI Tutor</small>
+        </div>
+        <div class="ai-response">
+          <%= simple_format(question.answer.content) %>
+        </div>
+        <small class="text-muted">
+          <%= time_ago_in_words(question.answer.created_at) %> ago
+        </small>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <!-- Loading indicator for unanswered questions -->
+  <div class="message ai-message mb-3">
+    <div class="d-flex">
+      <div class="message-content bg-light p-3 rounded" style="max-width: 70%;">
+        <div class="d-flex align-items-center">
+          <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <small class="text-muted">AI is thinking...</small>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

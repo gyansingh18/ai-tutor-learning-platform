@@ -1,0 +1,95 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to "Admin Dashboard", admin_dashboard_path %></li>
+          <li class="breadcrumb-item"><%= link_to "PDF Materials", admin_pdf_materials_path %></li>
+          <li class="breadcrumb-item active" aria-current="page"><%= @pdf_material.title %></li>
+        </ol>
+      </nav>
+
+      <h1 class="display-4 text-primary"><%= @pdf_material.title %></h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <!-- PDF Information -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">PDF Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Title:</strong> <%= @pdf_material.title %></p>
+              <p><strong>Chapter:</strong> <%= @pdf_material.chapter&.display_name %></p>
+              <p><strong>Uploaded by:</strong> <%= @pdf_material.user.display_name %></p>
+              <p><strong>Upload date:</strong> <%= @pdf_material.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Status:</strong>
+                <% if @pdf_material.pdf_file.attached? %>
+                  <span class="badge bg-success">Uploaded</span>
+                <% else %>
+                  <span class="badge bg-warning">Processing</span>
+                <% end %>
+              </p>
+              <% if @pdf_material.pdf_file.attached? %>
+                <p><strong>File size:</strong> <%= number_to_human_size(@pdf_material.pdf_file.byte_size) %></p>
+                <p><strong>Vector chunks:</strong> <%= @pdf_material.vector_chunks.count %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PDF Preview -->
+      <% if @pdf_material.pdf_file.attached? %>
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">PDF Preview</h5>
+          </div>
+          <div class="card-body">
+            <div class="ratio ratio-16x9">
+              <iframe src="<%= rails_blob_url(@pdf_material.pdf_file) %>" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-md-4">
+      <!-- Quick Actions -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <% if @pdf_material.pdf_file.attached? %>
+              <%= link_to "Download PDF", rails_blob_path(@pdf_material.pdf_file, disposition: "attachment"), class: "btn btn-outline-primary" %>
+            <% end %>
+            <%= link_to "Back to PDF Materials", admin_pdf_materials_path, class: "btn btn-outline-secondary" %>
+            <%= link_to "Delete PDF", admin_pdf_material_path(@pdf_material), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-outline-danger" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vector Chunks Info -->
+      <% if @pdf_material.vector_chunks.any? %>
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">RAG Information</h5>
+          </div>
+          <div class="card-body">
+            <p><strong>Vector chunks:</strong> <%= @pdf_material.vector_chunks.count %></p>
+            <p><strong>Processing status:</strong> Complete</p>
+            <small class="text-muted">This PDF is available for AI-powered question answering.</small>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

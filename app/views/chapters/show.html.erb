@@ -1,0 +1,100 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to "Home", root_path %></li>
+          <li class="breadcrumb-item"><%= link_to "Grades", grades_path %></li>
+          <li class="breadcrumb-item"><%= link_to @grade.display_name, grade_path(@grade) %></li>
+          <li class="breadcrumb-item"><%= link_to @subject.display_name, grade_subject_path(@grade, @subject) %></li>
+          <li class="breadcrumb-item active" aria-current="page"><%= @chapter.display_name %></li>
+        </ol>
+      </nav>
+
+      <h1 class="display-4 text-primary"><%= @chapter.display_name %></h1>
+      <p class="lead">Learn and ask questions about this chapter</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <!-- Chapter Content -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Chapter Overview</h5>
+        </div>
+        <div class="card-body">
+          <p>This chapter covers fundamental concepts and provides a foundation for understanding the subject matter.</p>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <%= link_to "Ask a Question", new_grade_subject_chapter_question_path(@grade, @subject, @chapter), class: "btn btn-primary me-md-2" %>
+            <%= link_to "View All Questions", grade_subject_chapter_questions_path(@grade, @subject, @chapter), class: "btn btn-outline-secondary" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Questions -->
+      <% if @questions.any? %>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Recent Questions</h5>
+          </div>
+          <div class="card-body">
+            <% @questions.each do |question| %>
+              <div class="border-bottom pb-3 mb-3">
+                <h6><%= question.display_content %></h6>
+                <small class="text-muted">
+                  Asked by <%= question.user.display_name %>
+                  <%= time_ago_in_words(question.created_at) %> ago
+                </small>
+                <% if question.answered? %>
+                  <span class="badge bg-success ms-2">Answered</span>
+                <% else %>
+                  <span class="badge bg-warning ms-2">Pending</span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="col-md-4">
+      <!-- PDF Materials -->
+      <% if @pdf_materials.any? %>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Study Materials</h5>
+          </div>
+          <div class="card-body">
+            <% @pdf_materials.each do |pdf| %>
+              <div class="mb-2">
+                <h6><%= pdf.title %></h6>
+                <small class="text-muted">
+                  Uploaded by <%= pdf.user.display_name %>
+                  <%= time_ago_in_words(pdf.created_at) %> ago
+                </small>
+                <br>
+                <%= link_to "View PDF", admin_pdf_material_path(pdf), class: "btn btn-sm btn-outline-primary" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <%= link_to "Ask New Question", new_grade_subject_chapter_question_path(@grade, @subject, @chapter), class: "btn btn-primary" %>
+            <%= link_to "View All Questions", grade_subject_chapter_questions_path(@grade, @subject, @chapter), class: "btn btn-outline-secondary" %>
+            <%= link_to "Back to Subject", grade_subject_path(@grade, @subject), class: "btn btn-outline-info" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

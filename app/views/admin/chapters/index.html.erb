@@ -1,0 +1,79 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to "Admin Dashboard", admin_dashboard_path %></li>
+          <li class="breadcrumb-item active" aria-current="page">Chapters</li>
+        </ol>
+      </nav>
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="display-4 text-primary">Manage Chapters</h1>
+          <p class="lead">Create and manage chapters for different subjects</p>
+        </div>
+        <%= link_to "Add New Chapter", new_admin_chapter_path, class: "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">All Chapters</h5>
+        </div>
+        <div class="card-body">
+          <% if @chapters.any? %>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Chapter Name</th>
+                    <th>Subject</th>
+                    <th>Grade</th>
+                    <th>Description</th>
+                    <th>Questions</th>
+                    <th>PDFs</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @chapters.each do |chapter| %>
+                    <tr>
+                      <td><strong><%= chapter.name %></strong></td>
+                      <td><%= chapter.subject.name %></td>
+                      <td><%= chapter.subject.grade.name %></td>
+                      <td><%= truncate(chapter.description, length: 50) %></td>
+                      <td>
+                        <span class="badge bg-info"><%= chapter.questions.count %></span>
+                      </td>
+                      <td>
+                        <span class="badge bg-success"><%= chapter.pdf_materials.count %></span>
+                      </td>
+                      <td>
+                        <div class="btn-group" role="group">
+                          <%= link_to "Edit", edit_admin_chapter_path(chapter), class: "btn btn-sm btn-outline-primary" %>
+                          <%= link_to "Delete", admin_chapter_path(chapter),
+                              method: :delete,
+                              data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                              class: "btn btn-sm btn-outline-danger" %>
+                        </div>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="text-center py-4">
+              <p class="text-muted">No chapters found.</p>
+              <%= link_to "Create your first chapter", new_admin_chapter_path, class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

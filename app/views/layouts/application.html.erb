@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AI Tutor - Your Learning Companion</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS for Chat Interface -->
+    <style>
+      .chat-messages {
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin: 10px;
+      }
+
+      .message-content {
+        border-radius: 18px !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      }
+
+      .user-message .message-content {
+        background: linear-gradient(135deg, #007bff, #0056b3) !important;
+        color: white !important;
+      }
+
+      .ai-message .message-content {
+        background: white !important;
+        border: 1px solid #e9ecef;
+      }
+
+      .chat-input {
+        background: white;
+        border-top: 1px solid #dee2e6;
+      }
+
+      .chat-header {
+        background: linear-gradient(135deg, #007bff, #0056b3) !important;
+      }
+
+      .ai-response {
+        line-height: 1.6;
+      }
+
+      .ai-response p {
+        margin-bottom: 0.5rem;
+      }
+
+      .ai-response ul {
+        margin-bottom: 0.5rem;
+      }
+
+      .ai-response li {
+        margin-bottom: 0.25rem;
+      }
+
+      /* Chat scrolling improvements */
+      .chat-messages {
+        scroll-behavior: smooth;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* Ensure chat input stays at bottom */
+      .chat-input {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        border-top: 1px solid #dee2e6;
+        z-index: 1000;
+      }
+
+      /* Prevent page jumping */
+      body {
+        overflow-x: hidden;
+      }
+
+      /* Ensure smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Fix for navbar */
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1001;
+      }
+
+      /* Ensure proper height calculation */
+      .container-fluid {
+        height: calc(100vh - 56px);
+      }
+
+      .row.h-100 {
+        height: 100% !important;
+      }
+
+      /* Flexbox layout for chat */
+      .d-flex.flex-column {
+        height: 100%;
+      }
+
+      .flex-shrink-0 {
+        flex-shrink: 0;
+      }
+
+      .flex-grow-1 {
+        flex-grow: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <i class="bi bi-mortarboard-fill"></i> AI Tutor
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <%= link_to "Learn", root_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "Ask a Doubt", questions_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item">
+              <%= link_to "History", history_path, class: "nav-link" %>
+            </li>
+            <% if current_user&.admin? %>
+              <li class="nav-item">
+                <%= link_to "Admin", admin_dashboard_path, class: "nav-link" %>
+              </li>
+            <% end %>
+          </ul>
+
+          <ul class="navbar-nav">
+            <% if user_signed_in? %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-person-circle"></i> <%= current_user.display_name %>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><%= link_to "Profile", profile_path, class: "dropdown-item" %></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><%= link_to "Sign Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item text-danger" %></li>
+                </ul>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <%= link_to "Sign In", new_user_session_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if notice %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= notice %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% end %>
+
+    <% if alert %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= alert %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% end %>
+
+    <!-- Main Content -->
+    <main>
+      <%= yield %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4">
+      <div class="container text-center">
+        <p class="text-muted mb-0">&copy; 2024 AI Tutor. Built with ❤️ for education.</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

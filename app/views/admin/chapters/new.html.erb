@@ -1,0 +1,73 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to "Admin Dashboard", admin_dashboard_path %></li>
+          <li class="breadcrumb-item"><%= link_to "Chapters", admin_chapters_path %></li>
+          <li class="breadcrumb-item active" aria-current="page">New Chapter</li>
+        </ol>
+      </nav>
+
+      <h1 class="display-4 text-primary">Create New Chapter</h1>
+      <p class="lead">Add a new chapter to a subject</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <%= form_with model: [:admin, @chapter], local: true do |form| %>
+            <% if @chapter.errors.any? %>
+              <div class="alert alert-danger">
+                <h4><%= pluralize(@chapter.errors.count, "error") %> prohibited this chapter from being saved:</h4>
+                <ul>
+                  <% @chapter.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <div class="mb-3">
+              <%= form.label :name, "Chapter Name", class: "form-label" %>
+              <%= form.text_field :name, class: "form-control", placeholder: "Enter chapter name" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :description, "Description", class: "form-label" %>
+              <%= form.text_area :description, class: "form-control", rows: 3, placeholder: "Enter chapter description" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :subject_id, "Subject", class: "form-label" %>
+              <%= form.collection_select :subject_id, @subjects, :id, :display_name, { prompt: "Select a subject" }, { class: "form-select" } %>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+              <%= form.submit "Create Chapter", class: "btn btn-primary me-md-2" %>
+              <%= link_to "Cancel", admin_chapters_path, class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Chapter Guidelines</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled">
+            <li class="mb-2">• Use clear, descriptive chapter names</li>
+            <li class="mb-2">• Provide a brief description of the content</li>
+            <li class="mb-2">• Select the appropriate subject</li>
+            <li class="mb-2">• Chapters will be available for questions and PDFs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

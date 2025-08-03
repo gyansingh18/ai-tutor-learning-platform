@@ -1,0 +1,174 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="display-4 text-primary">Admin Dashboard</h1>
+      <p class="lead">Welcome back, <%= current_user.display_name %></p>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Users</h5>
+          <h2 class="card-text"><%= @total_users %></h2>
+          <small>Registered users</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card bg-success text-white">
+        <div class="card-body">
+          <h5 class="card-title">Total Questions</h5>
+          <h2 class="card-text"><%= @total_questions %></h2>
+          <small>AI interactions</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card bg-info text-white">
+        <div class="card-body">
+          <h5 class="card-title">PDF Materials</h5>
+          <h2 class="card-text"><%= @total_pdf_materials %></h2>
+          <small>Uploaded files</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card bg-warning text-white">
+        <div class="card-body">
+          <h5 class="card-title">Vector Chunks</h5>
+          <h2 class="card-text"><%= @total_vector_chunks %></h2>
+          <small>RAG components</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+              <%= link_to admin_pdf_materials_path, class: "btn btn-primary btn-lg w-100 mb-2" do %>
+                <i class="bi bi-upload"></i> Upload PDF
+              <% end %>
+            </div>
+            <div class="col-md-3">
+              <%= link_to admin_users_path, class: "btn btn-info btn-lg w-100 mb-2" do %>
+                <i class="bi bi-people"></i> Manage Users
+              <% end %>
+            </div>
+            <div class="col-md-3">
+              <%= link_to admin_chapters_path, class: "btn btn-warning btn-lg w-100 mb-2" do %>
+                <i class="bi bi-book"></i> Manage Chapters
+              <% end %>
+            </div>
+            <div class="col-md-3">
+              <%= link_to questions_path, class: "btn btn-success btn-lg w-100 mb-2" do %>
+                <i class="bi bi-question-circle"></i> View Questions
+              <% end %>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-3">
+              <%= link_to root_path, class: "btn btn-secondary btn-lg w-100 mb-2" do %>
+                <i class="bi bi-house"></i> Back to App
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Recent Questions</h5>
+        </div>
+        <div class="card-body">
+          <% if @recent_questions.any? %>
+            <div class="list-group list-group-flush">
+              <% @recent_questions.each do |question| %>
+                <div class="list-group-item">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1"><%= question.display_content.truncate(50) %></h6>
+                    <small><%= time_ago_in_words(question.created_at) %> ago</small>
+                  </div>
+                  <p class="mb-1">by <%= question.user.display_name %></p>
+                  <small class="text-muted">Chapter: <%= question.chapter&.display_name %></small>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-muted">No questions yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Recent PDF Uploads</h5>
+        </div>
+        <div class="card-body">
+          <% if @recent_pdf_materials.any? %>
+            <div class="list-group list-group-flush">
+              <% @recent_pdf_materials.each do |pdf| %>
+                <div class="list-group-item">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1"><%= pdf.title %></h6>
+                    <small><%= time_ago_in_words(pdf.created_at) %> ago</small>
+                  </div>
+                  <p class="mb-1">by <%= pdf.user.display_name %></p>
+                  <small class="text-muted">Chapter: <%= pdf.chapter&.display_name %></small>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-muted">No PDF materials uploaded yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Statistics -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">User Statistics</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6>Users by Role</h6>
+              <ul class="list-group">
+                <% @users_by_role.each do |role, count| %>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <%= role.titleize %>
+                    <span class="badge bg-primary rounded-pill"><%= count %></span>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

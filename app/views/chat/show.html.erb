@@ -1,0 +1,67 @@
+<div class="container-fluid" style="height: calc(100vh - 56px);">
+  <div class="d-flex flex-column" style="height: 100%;" data-controller="chat">
+
+    <!-- Chat Header -->
+    <div class="chat-header flex-shrink-0 p-3 border-bottom">
+      <h4 class="mb-0">
+        <i class="bi bi-chat-dots"></i>
+        Chat with AI Tutor - <%= @chapter.name %>
+      </h4>
+      <small class="text-muted">Ask me anything about <%= @chapter.name %></small>
+    </div>
+
+    <!-- Flash Messages -->
+    <div id="flash_messages" class="flex-shrink-0">
+      <%= render "shared/flash" %>
+    </div>
+
+    <!-- Chat Messages -->
+    <div id="chat_messages"
+         class="chat-messages flex-grow-1 p-3"
+         style="height: 0; min-height: 0; overflow-y: auto;"
+         data-chat-target="messages">
+      
+      <!-- Welcome Message if no questions -->
+      <% unless @questions&.any? %>
+        <div class="message ai-message mb-3">
+          <div class="d-flex">
+            <div class="message-content bg-light p-3 rounded" style="max-width: 70%;">
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-robot text-primary me-2"></i>
+                <small class="text-muted">AI Tutor</small>
+              </div>
+              <div class="ai-response">
+                <p>👋 Hello! I'm your AI tutor.</p>
+                <p>Ask me anything about this topic, and I'll help you understand it better!</p>
+                <p>You can ask questions like:</p>
+                <ul>
+                  <li>"Explain this topic"</li>
+                  <li>"Give me examples"</li>
+                  <li>"What are the key points?"</li>
+                  <li>"How does this work?"</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Render existing questions using message_pair partial -->
+      <% @questions&.each do |question| %>
+        <%= render "message_pair", question: question %>
+      <% end %>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input flex-shrink-0 p-3 border-top">
+      <%= render "form", question: @question, chapter: @chapter %>
+    </div>
+  </div>
+</div>
+
+<script>
+function askQuestion(text) {
+  document.getElementById('question_content').value = text;
+  document.getElementById('question_content').focus();
+}
+</script>

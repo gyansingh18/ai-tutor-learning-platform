@@ -1,0 +1,94 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to "Admin Dashboard", admin_dashboard_path %></li>
+          <li class="breadcrumb-item"><%= link_to "Users", admin_users_path %></li>
+          <li class="breadcrumb-item active" aria-current="page"><%= @user.display_name %></li>
+        </ol>
+      </nav>
+
+      <h1 class="display-4 text-primary">User Profile: <%= @user.display_name %></h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <!-- User Information -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">User Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Name:</strong> <%= @user.display_name %></p>
+              <p><strong>Email:</strong> <%= @user.email %></p>
+              <p><strong>Role:</strong>
+                <span class="badge <%= @user.admin? ? 'bg-danger' : 'bg-primary' %>">
+                  <%= @user.role.titleize %>
+                </span>
+              </p>
+              <p><strong>Member since:</strong> <%= @user.created_at.strftime("%B %d, %Y") %></p>
+            </div>
+            <div class="col-md-6">
+              <div class="row text-center">
+                <div class="col-6">
+                  <h4 class="text-primary"><%= @user.questions.count %></h4>
+                  <small class="text-muted">Questions Asked</small>
+                </div>
+                <div class="col-6">
+                  <h4 class="text-success"><%= @user.questions.joins(:answer).count %></h4>
+                  <small class="text-muted">Questions Answered</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Questions -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Recent Questions</h5>
+        </div>
+        <div class="card-body">
+          <% if @questions.any? %>
+            <% @questions.each do |question| %>
+              <div class="border-bottom pb-3 mb-3">
+                <h6><%= question.display_content %></h6>
+                <small class="text-muted">
+                  Asked <%= time_ago_in_words(question.created_at) %> ago
+                  in <%= question.chapter.display_name %>
+                </small>
+                <% if question.answered? %>
+                  <span class="badge bg-success ms-2">Answered</span>
+                <% else %>
+                  <span class="badge bg-warning ms-2">Pending</span>
+                <% end %>
+              </div>
+            <% end %>
+          <% else %>
+            <p class="text-muted">No questions asked yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <%= link_to "Back to Users", admin_users_path, class: "btn btn-outline-secondary" %>
+            <%= link_to "Admin Dashboard", admin_dashboard_path, class: "btn btn-outline-primary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

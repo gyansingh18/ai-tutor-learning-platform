@@ -1,0 +1,67 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="display-4 text-primary">Upload PDF Material</h1>
+      <p class="lead">Add study materials for students</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <%= form_with model: @pdf_material, local: true, multipart: true do |form| %>
+            <% if @pdf_material.errors.any? %>
+              <div class="alert alert-danger">
+                <h4><%= pluralize(@pdf_material.errors.count, "error") %> prohibited this PDF from being saved:</h4>
+                <ul>
+                  <% @pdf_material.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <div class="mb-3">
+              <%= form.label :title, "Title", class: "form-label" %>
+              <%= form.text_field :title, class: "form-control", placeholder: "Enter a descriptive title" %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :chapter_id, "Chapter", class: "form-label" %>
+              <%= form.collection_select :chapter_id, Chapter.ordered, :id, :display_name, { prompt: "Select a chapter" }, { class: "form-select" } %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :pdf_file, "PDF File", class: "form-label" %>
+              <%= form.file_field :pdf_file, class: "form-control", accept: ".pdf" %>
+              <div class="form-text">Only PDF files are allowed. Maximum size: 10MB</div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+              <%= form.submit "Upload PDF", class: "btn btn-primary me-md-2" %>
+              <%= link_to "Cancel", pdf_materials_path, class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Upload Guidelines</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled">
+            <li class="mb-2">• Only PDF files are accepted</li>
+            <li class="mb-2">• Maximum file size: 10MB</li>
+            <li class="mb-2">• Use descriptive titles</li>
+            <li class="mb-2">• Select the appropriate chapter</li>
+            <li class="mb-2">• Files will be processed automatically</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

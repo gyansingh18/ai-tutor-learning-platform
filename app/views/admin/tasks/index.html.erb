@@ -1,0 +1,68 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Tasks for <%= @chapter.display_name %></h1>
+        <div>
+          <%= link_to "Generate AI Tasks", generate_tasks_admin_chapter_path(@chapter),
+                      method: :post,
+                      class: "btn btn-primary",
+                      data: { confirm: "This will generate new AI tasks. Continue?" } %>
+          <%= link_to "New Task", new_admin_chapter_task_path(@chapter), class: "btn btn-success ms-2" %>
+          <%= link_to "Back to Chapters", admin_chapters_path, class: "btn btn-outline-secondary ms-2" %>
+        </div>
+      </div>
+
+      <% if @tasks.any? %>
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">AI-Generated Tasks (<%= @tasks.count %>)</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @tasks.each do |task| %>
+                    <tr>
+                      <td><%= task.order %></td>
+                      <td><%= task.title %></td>
+                      <td>
+                        <span class="badge bg-info"><%= task.task_type.humanize %></span>
+                      </td>
+                      <td>
+                        <%= link_to "Edit", edit_admin_chapter_task_path(@chapter, task),
+                                    class: "btn btn-sm btn-outline-primary" %>
+                        <%= link_to "Delete", admin_chapter_task_path(@chapter, task),
+                                    method: :delete,
+                                    class: "btn btn-sm btn-outline-danger",
+                                    data: { confirm: "Are you sure?" } %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <div class="card">
+          <div class="card-body text-center">
+            <h5 class="text-muted">No tasks found</h5>
+            <p class="text-muted">Click "Generate AI Tasks" to create tasks automatically using AI.</p>
+            <%= link_to "Generate AI Tasks", generate_tasks_admin_chapter_path(@chapter),
+                        method: :post,
+                        class: "btn btn-primary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

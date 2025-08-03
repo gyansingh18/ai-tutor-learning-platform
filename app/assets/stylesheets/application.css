@@ -1,0 +1,73 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+/* Simple Learning Environment */
+.learning-environment {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.learning-header {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.learning-content {
+  padding: 20px 0;
+}
+
+.learning-footer {
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+
+/* Panel styling */
+.explanation-section,
+.question-section,
+.hint-section {
+  padding: 15px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  margin-bottom: 15px;
+}
+
+.explanation-content,
+.question-content,
+.hint-content {
+  line-height: 1.6;
+}
+
+/* Form styling */
+.answer-form .form-control,
+.answer-form .form-check {
+  margin-bottom: 15px;
+}
+
+/* Results styling */
+.result-section {
+  padding: 15px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+}
+
+.correct-answer {
+  margin-top: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .learning-content {
+    padding: 10px 0;
+  }
+}
