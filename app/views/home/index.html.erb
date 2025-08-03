@@ -38,6 +38,58 @@
         </div>
       <% end %>
 
+      <!-- Resume Learning Section -->
+      <% if user_signed_in? && @resume_chapter %>
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card border-primary">
+              <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">
+                  <i class="fas fa-play-circle me-2"></i>
+                  Resume Learning
+                </h6>
+              </div>
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-md-8">
+                    <h6 class="text-primary mb-1">Continue where you left off:</h6>
+                    <p class="mb-2">
+                      <strong><%= @resume_chapter.display_name %></strong>
+                      <br>
+                      <small class="text-muted">
+                        <%= @resume_chapter.subject.name %> • <%= @resume_chapter.subject.grade.display_name %>
+                      </small>
+                    </p>
+                    <% 
+                      total_tasks = @resume_chapter.tasks.count
+                      completed_tasks = @resume_chapter.tasks.joins(:student_answers)
+                                                   .where(student_answers: { user: current_user })
+                                                   .distinct.count
+                      progress_percentage = total_tasks > 0 ? (completed_tasks.to_f / total_tasks * 100).round : 0
+                    %>
+                    <div class="progress mb-2" style="height: 6px;">
+                      <div class="progress-bar bg-success" role="progressbar" 
+                           style="width: <%= progress_percentage %>%" 
+                           aria-valuenow="<%= progress_percentage %>" 
+                           aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <small class="text-muted">
+                      <%= completed_tasks %> of <%= total_tasks %> tasks completed (<%= progress_percentage %>%)
+                    </small>
+                  </div>
+                  <div class="col-md-4 text-end">
+                    <%= link_to learning_path(@resume_chapter), class: "btn btn-primary btn-lg" do %>
+                      <i class="fas fa-play me-2"></i>
+                      Resume Learning
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Start Learning</h5>
@@ -85,6 +137,7 @@
           <div class="d-grid gap-2">
             <% if user_signed_in? %>
               <%= link_to "My Dashboard", profile_path, class: "btn btn-outline-primary" %>
+              <%= link_to "View All Progress", profile_path, class: "btn btn-outline-success" %>
               <%= link_to "Ask a Doubt", questions_path, class: "btn btn-outline-secondary" %>
               <%= link_to "View History", history_path, class: "btn btn-outline-info" %>
               <% if current_user.admin? %>
