@@ -6,68 +6,288 @@
  * vendor/assets/stylesheets directory can be referenced here using a relative path.
  *
  * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS
- * files in this directory. Styles in this file should be added after the last require_* statement.
- * It is generally better to create a new file per style scope.
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS files in this directory.
+ *
+ * Instead of relying on imports for all of these files, manifest files are used to include just the files that are
+ * needed. For example, we could import `some_import.css` right here if it was needed, or we could require a CSS file
+ * in an import statement. For more information, see the documentation:
+ * https://guides.rubyonrails.org/asset_pipeline.html#manifest-files
  *
  *= require_tree .
  *= require_self
  */
 
-/* Simple Learning Environment */
-.learning-environment {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
+/* ===== AI Tutor Design System ===== */
+
+/* Color Palette - Based on Research */
+:root {
+  /* Primary Colors */
+  --deep-blue: #4361EE;      /* Trust, intelligence */
+  --emerald-green: #06D6A0;  /* Growth, success */
+  --warm-amber: #FFD166;     /* Attention, interaction */
+  --soft-red: #EF476F;       /* Errors, corrections */
+  
+  /* Neutrals */
+  --light-gray: #F8F9FA;     /* Background */
+  --medium-gray: #ADB5BD;    /* Borders */
+  --dark-gray: #212529;      /* Text */
+  
+  /* Semantic Colors */
+  --success: var(--emerald-green);
+  --warning: var(--warm-amber);
+  --danger: var(--soft-red);
+  --primary: var(--deep-blue);
+  --info: #17a2b8;
+  --secondary: var(--medium-gray);
+  --light: var(--light-gray);
+  --dark: var(--dark-gray);
 }
 
-.learning-header {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.learning-content {
-  padding: 20px 0;
-}
-
-.learning-footer {
-  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
-}
-
-/* Panel styling */
-.explanation-section,
-.question-section,
-.hint-section {
-  padding: 15px;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.05);
-  margin-bottom: 15px;
-}
-
-.explanation-content,
-.question-content,
-.hint-content {
+/* Typography Hierarchy */
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
   line-height: 1.6;
+  color: var(--dark-gray);
+  background-color: var(--light-gray);
 }
 
-/* Form styling */
-.answer-form .form-control,
-.answer-form .form-check {
-  margin-bottom: 15px;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: var(--dark-gray);
 }
 
-/* Results styling */
-.result-section {
-  padding: 15px;
+h1 { font-size: 32px; }
+h2 { font-size: 28px; }
+h3 { font-size: 24px; }
+h4 { font-size: 20px; }
+h5 { font-size: 18px; }
+h6 { font-size: 16px; }
+
+/* Code Typography */
+code, pre {
+  font-family: 'Roboto Mono', monospace;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+/* Card Design System */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0 !important;
+  border-bottom: none;
+  font-weight: 600;
+}
+
+/* Button Design System */
+.btn {
   border-radius: 8px;
-  background: rgba(255,255,255,0.05);
+  font-weight: 600;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+  border: none;
 }
 
-.correct-answer {
-  margin-top: 15px;
+.btn-primary {
+  background-color: var(--deep-blue);
+  color: white;
 }
 
-/* Responsive adjustments */
+.btn-primary:hover {
+  background-color: #3a56d4;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+}
+
+.btn-success {
+  background-color: var(--emerald-green);
+  color: white;
+}
+
+.btn-warning {
+  background-color: var(--warm-amber);
+  color: var(--dark-gray);
+}
+
+.btn-danger {
+  background-color: var(--soft-red);
+  color: white;
+}
+
+/* Progress Bar Enhancements */
+.progress {
+  border-radius: 10px;
+  background-color: var(--light-gray);
+  overflow: hidden;
+}
+
+.progress-bar {
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.progress-bar.bg-success {
+  background-color: var(--emerald-green) !important;
+}
+
+/* Form Controls */
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 2px solid var(--medium-gray);
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--deep-blue);
+  box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+}
+
+/* Learning Interface Specific Styles */
+.learning-panel {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.learning-panel:hover {
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Microinteractions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Dashboard Enhancements */
+.dashboard-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.stats-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stats-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--deep-blue);
+}
+
+.stats-label {
+  color: var(--medium-gray);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Resume Learning Card */
+.resume-card {
+  border: 2px solid var(--deep-blue);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(6, 214, 160, 0.1) 100%);
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --deep-blue: #000080;
+    --emerald-green: #008000;
+    --warm-amber: #FF8C00;
+    --soft-red: #DC143C;
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .learning-content {
-    padding: 10px 0;
+  .container {
+    padding: 0 15px;
+  }
+  
+  .card {
+    margin-bottom: 15px;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .stats-number {
+    font-size: 2rem;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --light-gray: #1a1a1a;
+    --medium-gray: #4a4a4a;
+    --dark-gray: #ffffff;
+  }
+  
+  body {
+    background-color: var(--light-gray);
+    color: var(--dark-gray);
+  }
+  
+  .card {
+    background-color: #2a2a2a;
+    color: var(--dark-gray);
   }
 }

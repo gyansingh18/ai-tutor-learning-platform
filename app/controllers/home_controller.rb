@@ -59,7 +59,7 @@ class HomeController < ApplicationController
       latest_answer = StudentAnswer.where(user: current_user, task: incomplete_chapters.flat_map(&:tasks))
                                   .order(created_at: :desc)
                                   .first
-      
+
       if latest_answer
         latest_answer.task.chapter
       else

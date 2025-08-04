@@ -1,36 +1,37 @@
 <div class="container mt-4">
   <div class="row">
     <div class="col-md-8">
-      <h1 class="display-4 text-primary">AI Tutor</h1>
-      <p class="lead">Your personal AI learning companion</p>
+      <h1 class="display-4 text-primary fade-in">
+        <i class="fas fa-graduation-cap me-3"></i>
+        AI Tutor Learning Platform
+      </h1>
+      <p class="lead text-muted fade-in">Your personal AI learning companion with interactive tasks and progress tracking</p>
 
       <!-- Learning Statistics for logged-in users -->
       <% if user_signed_in? && @learning_stats %>
-        <div class="row mb-4">
+        <div class="row mb-4 fade-in">
           <div class="col-12">
-            <div class="card bg-light">
-              <div class="card-body">
-                <h6 class="card-title text-primary">
-                  <i class="fas fa-chart-bar me-2"></i>
-                  Your Learning Progress
-                </h6>
-                <div class="row text-center">
-                  <div class="col-md-3">
-                    <h4 class="text-primary"><%= @learning_stats[:total_chapters_started] %></h4>
-                    <small class="text-muted">Chapters Started</small>
-                  </div>
-                  <div class="col-md-3">
-                    <h4 class="text-success"><%= @learning_stats[:completed_chapters] %></h4>
-                    <small class="text-muted">Chapters Completed</small>
-                  </div>
-                  <div class="col-md-3">
-                    <h4 class="text-info"><%= @learning_stats[:total_tasks_completed] %></h4>
-                    <small class="text-muted">Tasks Completed</small>
-                  </div>
-                  <div class="col-md-3">
-                    <h4 class="text-warning"><%= @learning_stats[:accuracy_rate] %>%</h4>
-                    <small class="text-muted">Accuracy Rate</small>
-                  </div>
+            <div class="stats-card">
+              <h6 class="card-title text-primary mb-3">
+                <i class="fas fa-chart-bar me-2"></i>
+                Your Learning Progress
+              </h6>
+              <div class="row text-center">
+                <div class="col-md-3 mb-3">
+                  <div class="stats-number"><%= @learning_stats[:total_chapters_started] %></div>
+                  <div class="stats-label">Chapters Started</div>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <div class="stats-number text-success"><%= @learning_stats[:completed_chapters] %></div>
+                  <div class="stats-label">Chapters Completed</div>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <div class="stats-number text-info"><%= @learning_stats[:total_tasks_completed] %></div>
+                  <div class="stats-label">Tasks Completed</div>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <div class="stats-number text-warning"><%= @learning_stats[:accuracy_rate] %>%</div>
+                  <div class="stats-label">Accuracy Rate</div>
                 </div>
               </div>
             </div>
@@ -40,9 +41,9 @@
 
       <!-- Resume Learning Section -->
       <% if user_signed_in? && @resume_chapter %>
-        <div class="row mb-4">
+        <div class="row mb-4 fade-in">
           <div class="col-12">
-            <div class="card border-primary">
+            <div class="card resume-card">
               <div class="card-header bg-primary text-white">
                 <h6 class="mb-0">
                   <i class="fas fa-play-circle me-2"></i>
@@ -60,17 +61,17 @@
                         <%= @resume_chapter.subject.name %> • <%= @resume_chapter.subject.grade.display_name %>
                       </small>
                     </p>
-                    <% 
+                    <%
                       total_tasks = @resume_chapter.tasks.count
                       completed_tasks = @resume_chapter.tasks.joins(:student_answers)
                                                    .where(student_answers: { user: current_user })
                                                    .distinct.count
                       progress_percentage = total_tasks > 0 ? (completed_tasks.to_f / total_tasks * 100).round : 0
                     %>
-                    <div class="progress mb-2" style="height: 6px;">
-                      <div class="progress-bar bg-success" role="progressbar" 
-                           style="width: <%= progress_percentage %>%" 
-                           aria-valuenow="<%= progress_percentage %>" 
+                    <div class="progress mb-2" style="height: 8px;">
+                      <div class="progress-bar bg-success" role="progressbar"
+                           style="width: <%= progress_percentage %>%"
+                           aria-valuenow="<%= progress_percentage %>"
                            aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <small class="text-muted">
@@ -78,7 +79,7 @@
                     </small>
                   </div>
                   <div class="col-md-4 text-end">
-                    <%= link_to learning_path(@resume_chapter), class: "btn btn-primary btn-lg" do %>
+                    <%= link_to learning_path(@resume_chapter), class: "btn btn-primary btn-lg pulse" do %>
                       <i class="fas fa-play me-2"></i>
                       Resume Learning
                     <% end %>
@@ -90,14 +91,17 @@
         </div>
       <% end %>
 
-      <div class="card">
+      <div class="card fade-in">
         <div class="card-body">
-          <h5 class="card-title">Start Learning</h5>
+          <h5 class="card-title">
+            <i class="fas fa-rocket me-2"></i>
+            Start Learning
+          </h5>
           <p class="card-text">Select your grade, subject, and chapter to begin your learning journey.</p>
 
           <div class="row">
             <div class="col-md-4">
-              <label for="grade-select" class="form-label">Grade</label>
+              <label for="grade-select" class="form-label fw-bold">Grade</label>
               <select class="form-select" id="grade-select">
                 <option value="">Select Grade</option>
                 <% @grades.each do |grade| %>
@@ -107,14 +111,14 @@
             </div>
 
             <div class="col-md-4">
-              <label for="subject-select" class="form-label">Subject</label>
+              <label for="subject-select" class="form-label fw-bold">Subject</label>
               <select class="form-select" id="subject-select" disabled>
                 <option value="">Select Subject</option>
               </select>
             </div>
 
             <div class="col-md-4">
-              <label for="chapter-select" class="form-label">Chapter</label>
+              <label for="chapter-select" class="form-label fw-bold">Chapter</label>
               <select class="form-select" id="chapter-select" disabled>
                 <option value="">Select Chapter</option>
               </select>
@@ -123,6 +127,7 @@
 
           <div class="text-center mt-4">
             <button id="startLearningBtn" class="btn btn-primary btn-lg" disabled onclick="startLearning()">
+              <i class="fas fa-graduation-cap me-2"></i>
               Start Learning
             </button>
           </div>
@@ -131,21 +136,45 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card">
+      <div class="card fade-in">
         <div class="card-body">
-          <h5 class="card-title">Quick Actions</h5>
-          <div class="d-grid gap-2">
+          <h5 class="card-title">
+            <i class="fas fa-bolt me-2"></i>
+            Quick Actions
+          </h5>
+          <div class="d-grid gap-3">
             <% if user_signed_in? %>
-              <%= link_to "My Dashboard", profile_path, class: "btn btn-outline-primary" %>
-              <%= link_to "View All Progress", profile_path, class: "btn btn-outline-success" %>
-              <%= link_to "Ask a Doubt", questions_path, class: "btn btn-outline-secondary" %>
-              <%= link_to "View History", history_path, class: "btn btn-outline-info" %>
+              <%= link_to profile_path, class: "btn btn-outline-primary" do %>
+                <i class="fas fa-user-graduate me-2"></i>
+                My Dashboard
+              <% end %>
+              <%= link_to profile_path, class: "btn btn-outline-success" do %>
+                <i class="fas fa-chart-line me-2"></i>
+                View All Progress
+              <% end %>
+              <%= link_to questions_path, class: "btn btn-outline-secondary" do %>
+                <i class="fas fa-question-circle me-2"></i>
+                Ask a Doubt
+              <% end %>
+              <%= link_to history_path, class: "btn btn-outline-info" do %>
+                <i class="fas fa-history me-2"></i>
+                View History
+              <% end %>
               <% if current_user.admin? %>
-                <%= link_to "Admin Dashboard", admin_dashboard_path, class: "btn btn-outline-warning" %>
+                <%= link_to admin_dashboard_path, class: "btn btn-outline-warning" do %>
+                  <i class="fas fa-cog me-2"></i>
+                  Admin Dashboard
+                <% end %>
               <% end %>
             <% else %>
-              <%= link_to "Sign In", new_user_session_path, class: "btn btn-outline-primary" %>
-              <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-outline-secondary" %>
+              <%= link_to new_user_session_path, class: "btn btn-outline-primary" do %>
+                <i class="fas fa-sign-in-alt me-2"></i>
+                Sign In
+              <% end %>
+              <%= link_to new_user_registration_path, class: "btn btn-outline-secondary" do %>
+                <i class="fas fa-user-plus me-2"></i>
+                Sign Up
+              <% end %>
             <% end %>
           </div>
         </div>
