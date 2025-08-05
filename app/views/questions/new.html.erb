@@ -1,72 +1,213 @@
 <div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
-      <% if @selected_chapter %>
-        <h1 class="display-4 text-primary">Ask a Follow-up Question</h1>
-        <p class="lead">Continue learning about <%= @selected_chapter.display_name %></p>
-      <% else %>
-        <h1 class="display-4 text-primary">Ask a Question</h1>
-        <p class="lead">Get help with your studies</p>
-      <% end %>
-    </div>
-  </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- Header -->
+      <div class="text-center mb-5 fade-in">
+        <h1 class="display-4 text-primary mb-3">
+          <i class="fas fa-question-circle me-3"></i>
+          Ask a Doubt
+        </h1>
+        <p class="lead text-muted">Get personalized help from our AI tutor for any subject or topic</p>
+      </div>
 
-  <div class="row">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-body">
-          <%= form_with model: @question, local: true do |form| %>
-            <% if @question.errors.any? %>
-              <div class="alert alert-danger">
-                <h4><%= pluralize(@question.errors.count, "error") %> prohibited this question from being saved:</h4>
-                <ul>
-                  <% @question.errors.full_messages.each do |msg| %>
-                    <li><%= msg %></li>
-                  <% end %>
-                </ul>
-              </div>
-            <% end %>
+      <!-- Flash Messages Container -->
+      <div id="flash-messages"></div>
 
+      <!-- Question Form -->
+      <div id="question-form">
+        <div class="card fade-in">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-edit me-2"></i>
+              Your Question
+            </h5>
+          </div>
+          <div class="card-body">
             <% if @selected_chapter %>
-              <div class="alert alert-info">
-                <i class="bi bi-lightbulb"></i>
-                <strong>Follow-up Question:</strong> You're asking about <%= @selected_chapter.display_name %>
+              <div class="alert alert-info mb-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Continue learning about <%= @selected_chapter.display_name %></strong>
               </div>
             <% end %>
 
-            <div class="mb-3">
-              <%= form.label :content, "Your Question", class: "form-label" %>
-              <%= form.text_area :content, class: "form-control", rows: 5, placeholder: @selected_chapter ? "Ask a follow-up question about #{@selected_chapter.name}..." : "Ask your question here..." %>
-            </div>
+            <%= form_with model: @question, local: true, class: "needs-validation", novalidate: true do |form| %>
+              <div class="mb-4">
+                <label class="form-label fw-bold">
+                  <i class="fas fa-question-circle me-2"></i>
+                  What would you like to ask?
+                </label>
+                <%= form.text_area :content,
+                    class: "form-control",
+                    rows: 4,
+                    placeholder: "Describe your question in detail...",
+                    required: true %>
+                <div class="form-text">
+                  <i class="fas fa-lightbulb me-1"></i>
+                  Be specific! The more details you provide, the better the answer will be.
+                </div>
+              </div>
 
-            <div class="mb-3">
-              <%= form.label :chapter_id, "Chapter", class: "form-label" %>
-              <%= form.collection_select :chapter_id, Chapter.ordered, :id, :display_name, { selected: @question.chapter_id, prompt: "Select a chapter" }, { class: "form-select" } %>
-            </div>
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    Grade Level
+                  </label>
+                  <%= form.collection_select :grade_id, Grade.ordered, :id, :display_name,
+                      { prompt: "Select a grade" },
+                      { class: "form-select", required: true } %>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-bold">
+                    <i class="fas fa-book me-2"></i>
+                    Subject
+                  </label>
+                  <%= form.collection_select :subject_id, Subject.ordered, :id, :display_name,
+                      { prompt: "Select a subject" },
+                      { class: "form-select", required: true } %>
+                </div>
+              </div>
 
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-              <%= form.submit @selected_chapter ? "Ask Follow-up Question" : "Ask Question", class: "btn btn-primary me-md-2" %>
-              <%= link_to "Cancel", questions_path, class: "btn btn-secondary" %>
-            </div>
-          <% end %>
+              <div class="mb-4">
+                <label class="form-label fw-bold">
+                  <i class="fas fa-list-ol me-2"></i>
+                  Chapter (Optional)
+                </label>
+                <%= form.collection_select :chapter_id, Chapter.ordered, :id, :display_name,
+                    { selected: @question.chapter_id, prompt: "Select a chapter" },
+                    { class: "form-select" } %>
+                <div class="form-text">
+                  <i class="fas fa-info-circle me-1"></i>
+                  Selecting a chapter helps provide more targeted answers.
+                </div>
+              </div>
+
+              <% if @selected_chapter %>
+                <div class="alert alert-warning mb-4">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  <strong>Follow-up Question:</strong> You're asking about <%= @selected_chapter.display_name %>
+                </div>
+              <% end %>
+
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <%= link_to questions_path, class: "btn btn-outline-secondary me-md-2" do %>
+                  <i class="fas fa-arrow-left me-2"></i>
+                  Back to Questions
+                <% end %>
+                <%= form.submit "Ask Question", class: "btn btn-primary btn-lg" do %>
+                  <i class="fas fa-paper-plane me-2"></i>
+                  Ask Question
+                <% end %>
+              </div>
+            <% end %>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="card">
+      <!-- Tips Section -->
+      <div class="card mt-4 fade-in">
         <div class="card-header">
-          <h5 class="mb-0">Tips for Good Questions</h5>
+          <h5 class="mb-0">
+            <i class="fas fa-lightbulb me-2"></i>
+            Tips for Better Answers
+          </h5>
         </div>
         <div class="card-body">
-          <ul class="list-unstyled">
-            <li class="mb-2">• Be specific about what you're asking</li>
-            <li class="mb-2">• Include relevant context</li>
-            <li class="mb-2">• Mention the chapter you're studying</li>
-            <li class="mb-2">• Check if your question was already asked</li>
-          </ul>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-start">
+                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                <div>
+                  <h6 class="mb-1">Be Specific</h6>
+                  <small class="text-muted">Include context and details about what you're trying to understand.</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-start">
+                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                <div>
+                  <h6 class="mb-1">Show Your Work</h6>
+                  <small class="text-muted">If it's a math problem, show your attempt even if it's wrong.</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-start">
+                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                <div>
+                  <h6 class="mb-1">Ask Follow-ups</h6>
+                  <small class="text-muted">Don't hesitate to ask for clarification or more examples.</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-start">
+                <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                <div>
+                  <h6 class="mb-1">Use Examples</h6>
+                  <small class="text-muted">Reference specific problems or concepts you're struggling with.</small>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Enhanced form validation
+  const form = document.querySelector('.needs-validation');
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  form.addEventListener('submit', function(event) {
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  });
+
+  // Real-time character count for textarea
+  const textarea = form.querySelector('textarea');
+  const charCount = document.createElement('small');
+  charCount.className = 'form-text text-muted';
+  textarea.parentNode.appendChild(charCount);
+
+  textarea.addEventListener('input', function() {
+    const count = this.value.length;
+    charCount.textContent = `${count} characters`;
+
+    if (count < 10) {
+      charCount.className = 'form-text text-danger';
+    } else if (count < 50) {
+      charCount.className = 'form-text text-warning';
+    } else {
+      charCount.className = 'form-text text-success';
+    }
+  });
+
+  // Enhanced select interactions
+  const selects = form.querySelectorAll('select');
+  selects.forEach(select => {
+    select.addEventListener('change', function() {
+      if (this.value) {
+        this.classList.add('is-valid');
+        this.classList.remove('is-invalid');
+      } else {
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+      }
+    });
+  });
+
+  // Auto-resize textarea
+  textarea.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+});
+</script>

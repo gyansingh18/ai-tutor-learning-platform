@@ -13,120 +13,562 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 
-    <!-- Custom CSS for Chat Interface -->
+    <!-- Enhanced Custom CSS -->
     <style>
-      .chat-messages {
-        background: #f8f9fa;
+      :root {
+        /* Enhanced Color Palette */
+        --primary-blue: #4361EE;
+        --primary-blue-dark: #3730A3;
+        --success-green: #06D6A0;
+        --warning-amber: #FFD166;
+        --danger-red: #EF476F;
+        --info-cyan: #118AB2;
+        --light-gray: #F8F9FA;
+        --medium-gray: #ADB5BD;
+        --dark-gray: #212529;
+        --white: #FFFFFF;
+        --gradient-primary: linear-gradient(135deg, #4361EE, #3730A3);
+        --gradient-success: linear-gradient(135deg, #06D6A0, #059669);
+        --gradient-warning: linear-gradient(135deg, #FFD166, #F59E0B);
+        --gradient-danger: linear-gradient(135deg, #EF476F, #DC2626);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+        --shadow-lg: 0 10px 20px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.1);
+        --shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.1);
+        --border-radius: 12px;
+        --border-radius-lg: 16px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Global Styles */
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Open Sans', sans-serif;
+        line-height: 1.6;
+        color: var(--dark-gray);
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+      }
+
+      /* Typography */
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        color: var(--dark-gray);
+      }
+
+      .display-4 {
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      /* Enhanced Navbar */
+      .navbar {
+        background: var(--gradient-primary) !important;
+        box-shadow: var(--shadow-md);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        transition: var(--transition);
+      }
+
+      .navbar-brand {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--white) !important;
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .navbar-brand:hover {
+        transform: translateY(-1px);
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+
+      .navbar-nav .nav-link {
+        color: rgba(255,255,255,0.9) !important;
+        font-weight: 500;
+        padding: 0.75rem 1rem !important;
         border-radius: 8px;
+        transition: var(--transition);
+        position: relative;
+      }
+
+      .navbar-nav .nav-link:hover {
+        color: var(--white) !important;
+        background: rgba(255,255,255,0.1);
+        transform: translateY(-1px);
+      }
+
+      .navbar-nav .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--white);
+        transition: var(--transition);
+        transform: translateX(-50%);
+      }
+
+      .navbar-nav .nav-link:hover::after {
+        width: 80%;
+      }
+
+      /* Enhanced Cards */
+      .card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        background: var(--white);
+        overflow: hidden;
+      }
+
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .card-header {
+        background: var(--gradient-primary);
+        color: var(--white);
+        border: none;
+        font-weight: 600;
+        padding: 1.25rem 1.5rem;
+      }
+
+      .card-body {
+        padding: 1.5rem;
+      }
+
+      /* Enhanced Buttons */
+      .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        transition: var(--transition);
+        border: none;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary {
+        background: var(--gradient-primary);
+        color: var(--white);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        color: var(--white);
+      }
+
+      .btn-success {
+        background: var(--gradient-success);
+        color: var(--white);
+      }
+
+      .btn-warning {
+        background: var(--gradient-warning);
+        color: var(--dark-gray);
+      }
+
+      .btn-danger {
+        background: var(--gradient-danger);
+        color: var(--white);
+      }
+
+      .btn-outline-primary {
+        border: 2px solid var(--primary-blue);
+        color: var(--primary-blue);
+        background: transparent;
+      }
+
+      .btn-outline-primary:hover {
+        background: var(--gradient-primary);
+        color: var(--white);
+        transform: translateY(-2px);
+      }
+
+      /* Enhanced Form Controls */
+      .form-control, .form-select {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        transition: var(--transition);
+        font-size: 1rem;
+      }
+
+      .form-control:focus, .form-select:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        transform: translateY(-1px);
+      }
+
+      .form-label {
+        font-weight: 600;
+        color: var(--dark-gray);
+        margin-bottom: 0.5rem;
+      }
+
+      /* Enhanced Alerts */
+      .alert {
+        border: none;
+        border-radius: var(--border-radius);
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .alert-success {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #065f46;
+        border-left: 4px solid var(--success-green);
+      }
+
+      .alert-danger {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+        border-left: 4px solid var(--danger-red);
+      }
+
+      /* Enhanced Progress Bars */
+      .progress {
+        height: 12px;
+        border-radius: 6px;
+        background: #e9ecef;
+        overflow: hidden;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+      }
+
+      .progress-bar {
+        background: var(--gradient-success);
+        border-radius: 6px;
+        transition: width 0.6s ease;
+      }
+
+      /* Enhanced Badges */
+      .badge {
+        border-radius: 6px;
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+      }
+
+      /* Enhanced Tables */
+      .table {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .table thead th {
+        background: var(--gradient-primary);
+        color: var(--white);
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+      }
+
+      .table tbody tr {
+        transition: var(--transition);
+      }
+
+      .table tbody tr:hover {
+        background: rgba(67, 97, 238, 0.05);
+        transform: scale(1.01);
+      }
+
+      /* Enhanced Dropdowns */
+      .dropdown-menu {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-lg);
+        padding: 0.5rem;
+      }
+
+      .dropdown-item {
+        border-radius: 6px;
+        padding: 0.75rem 1rem;
+        transition: var(--transition);
+      }
+
+      .dropdown-item:hover {
+        background: rgba(67, 97, 238, 0.1);
+        color: var(--primary-blue);
+      }
+
+      /* Enhanced Footer */
+      footer {
+        background: var(--gradient-primary);
+        color: var(--white);
+        margin-top: auto;
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .fade-in {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .slide-in-left {
+        animation: slideInLeft 0.6s ease-out;
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      /* Enhanced Chat Interface */
+      .chat-messages {
+        background: var(--light-gray);
+        border-radius: var(--border-radius);
         margin: 10px;
+        box-shadow: var(--shadow-sm);
       }
 
       .message-content {
         border-radius: 18px !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
       }
 
       .user-message .message-content {
-        background: linear-gradient(135deg, #007bff, #0056b3) !important;
-        color: white !important;
+        background: var(--gradient-primary) !important;
+        color: var(--white) !important;
       }
 
       .ai-message .message-content {
-        background: white !important;
+        background: var(--white) !important;
         border: 1px solid #e9ecef;
       }
 
       .chat-input {
-        background: white;
+        background: var(--white);
         border-top: 1px solid #dee2e6;
+        box-shadow: var(--shadow-sm);
       }
 
       .chat-header {
-        background: linear-gradient(135deg, #007bff, #0056b3) !important;
+        background: var(--gradient-primary) !important;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
       }
 
-      .ai-response {
-        line-height: 1.6;
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .container {
+          padding-left: 1rem;
+          padding-right: 1rem;
+        }
+
+        .card-body {
+          padding: 1rem;
+        }
+
+        .btn {
+          padding: 0.5rem 1rem;
+          font-size: 0.9rem;
+        }
       }
 
-      .ai-response p {
+      /* Loading States */
+      .loading {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      /* Enhanced Stats Cards */
+      .stats-card {
+        background: var(--white);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+      }
+
+      .stats-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-blue);
         margin-bottom: 0.5rem;
       }
 
-      .ai-response ul {
-        margin-bottom: 0.5rem;
+      .stats-label {
+        font-size: 0.9rem;
+        color: var(--medium-gray);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
-      .ai-response li {
-        margin-bottom: 0.25rem;
+      /* Enhanced Resume Card */
+      .resume-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: var(--white);
+        border: none;
+        border-radius: var(--border-radius);
+        overflow: hidden;
       }
 
-      /* Chat scrolling improvements */
-      .chat-messages {
-        scroll-behavior: smooth;
-        overflow-y: auto;
-        overflow-x: hidden;
+      .resume-card .card-header {
+        background: transparent;
+        border: none;
       }
 
-      /* Ensure chat input stays at bottom */
-      .chat-input {
-        position: sticky;
-        bottom: 0;
-        background: white;
-        border-top: 1px solid #dee2e6;
-        z-index: 1000;
+      /* Enhanced Learning Interface */
+      .learning-interface {
+        background: var(--white);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
       }
 
-      /* Prevent page jumping */
-      body {
-        overflow-x: hidden;
+      .task-panel {
+        background: var(--light-gray);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
       }
 
-      /* Ensure smooth scrolling */
-      html {
-        scroll-behavior: smooth;
+      /* Enhanced Navigation */
+      .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 1rem;
       }
 
-      /* Fix for navbar */
-      .navbar {
-        position: sticky;
-        top: 0;
-        z-index: 1001;
+      .breadcrumb-item a {
+        color: var(--primary-blue);
+        text-decoration: none;
+        font-weight: 500;
       }
 
-      /* Ensure proper height calculation */
-      .container-fluid {
-        height: calc(100vh - 56px);
+      .breadcrumb-item.active {
+        color: var(--medium-gray);
       }
 
-      .row.h-100 {
-        height: 100% !important;
+      /* Enhanced Icons */
+      .icon-large {
+        font-size: 3rem;
+        color: var(--primary-blue);
+        margin-bottom: 1rem;
       }
 
-      /* Flexbox layout for chat */
-      .d-flex.flex-column {
-        height: 100%;
+      .icon-medium {
+        font-size: 2rem;
+        color: var(--primary-blue);
       }
 
-      .flex-shrink-0 {
-        flex-shrink: 0;
+      /* Enhanced Spacing */
+      .section-padding {
+        padding: 3rem 0;
       }
 
-      .flex-grow-1 {
-        flex-grow: 1;
+      .section-margin {
+        margin: 3rem 0;
+      }
+
+      /* Enhanced Focus States */
+      .btn:focus, .form-control:focus, .form-select:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+      }
+
+      /* Enhanced Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--primary-blue);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-blue-dark);
       }
     </style>
   </head>
 
   <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- Enhanced Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
         <a class="navbar-brand" href="/">
-          <i class="bi bi-mortarboard-fill"></i> AI Tutor
+          <i class="fas fa-graduation-cap me-2"></i> AI Tutor
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -136,17 +578,30 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <%= link_to "Learn", root_path, class: "nav-link" %>
+              <%= link_to root_path, class: "nav-link" do %>
+                <i class="fas fa-home me-1"></i> Learn
+              <% end %>
             </li>
             <li class="nav-item">
-              <%= link_to "Ask a Doubt", questions_path, class: "nav-link" %>
+              <%= link_to questions_path, class: "nav-link" do %>
+                <i class="fas fa-question-circle me-1"></i> Ask a Doubt
+              <% end %>
             </li>
             <li class="nav-item">
-              <%= link_to "History", history_path, class: "nav-link" %>
+              <%= link_to history_path, class: "nav-link" do %>
+                <i class="fas fa-history me-1"></i> History
+              <% end %>
+            </li>
+            <li class="nav-item">
+              <%= link_to test_index_path, class: "nav-link" do %>
+                <i class="fas fa-magic me-1"></i> AI Visual Test
+              <% end %>
             </li>
             <% if current_user&.admin? %>
               <li class="nav-item">
-                <%= link_to "Admin", admin_dashboard_path, class: "nav-link" %>
+                <%= link_to admin_dashboard_path, class: "nav-link" do %>
+                  <i class="fas fa-cog me-1"></i> Admin
+                <% end %>
               </li>
             <% end %>
           </ul>
@@ -155,20 +610,32 @@
             <% if user_signed_in? %>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="bi bi-person-circle"></i> <%= current_user.display_name %>
+                  <i class="fas fa-user-circle me-1"></i> <%= current_user.display_name %>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                  <li><%= link_to "Profile", profile_path, class: "dropdown-item" %></li>
+                  <li>
+                    <%= link_to profile_path, class: "dropdown-item" do %>
+                      <i class="fas fa-user me-2"></i> Profile
+                    <% end %>
+                  </li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><%= link_to "Sign Out", destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item text-danger" %></li>
+                  <li>
+                    <%= link_to destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item text-danger" do %>
+                      <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+                    <% end %>
+                  </li>
                 </ul>
               </li>
             <% else %>
               <li class="nav-item">
-                <%= link_to "Sign In", new_user_session_path, class: "nav-link" %>
+                <%= link_to new_user_session_path, class: "nav-link" do %>
+                  <i class="fas fa-sign-in-alt me-1"></i> Sign In
+                <% end %>
               </li>
               <li class="nav-item">
-                <%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %>
+                <%= link_to new_user_registration_path, class: "nav-link" do %>
+                  <i class="fas fa-user-plus me-1"></i> Sign Up
+                <% end %>
               </li>
             <% end %>
           </ul>
@@ -176,34 +643,105 @@
       </div>
     </nav>
 
-    <!-- Flash Messages -->
+    <!-- Enhanced Flash Messages -->
     <% if notice %>
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <div class="alert alert-success alert-dismissible fade show fade-in" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
         <%= notice %>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     <% end %>
 
     <% if alert %>
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <div class="alert alert-danger alert-dismissible fade show fade-in" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
         <%= alert %>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     <% end %>
 
     <!-- Main Content -->
-    <main>
+    <main class="section-padding">
       <%= yield %>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-light mt-5 py-4">
+    <!-- Enhanced Footer -->
+    <footer class="mt-5 py-4">
       <div class="container text-center">
-        <p class="text-muted mb-0">&copy; 2024 AI Tutor. Built with ❤️ for education.</p>
+        <div class="row">
+          <div class="col-md-4">
+            <h6 class="text-white mb-3">
+              <i class="fas fa-graduation-cap me-2"></i>AI Tutor
+            </h6>
+            <p class="text-light mb-0">Your personal AI learning companion</p>
+          </div>
+          <div class="col-md-4">
+            <h6 class="text-white mb-3">Features</h6>
+            <ul class="list-unstyled text-light">
+              <li><i class="fas fa-check me-2"></i>Interactive Learning</li>
+              <li><i class="fas fa-check me-2"></i>AI-Powered Tutoring</li>
+              <li><i class="fas fa-check me-2"></i>Progress Tracking</li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h6 class="text-white mb-3">Connect</h6>
+            <div class="d-flex justify-content-center">
+              <a href="#" class="text-light me-3"><i class="fab fa-twitter fa-lg"></i></a>
+              <a href="#" class="text-light me-3"><i class="fab fa-facebook fa-lg"></i></a>
+              <a href="#" class="text-light"><i class="fab fa-linkedin fa-lg"></i></a>
+            </div>
+          </div>
+        </div>
+        <hr class="my-4" style="border-color: rgba(255,255,255,0.2);">
+        <p class="text-light mb-0">&copy; 2024 AI Tutor. Built with <i class="fas fa-heart text-danger"></i> for education.</p>
       </div>
     </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Enhanced JavaScript -->
+    <script>
+      // Add fade-in animation to elements
+      document.addEventListener('DOMContentLoaded', function() {
+        const elements = document.querySelectorAll('.card, .alert, .btn');
+        elements.forEach(element => {
+          element.classList.add('fade-in');
+        });
+      });
+
+      // Enhanced form validation
+      document.querySelectorAll('.form-control, .form-select').forEach(input => {
+        input.addEventListener('focus', function() {
+          this.parentElement.classList.add('focused');
+        });
+
+        input.addEventListener('blur', function() {
+          this.parentElement.classList.remove('focused');
+        });
+      });
+
+      // Enhanced button interactions
+      document.querySelectorAll('.btn').forEach(button => {
+        button.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px)';
+        });
+
+        button.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      });
+
+      // Enhanced card interactions
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-4px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+        });
+      });
+    </script>
   </body>
 </html>

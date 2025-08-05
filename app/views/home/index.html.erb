@@ -1,149 +1,176 @@
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-md-8">
-      <h1 class="display-4 text-primary fade-in">
-        <i class="fas fa-graduation-cap me-3"></i>
-        AI Tutor Learning Platform
-      </h1>
-      <p class="lead text-muted fade-in">Your personal AI learning companion with interactive tasks and progress tracking</p>
-
-      <!-- Learning Statistics for logged-in users -->
-      <% if user_signed_in? && @learning_stats %>
-        <div class="row mb-4 fade-in">
-          <div class="col-12">
-            <div class="stats-card">
-              <h6 class="card-title text-primary mb-3">
-                <i class="fas fa-chart-bar me-2"></i>
-                Your Learning Progress
-              </h6>
-              <div class="row text-center">
-                <div class="col-md-3 mb-3">
-                  <div class="stats-number"><%= @learning_stats[:total_chapters_started] %></div>
-                  <div class="stats-label">Chapters Started</div>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <div class="stats-number text-success"><%= @learning_stats[:completed_chapters] %></div>
-                  <div class="stats-label">Chapters Completed</div>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <div class="stats-number text-info"><%= @learning_stats[:total_tasks_completed] %></div>
-                  <div class="stats-label">Tasks Completed</div>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <div class="stats-number text-warning"><%= @learning_stats[:accuracy_rate] %>%</div>
-                  <div class="stats-label">Accuracy Rate</div>
-                </div>
-              </div>
+<% if user_signed_in? %>
+  <!-- Authenticated User Home Page -->
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-5 fade-in">
+          <h1 class="display-4 text-primary mb-3">
+            <i class="fas fa-graduation-cap me-3"></i>
+            AI Tutor Learning Platform
+          </h1>
+          <p class="lead text-muted mb-4">Your personal AI learning companion with interactive tasks and progress tracking</p>
+          <div class="d-flex justify-content-center gap-3">
+            <div class="badge bg-primary fs-6 px-3 py-2">
+              <i class="fas fa-robot me-2"></i>AI-Powered
+            </div>
+            <div class="badge bg-success fs-6 px-3 py-2">
+              <i class="fas fa-chart-line me-2"></i>Progress Tracking
+            </div>
+            <div class="badge bg-info fs-6 px-3 py-2">
+              <i class="fas fa-users me-2"></i>Personalized
             </div>
           </div>
         </div>
-      <% end %>
 
-      <!-- Resume Learning Section -->
-      <% if user_signed_in? && @resume_chapter %>
-        <div class="row mb-4 fade-in">
-          <div class="col-12">
-            <div class="card resume-card">
-              <div class="card-header bg-primary text-white">
-                <h6 class="mb-0">
-                  <i class="fas fa-play-circle me-2"></i>
-                  Resume Learning
+        <!-- Learning Statistics for logged-in users -->
+        <% if @learning_stats %>
+          <div class="row mb-5 fade-in">
+            <div class="col-12">
+              <div class="stats-card">
+                <h6 class="card-title text-primary mb-4">
+                  <i class="fas fa-chart-bar me-2"></i>
+                  Your Learning Progress
                 </h6>
-              </div>
-              <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col-md-8">
-                    <h6 class="text-primary mb-1">Continue where you left off:</h6>
-                    <p class="mb-2">
-                      <strong><%= @resume_chapter.display_name %></strong>
-                      <br>
-                      <small class="text-muted">
-                        <%= @resume_chapter.subject.name %> • <%= @resume_chapter.subject.grade.display_name %>
-                      </small>
-                    </p>
-                    <%
-                      total_tasks = @resume_chapter.tasks.count
-                      completed_tasks = @resume_chapter.tasks.joins(:student_answers)
-                                                   .where(student_answers: { user: current_user })
-                                                   .distinct.count
-                      progress_percentage = total_tasks > 0 ? (completed_tasks.to_f / total_tasks * 100).round : 0
-                    %>
-                    <div class="progress mb-2" style="height: 8px;">
-                      <div class="progress-bar bg-success" role="progressbar"
-                           style="width: <%= progress_percentage %>%"
-                           aria-valuenow="<%= progress_percentage %>"
-                           aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <small class="text-muted">
-                      <%= completed_tasks %> of <%= total_tasks %> tasks completed (<%= progress_percentage %>%)
-                    </small>
+                <div class="row text-center">
+                  <div class="col-md-3 mb-3">
+                    <div class="stats-number"><%= @learning_stats[:total_chapters_started] %></div>
+                    <div class="stats-label">Chapters Started</div>
                   </div>
-                  <div class="col-md-4 text-end">
-                    <%= link_to learning_path(@resume_chapter), class: "btn btn-primary btn-lg pulse" do %>
-                      <i class="fas fa-play me-2"></i>
-                      Resume Learning
-                    <% end %>
+                  <div class="col-md-3 mb-3">
+                    <div class="stats-number text-success"><%= @learning_stats[:completed_chapters] %></div>
+                    <div class="stats-label">Chapters Completed</div>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <div class="stats-number text-info"><%= @learning_stats[:total_tasks_completed] %></div>
+                    <div class="stats-label">Tasks Completed</div>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <div class="stats-number text-warning"><%= @learning_stats[:accuracy_rate] %>%</div>
+                    <div class="stats-label">Accuracy Rate</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      <% end %>
+        <% end %>
 
-      <div class="card fade-in">
-        <div class="card-body">
-          <h5 class="card-title">
-            <i class="fas fa-rocket me-2"></i>
-            Start Learning
-          </h5>
-          <p class="card-text">Select your grade, subject, and chapter to begin your learning journey.</p>
-
-          <div class="row">
-            <div class="col-md-4">
-              <label for="grade-select" class="form-label fw-bold">Grade</label>
-              <select class="form-select" id="grade-select">
-                <option value="">Select Grade</option>
-                <% @grades.each do |grade| %>
-                  <option value="<%= grade.id %>"><%= grade.display_name %></option>
-                <% end %>
-              </select>
-            </div>
-
-            <div class="col-md-4">
-              <label for="subject-select" class="form-label fw-bold">Subject</label>
-              <select class="form-select" id="subject-select" disabled>
-                <option value="">Select Subject</option>
-              </select>
-            </div>
-
-            <div class="col-md-4">
-              <label for="chapter-select" class="form-label fw-bold">Chapter</label>
-              <select class="form-select" id="chapter-select" disabled>
-                <option value="">Select Chapter</option>
-              </select>
+        <!-- Resume Learning Section -->
+        <% if @resume_chapter %>
+          <div class="row mb-5 fade-in">
+            <div class="col-12">
+              <div class="card resume-card">
+                <div class="card-header">
+                  <h6 class="mb-0">
+                    <i class="fas fa-play-circle me-2"></i>
+                    Resume Learning
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col-md-8">
+                      <h6 class="text-white mb-2">Continue where you left off:</h6>
+                      <p class="mb-3">
+                        <strong class="text-white"><%= @resume_chapter.display_name %></strong>
+                        <br>
+                        <small class="text-light">
+                          <%= @resume_chapter.subject.name %> • <%= @resume_chapter.subject.grade.display_name %>
+                        </small>
+                      </p>
+                      <%
+                        total_tasks = @resume_chapter.tasks.count
+                        completed_tasks = @resume_chapter.tasks.joins(:student_answers)
+                                                     .where(student_answers: { user: current_user })
+                                                     .distinct.count
+                        progress_percentage = total_tasks > 0 ? (completed_tasks.to_f / total_tasks * 100).round : 0
+                      %>
+                      <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: <%= progress_percentage %>%"
+                             aria-valuenow="<%= progress_percentage %>"
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                      <small class="text-light">
+                        <%= completed_tasks %> of <%= total_tasks %> tasks completed (<%= progress_percentage %>%)
+                      </small>
+                    </div>
+                    <div class="col-md-4 text-end">
+                      <%= link_to learning_path(@resume_chapter), class: "btn btn-light btn-lg pulse" do %>
+                        <i class="fas fa-play me-2"></i>
+                        Resume Learning
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        <% end %>
 
-          <div class="text-center mt-4">
-            <button id="startLearningBtn" class="btn btn-primary btn-lg" disabled onclick="startLearning()">
-              <i class="fas fa-graduation-cap me-2"></i>
+        <!-- Start Learning Section -->
+        <div class="card fade-in">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-rocket me-2"></i>
               Start Learning
-            </button>
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="card-text mb-4">Select your grade, subject, and chapter to begin your learning journey.</p>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="grade-select" class="form-label fw-bold">
+                  <i class="fas fa-graduation-cap me-2"></i>Grade
+                </label>
+                <select class="form-select" id="grade-select">
+                  <option value="">Select Grade</option>
+                  <% @grades.each do |grade| %>
+                    <option value="<%= grade.id %>"><%= grade.display_name %></option>
+                  <% end %>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label for="subject-select" class="form-label fw-bold">
+                  <i class="fas fa-book me-2"></i>Subject
+                </label>
+                <select class="form-select" id="subject-select" disabled>
+                  <option value="">Select Subject</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label for="chapter-select" class="form-label fw-bold">
+                  <i class="fas fa-list-ol me-2"></i>Chapter
+                </label>
+                <select class="form-select" id="chapter-select" disabled>
+                  <option value="">Select Chapter</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="text-center mt-4">
+              <button id="startLearningBtn" class="btn btn-primary btn-lg" disabled onclick="startLearning()">
+                <i class="fas fa-graduation-cap me-2"></i>
+                Start Learning
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="col-md-4">
-      <div class="card fade-in">
-        <div class="card-body">
-          <h5 class="card-title">
-            <i class="fas fa-bolt me-2"></i>
-            Quick Actions
-          </h5>
-          <div class="d-grid gap-3">
-            <% if user_signed_in? %>
+      <!-- Quick Actions Sidebar -->
+      <div class="col-md-4">
+        <div class="card fade-in">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-bolt me-2"></i>
+              Quick Actions
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-3">
               <%= link_to profile_path, class: "btn btn-outline-primary" do %>
                 <i class="fas fa-user-graduate me-2"></i>
                 My Dashboard
@@ -166,22 +193,206 @@
                   Admin Dashboard
                 <% end %>
               <% end %>
-            <% else %>
-              <%= link_to new_user_session_path, class: "btn btn-outline-primary" do %>
-                <i class="fas fa-sign-in-alt me-2"></i>
-                Sign In
-              <% end %>
-              <%= link_to new_user_registration_path, class: "btn btn-outline-secondary" do %>
-                <i class="fas fa-user-plus me-2"></i>
-                Sign Up
-              <% end %>
-            <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features Card -->
+        <div class="card mt-4 fade-in">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-star me-2"></i>
+              Why Choose AI Tutor?
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+              <i class="fas fa-robot text-primary me-3 fa-lg"></i>
+              <div>
+                <h6 class="mb-1">AI-Powered Learning</h6>
+                <small class="text-muted">Personalized explanations and feedback</small>
+              </div>
+            </div>
+            <div class="d-flex align-items-center mb-3">
+              <i class="fas fa-chart-line text-success me-3 fa-lg"></i>
+              <div>
+                <h6 class="mb-1">Progress Tracking</h6>
+                <small class="text-muted">Monitor your learning journey</small>
+              </div>
+            </div>
+            <div class="d-flex align-items-center mb-3">
+              <i class="fas fa-users text-info me-3 fa-lg"></i>
+              <div>
+                <h6 class="mb-1">Interactive Tasks</h6>
+                <small class="text-muted">Engage with hands-on exercises</small>
+              </div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-clock text-warning me-3 fa-lg"></i>
+              <div>
+                <h6 class="mb-1">24/7 Availability</h6>
+                <small class="text-muted">Learn at your own pace</small>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+
+<% else %>
+  <!-- Landing Page for Non-Authenticated Users -->
+
+  <!-- Hero Section -->
+  <section class="hero-section text-white py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 fade-in">
+          <h1 class="display-3 fw-bold mb-4">
+            <i class="fas fa-graduation-cap me-3"></i>
+            AI-Powered Learning<br>
+            <span class="text-warning">Reimagined</span>
+          </h1>
+          <p class="lead mb-4">
+            Experience the future of education with our intelligent AI tutor.
+            Get personalized learning paths, instant feedback, and interactive exercises
+            that adapt to your learning style.
+          </p>
+          <div class="d-flex gap-3 mb-4">
+            <%= link_to new_user_registration_path, class: "btn btn-warning btn-lg" do %>
+              <i class="fas fa-rocket me-2"></i>
+              Start Learning Free
+            <% end %>
+            <%= link_to "#features", class: "btn btn-outline-light btn-lg" do %>
+              <i class="fas fa-play me-2"></i>
+              Watch Demo
+            <% end %>
+          </div>
+          <div class="d-flex align-items-center text-light">
+            <div class="me-4">
+              <h4 class="mb-0">10,000+</h4>
+              <small>Students Learning</small>
+            </div>
+            <div class="me-4">
+              <h4 class="mb-0">500+</h4>
+              <small>Chapters Available</small>
+            </div>
+            <div>
+              <h4 class="mb-0">95%</h4>
+              <small>Success Rate</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 fade-in">
+          <div class="text-center">
+            <div class="hero-image-container">
+              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80"
+                   alt="Students learning with AI"
+                   class="img-fluid rounded-3 shadow-lg"
+                   style="max-height: 400px; object-fit: cover;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold text-primary mb-3">Why Choose AI Tutor?</h2>
+        <p class="lead text-muted">Discover the features that make learning engaging, effective, and personalized</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6 fade-in">
+          <div class="card h-100 feature-card">
+            <div class="card-body text-center p-4">
+              <div class="feature-icon mb-3">
+                <i class="fas fa-robot fa-3x text-primary"></i>
+              </div>
+              <h4 class="card-title">AI-Powered Tutoring</h4>
+              <p class="card-text text-muted">
+                Our advanced AI understands your learning style and provides personalized explanations,
+                adapting to your pace and knowledge level.
+              </p>
+              <ul class="list-unstyled text-start">
+                <li><i class="fas fa-check text-success me-2"></i>Personalized explanations</li>
+                <li><i class="fas fa-check text-success me-2"></i>Adaptive difficulty</li>
+                <li><i class="fas fa-check text-success me-2"></i>Instant feedback</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 fade-in">
+          <div class="card h-100 feature-card">
+            <div class="card-body text-center p-4">
+              <div class="feature-icon mb-3">
+                <i class="fas fa-gamepad fa-3x text-success"></i>
+              </div>
+              <h4 class="card-title">Interactive Learning</h4>
+              <p class="card-text text-muted">
+                Engage with hands-on exercises, quizzes, and interactive tasks that make learning
+                fun and memorable.
+              </p>
+              <ul class="list-unstyled text-start">
+                <li><i class="fas fa-check text-success me-2"></i>Interactive exercises</li>
+                <li><i class="fas fa-check text-success me-2"></i>Gamified learning</li>
+                <li><i class="fas fa-check text-success me-2"></i>Real-time progress</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 fade-in">
+          <div class="card h-100 feature-card">
+            <div class="card-body text-center p-4">
+              <div class="feature-icon mb-3">
+                <i class="fas fa-chart-line fa-3x text-info"></i>
+              </div>
+              <h4 class="card-title">Progress Tracking</h4>
+              <p class="card-text text-muted">
+                Monitor your learning journey with detailed analytics, progress reports,
+                and achievement badges.
+              </p>
+              <ul class="list-unstyled text-start">
+                <li><i class="fas fa-check text-success me-2"></i>Detailed analytics</li>
+                <li><i class="fas fa-check text-success me-2"></i>Progress reports</li>
+                <li><i class="fas fa-check text-success me-2"></i>Achievement badges</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-5 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container text-center">
+      <h2 class="display-4 fw-bold mb-4">Ready to Transform Your Learning?</h2>
+      <p class="lead mb-4">
+        Join thousands of students who are already experiencing the future of education
+      </p>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <%= link_to new_user_registration_path, class: "btn btn-warning btn-lg" do %>
+          <i class="fas fa-rocket me-2"></i>
+          Start Learning Free
+        <% end %>
+        <%= link_to new_user_session_path, class: "btn btn-outline-light btn-lg" do %>
+          <i class="fas fa-sign-in-alt me-2"></i>
+          Sign In
+        <% end %>
+      </div>
+      <p class="mt-3 text-light">
+        <i class="fas fa-shield-alt me-2"></i>
+        No credit card required • Free forever • Cancel anytime
+      </p>
+    </div>
+  </section>
+<% end %>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -190,101 +401,155 @@ document.addEventListener('DOMContentLoaded', function() {
   const chapterSelect = document.getElementById('chapter-select');
   const startLearningBtn = document.getElementById('startLearningBtn');
 
-  gradeSelect.addEventListener('change', function() {
-    const gradeId = this.value;
-    if (gradeId) {
-      // Show loading state
-      subjectSelect.innerHTML = '<option value="">Loading...</option>';
-      subjectSelect.disabled = true;
-
-      fetch(`/grades/${gradeId}/subjects`, {
-        headers: {
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(subjects => {
-        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-        subjects.forEach(subject => {
-          subjectSelect.innerHTML += `<option value="${subject.id}">${subject.name}</option>`;
-        });
-        subjectSelect.disabled = false;
-        chapterSelect.disabled = true;
-        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-      })
-      .catch(error => {
-        console.error('Error loading subjects:', error);
-        subjectSelect.innerHTML = '<option value="">Error loading subjects</option>';
+  if (gradeSelect) {
+    gradeSelect.addEventListener('change', function() {
+      const gradeId = this.value;
+      if (gradeId) {
+        // Show loading state
+        subjectSelect.innerHTML = '<option value="">Loading...</option>';
         subjectSelect.disabled = true;
-      });
-    } else {
-      subjectSelect.disabled = true;
-      chapterSelect.disabled = true;
-      subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-      chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-    }
-  });
-
-  subjectSelect.addEventListener('change', function() {
-    const subjectId = this.value;
-    const gradeId = gradeSelect.value;
-    if (subjectId) {
-      // Show loading state
-      chapterSelect.innerHTML = '<option value="">Loading...</option>';
-      chapterSelect.disabled = true;
-
-      fetch(`/grades/${gradeId}/subjects/${subjectId}/chapters`, {
-        headers: {
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(chapters => {
         chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-        chapters.forEach(chapter => {
-          chapterSelect.innerHTML += `<option value="${chapter.id}">${chapter.name}</option>`;
-        });
-        chapterSelect.disabled = false;
-      })
-      .catch(error => {
-        console.error('Error loading chapters:', error);
-        chapterSelect.innerHTML = '<option value="">Error loading chapters</option>';
         chapterSelect.disabled = true;
-      });
-    } else {
-      chapterSelect.disabled = true;
-      chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-    }
-  });
+        startLearningBtn.disabled = true;
 
-  chapterSelect.addEventListener('change', function() {
-    const chapterId = this.value;
-    startLearningBtn.disabled = !chapterId;
-  });
+        fetch(`/api/grades/${gradeId}/subjects`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(subjects => {
+          subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+          subjects.forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject.id;
+            option.textContent = subject.name;
+            subjectSelect.appendChild(option);
+          });
+          subjectSelect.disabled = false;
+        })
+        .catch(error => {
+          console.error('Error fetching subjects:', error);
+          subjectSelect.innerHTML = '<option value="">Error loading subjects</option>';
+        });
+      } else {
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        subjectSelect.disabled = true;
+        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+        chapterSelect.disabled = true;
+        startLearningBtn.disabled = true;
+      }
+    });
 
-  // Make startLearning function globally accessible
-  window.startLearning = function() {
-    const gradeId = document.getElementById('grade-select').value;
-    const subjectId = document.getElementById('subject-select').value;
-    const chapterId = document.getElementById('chapter-select').value;
+    subjectSelect.addEventListener('change', function() {
+      const subjectId = this.value;
+      if (subjectId) {
+        // Show loading state
+        chapterSelect.innerHTML = '<option value="">Loading...</option>';
+        chapterSelect.disabled = true;
+        startLearningBtn.disabled = true;
 
-    if (gradeId && subjectId && chapterId) {
-      window.location.href = `/learning/${chapterId}`;
-    } else {
-      alert('Please select a grade, subject, and chapter first.');
-    }
-  };
+        fetch(`/api/subjects/${subjectId}/chapters`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(chapters => {
+          chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+          chapters.forEach(chapter => {
+            const option = document.createElement('option');
+            option.value = chapter.id;
+            option.textContent = chapter.name;
+            chapterSelect.appendChild(option);
+          });
+          chapterSelect.disabled = false;
+        })
+        .catch(error => {
+          console.error('Error fetching chapters:', error);
+          chapterSelect.innerHTML = '<option value="">Error loading chapters</option>';
+        });
+      } else {
+        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+        chapterSelect.disabled = true;
+        startLearningBtn.disabled = true;
+      }
+    });
+
+    chapterSelect.addEventListener('change', function() {
+      startLearningBtn.disabled = !this.value;
+    });
+  }
 });
+
+function startLearning() {
+  const chapterId = document.getElementById('chapter-select').value;
+  if (chapterId) {
+    window.location.href = `/learning/${chapterId}`;
+  }
+}
 </script>
+
+<style>
+/* Landing Page Specific Styles */
+.hero-section {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+}
+
+.hero-image-container {
+  position: relative;
+}
+
+.hero-image-container::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  border-radius: 20px;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+.feature-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 60vh;
+    text-align: center;
+  }
+
+  .display-3 {
+    font-size: 2.5rem;
+  }
+}
+</style>

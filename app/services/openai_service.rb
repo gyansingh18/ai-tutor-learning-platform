@@ -5,6 +5,46 @@ class OpenaiService
     @client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
   end
 
+  # Generate image using DALL-E
+  def generate_image(prompt)
+    begin
+      response = @client.images.generate(
+        parameters: {
+          prompt: prompt,
+          n: 1,
+          size: "1024x1024"
+        }
+      )
+
+      response.dig("data", 0, "url")
+    rescue => e
+      Rails.logger.error "DALL-E API Error: #{e.message}"
+      nil
+    end
+  end
+
+  # Generate simple text response (for non-RAG use cases)
+  def generate_simple_text(prompt)
+    begin
+      response = @client.chat(
+        parameters: {
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are a friendly, patient teacher who explains concepts in simple, engaging ways. Use conversational language and provide clear, helpful explanations." },
+            { role: "user", content: prompt }
+          ],
+          max_tokens: 1000,
+          temperature: 0.8
+        }
+      )
+
+      response.dig("choices", 0, "message", "content")
+    rescue => e
+      Rails.logger.error "OpenAI API Error: #{e.message}"
+      "I'm sorry, I'm having trouble processing your request right now. Please try again later."
+    end
+  end
+
   # Generate answer for a question using RAG
   def generate_answer(question, chapter, context_chunks = [])
     prompt = build_rag_prompt(question, chapter, context_chunks)

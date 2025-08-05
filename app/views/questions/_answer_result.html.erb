@@ -1,0 +1,55 @@
+<div class="card fade-in">
+  <div class="card-header">
+    <h5 class="mb-0">
+      <i class="fas fa-check-circle text-success me-2"></i>
+      Question Answered
+    </h5>
+  </div>
+  <div class="card-body">
+    <!-- Question -->
+    <div class="mb-4">
+      <h6 class="text-primary mb-2">
+        <i class="fas fa-question-circle me-2"></i>
+        Your Question
+      </h6>
+      <div class="p-3 bg-light rounded">
+        <%= question.content %>
+      </div>
+      <small class="text-muted">
+        <i class="fas fa-book me-1"></i>
+        <%= question.chapter.display_name %>
+      </small>
+    </div>
+
+    <!-- Answer -->
+    <div class="mb-4">
+      <h6 class="text-success mb-2">
+        <i class="fas fa-robot me-2"></i>
+        AI Answer
+      </h6>
+      <div class="p-3 bg-success bg-opacity-10 rounded">
+        <%= simple_format(question.answer.content) %>
+      </div>
+      <small class="text-muted">
+        <i class="fas fa-clock me-1"></i>
+        Answered just now
+      </small>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <%= link_to questions_path, class: "btn btn-outline-secondary me-md-2" do %>
+        <i class="fas fa-list me-2"></i>
+        View All Questions
+      <% end %>
+      <%= link_to learning_path(question.chapter), class: "btn btn-primary me-md-2" do %>
+        <i class="fas fa-graduation-cap me-2"></i>
+        Start Learning
+      <% end %>
+      <%= link_to chat_path(question.chapter), class: "btn btn-outline-primary" do %>
+        <i class="fas fa-comments me-2"></i>
+        Continue Chat
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -26,12 +26,12 @@
   --emerald-green: #06D6A0;  /* Growth, success */
   --warm-amber: #FFD166;     /* Attention, interaction */
   --soft-red: #EF476F;       /* Errors, corrections */
-  
+
   /* Neutrals */
   --light-gray: #F8F9FA;     /* Background */
   --medium-gray: #ADB5BD;    /* Borders */
   --dark-gray: #212529;      /* Text */
-  
+
   /* Semantic Colors */
   --success: var(--emerald-green);
   --warning: var(--warm-amber);
@@ -258,16 +258,16 @@ code, pre {
   .container {
     padding: 0 15px;
   }
-  
+
   .card {
     margin-bottom: 15px;
   }
-  
+
   .btn {
     width: 100%;
     margin-bottom: 10px;
   }
-  
+
   .stats-number {
     font-size: 2rem;
   }
@@ -280,12 +280,12 @@ code, pre {
     --medium-gray: #4a4a4a;
     --dark-gray: #ffffff;
   }
-  
+
   body {
     background-color: var(--light-gray);
     color: var(--dark-gray);
   }
-  
+
   .card {
     background-color: #2a2a2a;
     color: var(--dark-gray);

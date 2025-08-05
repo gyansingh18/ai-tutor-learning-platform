@@ -1,0 +1,228 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">
+            <i class="fas fa-magic me-2"></i>
+            AI Visual Explanations Test Suite
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <!-- Main Test Form -->
+            <div class="col-md-8">
+              <h4 class="text-primary mb-3">
+                <i class="fas fa-flask me-2"></i>
+                Interactive Visual Learning Test
+              </h4>
+
+              <%= form_with url: test_explain_path, method: :get, local: true, class: "needs-validation", novalidate: true do |form| %>
+                <!-- Chapter Selection -->
+                <div class="mb-3">
+                  <label for="chapter_id" class="form-label">
+                    <i class="fas fa-book me-1"></i>
+                    Select Chapter
+                  </label>
+                  <%= form.select :chapter_id,
+                      options_from_collection_for_select(@chapters, :id, :display_name),
+                      { prompt: "Choose a chapter..." },
+                      { class: "form-select", required: true } %>
+                </div>
+
+                <!-- Topic Input -->
+                <div class="mb-3">
+                  <label for="topic" class="form-label">
+                    <i class="fas fa-lightbulb me-1"></i>
+                    Topic to Explain
+                  </label>
+                  <%= form.text_field :topic,
+                      class: "form-control",
+                      placeholder: "e.g., triangles, photosynthesis, forces...",
+                      required: true %>
+                  <div class="form-text">
+                    Enter any educational topic you'd like to see explained visually
+                  </div>
+                </div>
+
+                <!-- Learning Style Selection -->
+                <div class="mb-3">
+                  <label for="learning_style" class="form-label">
+                    <i class="fas fa-brain me-1"></i>
+                    Learning Style
+                  </label>
+                  <%= form.select :learning_style,
+                      options_for_select(@learning_styles),
+                      { selected: 'Visual' },
+                      { class: "form-select" } %>
+                  <div class="form-text">
+                    Choose how you prefer to learn
+                  </div>
+                </div>
+
+                <!-- Difficulty Level -->
+                <div class="mb-3">
+                  <label for="difficulty" class="form-label">
+                    <i class="fas fa-chart-line me-1"></i>
+                    Difficulty Level
+                  </label>
+                  <%= form.select :difficulty,
+                      options_for_select(@difficulty_levels),
+                      { selected: 'Beginner' },
+                      { class: "form-select" } %>
+                  <div class="form-text">
+                    Choose the complexity level
+                  </div>
+                </div>
+
+                <!-- Interaction Type -->
+                <div class="mb-3">
+                  <label for="interaction_type" class="form-label">
+                    <i class="fas fa-handshake me-1"></i>
+                    Interaction Type
+                  </label>
+                  <%= form.select :interaction_type,
+                      options_for_select(@interaction_types),
+                      { selected: 'Exploration' },
+                      { class: "form-select" } %>
+                  <div class="form-text">
+                    Choose how you want to interact with the content
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mb-3">
+                  <%= form.submit "Generate Visual Explanation",
+                      class: "btn btn-primary btn-lg w-100",
+                      data: { disable_with: "Generating..." } %>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Quick Test Options -->
+            <div class="col-md-4">
+              <h5 class="text-primary mb-3">
+                <i class="fas fa-rocket me-2"></i>
+                Quick Test Options
+              </h5>
+
+              <!-- Batch Testing -->
+              <div class="card mb-3 border-primary">
+                <div class="card-body">
+                  <h6 class="card-title text-primary">
+                    <i class="fas fa-layer-group me-1"></i>
+                    Batch Testing
+                  </h6>
+                  <p class="card-text small">
+                    Test multiple scenarios and learning styles at once
+                  </p>
+                  <%= link_to test_batch_path, class: "btn btn-outline-primary btn-sm w-100" do %>
+                    <i class="fas fa-play me-1"></i>
+                    Run Batch Tests
+                  <% end %>
+                </div>
+              </div>
+
+              <!-- Performance Testing -->
+              <div class="card mb-3 border-success">
+                <div class="card-body">
+                  <h6 class="card-title text-success">
+                    <i class="fas fa-tachometer-alt me-1"></i>
+                    Performance Testing
+                  </h6>
+                  <p class="card-text small">
+                    Test system performance and reliability metrics
+                  </p>
+                  <%= link_to test_performance_path, class: "btn btn-outline-success btn-sm w-100" do %>
+                    <i class="fas fa-chart-bar me-1"></i>
+                    Performance Tests
+                  <% end %>
+                </div>
+              </div>
+
+              <!-- Learning Style Guide -->
+              <div class="card border-info">
+                <div class="card-body">
+                  <h6 class="card-title text-info">
+                    <i class="fas fa-question-circle me-1"></i>
+                    Learning Styles Guide
+                  </h6>
+                  <div class="small">
+                    <p><strong>Visual:</strong> Pictures, diagrams, colors</p>
+                    <p><strong>Kinesthetic:</strong> Hands-on, movement, action</p>
+                    <p><strong>Auditory:</strong> Sound, rhythm, verbal</p>
+                    <p><strong>Reading/Writing:</strong> Text, structure, organization</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Description -->
+          <div class="row mt-4">
+            <div class="col-12">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title text-primary">
+                    <i class="fas fa-star me-2"></i>
+                    What This Test Suite Does
+                  </h5>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h6><i class="fas fa-eye me-1"></i> Visual Learning</h6>
+                      <ul class="small">
+                        <li>Generates DALL-E images with no text</li>
+                        <li>Uses visual metaphors and storytelling</li>
+                        <li>Age-appropriate styles and complexity</li>
+                        <li>Pure visual explanations</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-6">
+                      <h6><i class="fas fa-cogs me-1"></i> Adaptive Features</h6>
+                      <ul class="small">
+                        <li>Learning style adaptation</li>
+                        <li>Difficulty level adjustment</li>
+                        <li>Interactive conversation flow</li>
+                        <li>Performance monitoring</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Form validation
+  const form = document.querySelector('.needs-validation');
+  form.addEventListener('submit', function(event) {
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    form.classList.add('was-validated');
+  });
+
+  // Dynamic form enhancement
+  const topicInput = document.querySelector('input[name="topic"]');
+  const learningStyleSelect = document.querySelector('select[name="learning_style"]');
+
+  // Update placeholder based on learning style
+  learningStyleSelect.addEventListener('change', function() {
+    const style = this.value;
+    const placeholders = {
+      'Visual': 'e.g., triangles, circles, shapes...',
+      'Kinesthetic': 'e.g., movement, action, hands-on...',
+      'Auditory': 'e.g., sound, rhythm, patterns...',
+      'Reading/Writing': 'e.g., structure, organization, concepts...'
+    };
+    topicInput.placeholder = placeholders[style] || 'e.g., triangles, photosynthesis, forces...';
+  });
+});
+</script>

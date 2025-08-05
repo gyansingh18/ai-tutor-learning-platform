@@ -1,171 +1,205 @@
 <div class="container mt-4">
   <div class="row">
     <div class="col-12">
-      <div class="card fade-in">
-        <div class="card-header bg-primary text-white">
-          <h3 class="mb-0">
-            <i class="fas fa-user-graduate me-2"></i>
-            Student Dashboard
-          </h3>
+      <!-- User Welcome Section -->
+      <div class="card fade-in mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-user me-2"></i>
+            Welcome, <%= @user.display_name %>!
+          </h5>
         </div>
         <div class="card-body">
-          <!-- User Info -->
-          <div class="row mb-4">
-            <div class="col-md-6">
-              <h5 class="text-primary">
-                <i class="fas fa-user me-2"></i>
-                Welcome, <%= @user.display_name %>!
-              </h5>
-              <p class="text-muted">Track your learning progress and resume where you left off.</p>
-            </div>
-            <div class="col-md-6 text-end">
-              <%= link_to profile_edit_path, class: "btn btn-outline-primary" do %>
-                <i class="fas fa-edit me-2"></i>
-                Edit Profile
-              <% end %>
+          <p class="text-muted mb-0">Track your learning progress and resume where you left off.</p>
+        </div>
+      </div>
+
+      <!-- Learning Progress Overview -->
+      <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+          <div class="card text-center fade-in">
+            <div class="card-body">
+              <i class="fas fa-book-open text-primary fa-2x mb-3"></i>
+              <h4 class="text-primary mb-2"><%= @learning_progress[:total_chapters] %></h4>
+              <p class="text-muted mb-0">Total Chapters</p>
             </div>
           </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="card text-center fade-in">
+            <div class="card-body">
+              <i class="fas fa-check-circle text-success fa-2x mb-3"></i>
+              <h4 class="text-success mb-2"><%= @learning_progress[:completed_chapters] %></h4>
+              <p class="text-muted mb-0">Completed</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="card text-center fade-in">
+            <div class="card-body">
+              <i class="fas fa-tasks text-info fa-2x mb-3"></i>
+              <h4 class="text-info mb-2"><%= @learning_progress[:total_tasks] %></h4>
+              <p class="text-muted mb-0">Tasks Done</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <div class="card text-center fade-in">
+            <div class="card-body">
+              <i class="fas fa-chart-line text-warning fa-2x mb-3"></i>
+              <h4 class="text-warning mb-2"><%= @learning_progress[:accuracy_rate] %>%</h4>
+              <p class="text-muted mb-0">Accuracy</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-          <!-- Learning Progress -->
-          <div class="row">
-            <div class="col-12">
-              <h5 class="mb-3 text-primary">
-                <i class="fas fa-chart-line me-2"></i>
-                Your Learning Progress
-              </h5>
-
-              <% if @learning_progress.any? %>
-                <div class="row">
-                  <% @learning_progress.each do |progress| %>
-                    <div class="col-md-6 col-lg-4 mb-3 fade-in">
-                      <div class="card learning-panel h-100">
-                        <div class="card-header <%= progress[:is_completed] ? 'bg-success' : 'bg-info' %> text-white">
-                          <h6 class="mb-0">
-                            <i class="fas fa-<%= progress[:is_completed] ? 'trophy' : 'book' %> me-2"></i>
-                            <%= progress[:chapter].display_name %>
-                          </h6>
+      <!-- Chapter Progress -->
+      <div class="card fade-in mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-chart-bar me-2"></i>
+            Chapter Progress
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if @learning_progress[:progress_data].any? %>
+            <div class="row">
+              <% @learning_progress[:progress_data].each do |progress| %>
+                <div class="col-md-6 mb-3">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                          <h6 class="card-title mb-1"><%= progress[:chapter].display_name %></h6>
+                          <small class="text-muted">
+                            <%= progress[:chapter].subject.name %> • <%= progress[:chapter].subject.grade.display_name %>
+                          </small>
                         </div>
-                        <div class="card-body">
-                          <div class="row text-center mb-3">
-                            <div class="col-4">
-                              <div class="stats-number"><%= progress[:completed_tasks] %>/<%= progress[:total_tasks] %></div>
-                              <div class="stats-label">Tasks</div>
-                            </div>
-                            <div class="col-4">
-                              <div class="stats-number text-success"><%= progress[:progress_percentage] %>%</div>
-                              <div class="stats-label">Progress</div>
-                            </div>
-                            <div class="col-4">
-                              <div class="stats-number text-warning"><%= progress[:score_percentage] %>%</div>
-                              <div class="stats-label">Score</div>
-                            </div>
-                          </div>
+                        <span class="badge <%= progress[:is_completed] ? 'bg-success' : 'bg-primary' %>">
+                          <%= progress[:is_completed] ? 'Completed' : 'In Progress' %>
+                        </span>
+                      </div>
 
-                          <!-- Progress Bar -->
-                          <div class="progress mb-3" style="height: 8px;">
-                            <div class="progress-bar bg-success" role="progressbar"
-                                 style="width: <%= progress[:progress_percentage] %>%"
-                                 aria-valuenow="<%= progress[:progress_percentage] %>"
-                                 aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
+                      <div class="progress mb-3" style="height: 8px;">
+                        <div class="progress-bar <%= progress[:is_completed] ? 'bg-success' : 'bg-primary' %>"
+                             role="progressbar"
+                             style="width: <%= progress[:progress_percentage] %>%"
+                             aria-valuenow="<%= progress[:progress_percentage] %>"
+                             aria-valuemin="0"
+                             aria-valuemax="100"></div>
+                      </div>
 
-                          <!-- Action Buttons -->
-                          <div class="d-grid gap-2">
-                            <% if progress[:is_completed] %>
-                              <%= link_to chapter_review_path(progress[:chapter]), class: "btn btn-success btn-sm" do %>
-                                <i class="fas fa-eye me-2"></i>
-                                View Review
-                              <% end %>
-                            <% elsif progress[:completed_tasks] > 0 %>
-                              <%= link_to learning_path(progress[:chapter]), class: "btn btn-primary btn-sm" do %>
-                                <i class="fas fa-play me-2"></i>
-                                Resume Learning
-                              <% end %>
-                            <% else %>
-                              <%= link_to learning_path(progress[:chapter]), class: "btn btn-outline-primary btn-sm" do %>
-                                <i class="fas fa-rocket me-2"></i>
-                                Start Learning
-                              <% end %>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                          <%= progress[:completed_tasks] %> of <%= progress[:total_tasks] %> tasks
+                        </small>
+                        <div>
+                          <% if progress[:is_completed] %>
+                            <%= link_to chapter_review_path(progress[:chapter]), class: "btn btn-success btn-sm" do %>
+                              <i class="fas fa-eye me-1"></i>
+                              View Review
                             <% end %>
-                          </div>
+                          <% elsif progress[:completed_tasks] > 0 %>
+                            <%= link_to learning_path(progress[:chapter]), class: "btn btn-primary btn-sm" do %>
+                              <i class="fas fa-play me-1"></i>
+                              Resume Learning
+                            <% end %>
+                          <% else %>
+                            <%= link_to learning_path(progress[:chapter]), class: "btn btn-outline-primary btn-sm" do %>
+                              <i class="fas fa-rocket me-1"></i>
+                              Start Learning
+                            <% end %>
+                          <% end %>
                         </div>
                       </div>
                     </div>
-                  <% end %>
-                </div>
-              <% else %>
-                <div class="text-center py-5 fade-in">
-                  <i class="fas fa-book-open fa-4x text-muted mb-4"></i>
-                  <h5 class="text-muted mb-3">No learning progress yet</h5>
-                  <p class="text-muted mb-4">Start your learning journey by selecting a chapter!</p>
-                  <%= link_to home_path, class: "btn btn-primary btn-lg" do %>
-                    <i class="fas fa-rocket me-2"></i>
-                    Start Learning
-                  <% end %>
-                </div>
-              <% end %>
-            </div>
-          </div>
-
-          <!-- Recent Activities -->
-          <div class="row mt-4">
-            <div class="col-12">
-              <h5 class="mb-3 text-primary">
-                <i class="fas fa-history me-2"></i>
-                Recent Activities
-              </h5>
-
-              <% if @recent_activities.any? %>
-                <div class="card fade-in">
-                  <div class="card-body">
-                    <div class="table-responsive">
-                      <table class="table table-hover">
-                        <thead class="table-light">
-                          <tr>
-                            <th><i class="fas fa-tasks me-2"></i>Task</th>
-                            <th><i class="fas fa-book me-2"></i>Chapter</th>
-                            <th><i class="fas fa-comment me-2"></i>Your Answer</th>
-                            <th><i class="fas fa-check-circle me-2"></i>Result</th>
-                            <th><i class="fas fa-calendar me-2"></i>Date</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <% @recent_activities.each do |activity| %>
-                            <tr class="fade-in">
-                              <td>
-                                <strong><%= activity.task.title %></strong>
-                              </td>
-                              <td><%= activity.task.chapter.display_name %></td>
-                              <td>
-                                <span class="text-truncate d-inline-block" style="max-width: 200px;" title="<%= activity.answer %>">
-                                  <%= activity.answer %>
-                                </span>
-                              </td>
-                              <td>
-                                <span class="badge <%= activity.is_correct? ? 'bg-success' : 'bg-danger' %>">
-                                  <i class="fas fa-<%= activity.is_correct? ? 'check' : 'times' %> me-1"></i>
-                                  <%= activity.is_correct? ? 'Correct' : 'Incorrect' %>
-                                </span>
-                              </td>
-                              <td><%= activity.created_at.strftime("%b %d, %Y") %></td>
-                            </tr>
-                          <% end %>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              <% else %>
-                <div class="card fade-in">
-                  <div class="card-body text-center py-4">
-                    <i class="fas fa-clock fa-3x text-muted mb-3"></i>
-                    <p class="text-muted mb-0">No recent activities yet.</p>
                   </div>
                 </div>
               <% end %>
             </div>
-          </div>
+          <% else %>
+            <div class="text-center py-5">
+              <i class="fas fa-book-open fa-4x text-muted mb-4"></i>
+              <h5 class="text-muted mb-3">No learning progress yet</h5>
+              <p class="text-muted mb-4">Start your learning journey by selecting a chapter!</p>
+              <%= link_to root_path, class: "btn btn-primary btn-lg" do %>
+                <i class="fas fa-rocket me-2"></i>
+                Start Learning
+              <% end %>
+            </div>
+          <% end %>
         </div>
+      </div>
+
+      <!-- Recent Activities -->
+      <div class="card fade-in">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-history me-2"></i>
+            Recent Activities
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if @recent_activities.any? %>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th><i class="fas fa-tasks me-2"></i>Task</th>
+                    <th><i class="fas fa-book me-2"></i>Chapter</th>
+                    <th><i class="fas fa-comment me-2"></i>Your Answer</th>
+                    <th><i class="fas fa-check-circle me-2"></i>Result</th>
+                    <th><i class="fas fa-calendar me-2"></i>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @recent_activities.each do |activity| %>
+                    <tr class="fade-in">
+                      <td>
+                        <strong><%= activity.task.title %></strong>
+                      </td>
+                      <td><%= activity.task.chapter.display_name %></td>
+                      <td>
+                        <span class="text-truncate d-inline-block" style="max-width: 200px;" title="<%= activity.answer %>">
+                          <%= activity.answer %>
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge <%= activity.is_correct? ? 'bg-success' : 'bg-danger' %>">
+                          <i class="fas fa-<%= activity.is_correct? ? 'check' : 'times' %> me-1"></i>
+                          <%= activity.is_correct? ? 'Correct' : 'Incorrect' %>
+                        </span>
+                      </td>
+                      <td><%= activity.created_at.strftime("%b %d, %Y") %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="text-center py-4">
+              <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+              <p class="text-muted mb-0">No recent activities yet.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="text-center mt-4">
+        <%= link_to root_path, class: "btn btn-primary btn-lg me-3" do %>
+          <i class="fas fa-rocket me-2"></i>
+          Start Learning
+        <% end %>
+        <%= link_to questions_path, class: "btn btn-outline-primary btn-lg me-3" do %>
+          <i class="fas fa-question-circle me-2"></i>
+          Ask a Doubt
+        <% end %>
+        <%= link_to history_path, class: "btn btn-outline-secondary btn-lg" do %>
+          <i class="fas fa-history me-2"></i>
+          View History
+        <% end %>
       </div>
     </div>
   </div>

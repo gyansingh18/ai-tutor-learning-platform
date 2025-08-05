@@ -1,0 +1,299 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">
+            <i class="fas fa-layer-group me-2"></i>
+            Batch Testing Suite
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <!-- Test Scenarios -->
+            <div class="col-md-8">
+              <h4 class="text-primary mb-3">
+                <i class="fas fa-flask me-2"></i>
+                Predefined Test Scenarios
+              </h4>
+
+              <div class="row">
+                <% @test_scenarios.each_with_index do |scenario, index| %>
+                  <div class="col-md-6 mb-3">
+                    <div class="card h-100 border-primary">
+                      <div class="card-header bg-light">
+                        <h6 class="mb-0 text-primary">
+                          <i class="fas fa-cog me-1"></i>
+                          <%= scenario[:name] %>
+                        </h6>
+                      </div>
+                      <div class="card-body">
+                        <p class="card-text small mb-3">
+                          <%= scenario[:description] %>
+                        </p>
+
+                        <div class="mb-3">
+                          <small class="text-muted">
+                            <strong>Parameters:</strong><br>
+                            <% scenario[:params].each do |key, value| %>
+                              <span class="badge bg-secondary me-1">
+                                <%= key.humanize %>: <%= value %>
+                              </span>
+                            <% end %>
+                          </small>
+                        </div>
+
+                        <button class="btn btn-outline-primary btn-sm w-100 run-batch-test"
+                                data-scenario="<%= index %>"
+                                data-params="<%= scenario[:params].to_json %>">
+                          <i class="fas fa-play me-1"></i>
+                          Run Test
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Custom Test Configuration -->
+            <div class="col-md-4">
+              <h5 class="text-primary mb-3">
+                <i class="fas fa-cogs me-2"></i>
+                Custom Test Configuration
+              </h5>
+
+              <div class="card border-success">
+                <div class="card-body">
+                  <h6 class="card-title text-success">
+                    <i class="fas fa-plus me-1"></i>
+                    Add Custom Test
+                  </h6>
+
+                  <form id="custom-test-form">
+                    <div class="mb-3">
+                      <label class="form-label">Topic</label>
+                      <input type="text" class="form-control" id="custom-topic" placeholder="e.g., triangles">
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Learning Style</label>
+                      <select class="form-select" id="custom-learning-style">
+                        <option value="Visual">Visual</option>
+                        <option value="Kinesthetic">Kinesthetic</option>
+                        <option value="Auditory">Auditory</option>
+                        <option value="Reading/Writing">Reading/Writing</option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Difficulty</label>
+                      <select class="form-select" id="custom-difficulty">
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Interaction Type</label>
+                      <select class="form-select" id="custom-interaction">
+                        <option value="Exploration">Exploration</option>
+                        <option value="Practice">Practice</option>
+                        <option value="Assessment">Assessment</option>
+                        <option value="Review">Review</option>
+                      </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-sm w-100">
+                      <i class="fas fa-plus me-1"></i>
+                      Add Custom Test
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Test Results Summary -->
+              <div class="card border-info mt-3">
+                <div class="card-body">
+                  <h6 class="card-title text-info">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    Test Results Summary
+                  </h6>
+                  <div id="test-results-summary">
+                    <p class="text-muted small">No tests run yet</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Test Results Display -->
+          <div class="row mt-4">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Test Results
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <div id="test-results-container">
+                    <p class="text-muted text-center">
+                      <i class="fas fa-info-circle me-1"></i>
+                      Run tests to see results here
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const testResults = [];
+  const resultsContainer = document.getElementById('test-results-container');
+  const resultsSummary = document.getElementById('test-results-summary');
+
+  // Run batch test
+  document.querySelectorAll('.run-batch-test').forEach(button => {
+    button.addEventListener('click', function() {
+      const scenarioIndex = this.dataset.scenario;
+      const params = JSON.parse(this.dataset.params);
+      const scenario = <%= @test_scenarios.to_json.html_safe %>[scenarioIndex];
+
+      runSingleTest(scenario.name, params);
+    });
+  });
+
+  // Custom test form
+  document.getElementById('custom-test-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const customParams = {
+      topic: document.getElementById('custom-topic').value,
+      learning_style: document.getElementById('custom-learning-style').value,
+      difficulty: document.getElementById('custom-difficulty').value,
+      interaction_type: document.getElementById('custom-interaction').value
+    };
+
+    if (customParams.topic) {
+      runSingleTest('Custom Test', customParams);
+      this.reset();
+    }
+  });
+
+  function runSingleTest(testName, params) {
+    // Show loading state
+    const loadingHtml = `
+      <div class="alert alert-info">
+        <i class="fas fa-spinner fa-spin me-2"></i>
+        Running test: ${testName}...
+      </div>
+    `;
+    resultsContainer.innerHTML = loadingHtml + resultsContainer.innerHTML;
+
+    // Simulate API call (replace with actual API call)
+    setTimeout(() => {
+      const result = {
+        name: testName,
+        params: params,
+        success: Math.random() > 0.2, // 80% success rate
+        image_generated: Math.random() > 0.3,
+        response_time: (Math.random() * 5 + 1).toFixed(2),
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      testResults.push(result);
+      updateResultsDisplay();
+
+      // Remove loading message
+      const loadingAlert = resultsContainer.querySelector('.alert-info');
+      if (loadingAlert) {
+        loadingAlert.remove();
+      }
+    }, 2000);
+  }
+
+  function updateResultsDisplay() {
+    // Update summary
+    const totalTests = testResults.length;
+    const successfulTests = testResults.filter(r => r.success).length;
+    const imagesGenerated = testResults.filter(r => r.image_generated).length;
+    const avgResponseTime = testResults.reduce((sum, r) => sum + parseFloat(r.response_time), 0) / totalTests;
+
+    resultsSummary.innerHTML = `
+      <div class="row text-center">
+        <div class="col-3">
+          <div class="text-primary">
+            <strong>${totalTests}</strong><br>
+            <small>Total Tests</small>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="text-success">
+            <strong>${successfulTests}</strong><br>
+            <small>Successful</small>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="text-info">
+            <strong>${imagesGenerated}</strong><br>
+            <small>Images Generated</small>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="text-warning">
+            <strong>${avgResponseTime.toFixed(2)}s</strong><br>
+            <small>Avg Response</small>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Update detailed results
+    const resultsHtml = testResults.map(result => `
+      <div class="card mb-2 ${result.success ? 'border-success' : 'border-danger'}">
+        <div class="card-body py-2">
+          <div class="row align-items-center">
+            <div class="col-md-3">
+              <strong>${result.name}</strong>
+              <br><small class="text-muted">${result.timestamp}</small>
+            </div>
+            <div class="col-md-3">
+              <small>
+                ${Object.entries(result.params).map(([k, v]) =>
+                  `<span class="badge bg-secondary me-1">${k}: ${v}</span>`
+                ).join('')}
+              </small>
+            </div>
+            <div class="col-md-2">
+              <span class="badge ${result.success ? 'bg-success' : 'bg-danger'}">
+                ${result.success ? 'SUCCESS' : 'FAILED'}
+              </span>
+            </div>
+            <div class="col-md-2">
+              <span class="badge ${result.image_generated ? 'bg-info' : 'bg-secondary'}">
+                ${result.image_generated ? 'IMAGE' : 'NO IMAGE'}
+              </span>
+            </div>
+            <div class="col-md-2">
+              <small class="text-muted">${result.response_time}s</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    if (resultsHtml) {
+      resultsContainer.innerHTML = resultsHtml;
+    }
+  }
+});
+</script>
