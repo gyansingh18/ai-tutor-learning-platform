@@ -8,10 +8,6 @@ Rails.application.routes.draw do
   # Main app routes
   get "home/index"
 
-  # AJAX routes for dropdowns (must come before RESTful routes)
-  get "grades/:grade_id/subjects", to: "api/grades#subjects"
-  get "grades/:grade_id/subjects/:subject_id/chapters", to: "api/subjects#chapters"
-
   # Grade routes
   resources :grades, only: [:index, :show] do
     resources :subjects, only: [:index, :show] do
@@ -64,6 +60,16 @@ Rails.application.routes.draw do
 
   # API routes for AJAX
   namespace :api do
+    resources :grades, only: [] do
+      member do
+        get :subjects
+      end
+    end
+    resources :subjects, only: [] do
+      member do
+        get :chapters
+      end
+    end
     resources :chapters, only: [:show] do
       member do
         get "explanation"
@@ -75,6 +81,13 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # Test routes for AI Visual Explanations
+  get "test", to: "test#index", as: :test_index
+  get "test/explain", to: "test#explain", as: :test_explain
+  post "test/continue_explanation", to: "test#continue_explanation", as: :test_continue_explanation
+  get "test/batch", to: "test#batch_test", as: :test_batch
+  get "test/performance", to: "test#performance_test", as: :test_performance
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

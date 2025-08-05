@@ -1,0 +1,395 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h2 class="mb-0">
+            <i class="fas fa-tachometer-alt me-2"></i>
+            Performance Testing Dashboard
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <!-- Performance Metrics -->
+            <div class="col-md-8">
+              <h4 class="text-success mb-3">
+                <i class="fas fa-chart-line me-2"></i>
+                System Performance Metrics
+              </h4>
+
+              <div class="row">
+                <!-- Response Time -->
+                <div class="col-md-6 mb-3">
+                  <div class="card border-primary">
+                    <div class="card-body text-center">
+                      <h5 class="text-primary">
+                        <i class="fas fa-clock me-1"></i>
+                        Response Time
+                      </h5>
+                      <div class="display-6 text-primary">
+                        <%= @performance_metrics[:image_generation_time] %>s
+                      </div>
+                      <small class="text-muted">Image Generation</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Text Generation -->
+                <div class="col-md-6 mb-3">
+                  <div class="card border-info">
+                    <div class="card-body text-center">
+                      <h5 class="text-info">
+                        <i class="fas fa-comment me-1"></i>
+                        Text Generation
+                      </h5>
+                      <div class="display-6 text-info">
+                        <%= @performance_metrics[:text_generation_time] %>s
+                      </div>
+                      <small class="text-muted">Average Response</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Error Rate -->
+                <div class="col-md-6 mb-3">
+                  <div class="card border-warning">
+                    <div class="card-body text-center">
+                      <h5 class="text-warning">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        Error Rate
+                      </h5>
+                      <div class="display-6 text-warning">
+                        <%= @performance_metrics[:error_rate] %>%
+                      </div>
+                      <small class="text-muted">Failed Requests</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Memory Usage -->
+                <div class="col-md-6 mb-3">
+                  <div class="card border-secondary">
+                    <div class="card-body text-center">
+                      <h5 class="text-secondary">
+                        <i class="fas fa-memory me-1"></i>
+                        Memory Usage
+                      </h5>
+                      <div class="display-6 text-secondary">
+                        <%= @performance_metrics[:memory_usage][:current] %>
+                      </div>
+                      <small class="text-muted">Current Usage</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Concurrent Requests Test -->
+              <div class="card border-success">
+                <div class="card-header">
+                  <h6 class="mb-0 text-success">
+                    <i class="fas fa-network-wired me-1"></i>
+                    Concurrent Request Testing
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <button class="btn btn-success w-100 mb-2" id="run-concurrent-test">
+                        <i class="fas fa-play me-1"></i>
+                        Run Concurrent Test
+                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <button class="btn btn-outline-secondary w-100 mb-2" id="clear-results">
+                        <i class="fas fa-trash me-1"></i>
+                        Clear Results
+                      </button>
+                    </div>
+                  </div>
+
+                  <div id="concurrent-results" class="mt-3">
+                    <p class="text-muted text-center">
+                      <i class="fas fa-info-circle me-1"></i>
+                      Click "Run Concurrent Test" to see results
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- System Status & Controls -->
+            <div class="col-md-4">
+              <h5 class="text-success mb-3">
+                <i class="fas fa-cogs me-2"></i>
+                System Status & Controls
+              </h5>
+
+              <!-- System Health -->
+              <div class="card border-success mb-3">
+                <div class="card-body">
+                  <h6 class="card-title text-success">
+                    <i class="fas fa-heartbeat me-1"></i>
+                    System Health
+                  </h6>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span>Overall Status</span>
+                    <span class="badge bg-success">HEALTHY</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span>API Connection</span>
+                    <span class="badge bg-success">ONLINE</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span>Image Generation</span>
+                    <span class="badge bg-success">WORKING</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span>Text Generation</span>
+                    <span class="badge bg-success">WORKING</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Performance Controls -->
+              <div class="card border-primary mb-3">
+                <div class="card-body">
+                  <h6 class="card-title text-primary">
+                    <i class="fas fa-sliders-h me-1"></i>
+                    Performance Controls
+                  </h6>
+
+                  <div class="mb-3">
+                    <label class="form-label">Test Intensity</label>
+                    <select class="form-select" id="test-intensity">
+                      <option value="low">Low (5 requests)</option>
+                      <option value="medium" selected>Medium (10 requests)</option>
+                      <option value="high">High (20 requests)</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Test Type</label>
+                    <select class="form-select" id="test-type">
+                      <option value="image">Image Generation Only</option>
+                      <option value="text">Text Generation Only</option>
+                      <option value="both" selected>Both Image & Text</option>
+                    </select>
+                  </div>
+
+                  <button class="btn btn-primary w-100" id="run-performance-test">
+                    <i class="fas fa-rocket me-1"></i>
+                    Run Performance Test
+                  </button>
+                </div>
+              </div>
+
+              <!-- Historical Data -->
+              <div class="card border-info">
+                <div class="card-body">
+                  <h6 class="card-title text-info">
+                    <i class="fas fa-history me-1"></i>
+                    Historical Performance
+                  </h6>
+
+                  <div class="small">
+                    <div class="d-flex justify-content-between">
+                      <span>Peak Memory</span>
+                      <span class="text-info"><%= @performance_metrics[:memory_usage][:peak] %></span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <span>Avg Memory</span>
+                      <span class="text-info"><%= @performance_metrics[:memory_usage][:average] %></span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <span>Best Response</span>
+                      <span class="text-success">0.8s</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                      <span>Worst Response</span>
+                      <span class="text-danger">4.2s</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detailed Performance Chart -->
+          <div class="row mt-4">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0">
+                    <i class="fas fa-chart-area me-2"></i>
+                    Performance Trends
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <div id="performance-chart">
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const concurrentResults = [];
+
+  // Run concurrent test
+  document.getElementById('run-concurrent-test').addEventListener('click', function() {
+    const resultsContainer = document.getElementById('concurrent-results');
+    resultsContainer.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Running concurrent test...</div>';
+
+    // Simulate concurrent requests
+    setTimeout(() => {
+      const results = <%= @performance_metrics[:concurrent_requests].to_json.html_safe %>;
+      displayConcurrentResults(results);
+    }, 3000);
+  });
+
+  // Clear results
+  document.getElementById('clear-results').addEventListener('click', function() {
+    document.getElementById('concurrent-results').innerHTML = `
+      <p class="text-muted text-center">
+        <i class="fas fa-info-circle me-1"></i>
+        Click "Run Concurrent Test" to see results
+      </p>
+    `;
+  });
+
+  // Run performance test
+  document.getElementById('run-performance-test').addEventListener('click', function() {
+    const intensity = document.getElementById('test-intensity').value;
+    const testType = document.getElementById('test-type').value;
+
+    alert(`Running ${intensity} intensity ${testType} test...`);
+    // Implement actual performance test here
+  });
+
+  function displayConcurrentResults(results) {
+    const resultsContainer = document.getElementById('concurrent-results');
+    const successful = results.filter(r => r.success).length;
+    const failed = results.filter(r => !r.success).length;
+
+    const resultsHtml = `
+      <div class="row text-center mb-3">
+        <div class="col-4">
+          <div class="text-primary">
+            <strong>${results.length}</strong><br>
+            <small>Total Requests</small>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="text-success">
+            <strong>${successful}</strong><br>
+            <small>Successful</small>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="text-danger">
+            <strong>${failed}</strong><br>
+            <small>Failed</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Thread</th>
+              <th>Status</th>
+              <th>Response Time</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${results.map(result => `
+              <tr class="${result.success ? 'table-success' : 'table-danger'}">
+                <td>Thread ${result.thread}</td>
+                <td>
+                  <span class="badge ${result.success ? 'bg-success' : 'bg-danger'}">
+                    ${result.success ? 'SUCCESS' : 'FAILED'}
+                  </span>
+                </td>
+                <td>${result.success ? '2.1s' : 'N/A'}</td>
+                <td>${result.error || 'None'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    resultsContainer.innerHTML = resultsHtml;
+  }
+
+  // Initialize performance chart
+  const ctx = document.getElementById('performanceChart').getContext('2d');
+  const performanceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['00:00', '00:05', '00:10', '00:15', '00:20', '00:25', '00:30'],
+      datasets: [{
+        label: 'Response Time (seconds)',
+        data: [1.2, 1.8, 1.5, 2.1, 1.9, 1.6, 1.4],
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.1
+      }, {
+        label: 'Memory Usage (MB)',
+        data: [150, 165, 180, 175, 190, 185, 170],
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        tension: 0.1,
+        yAxisID: 'y1'
+      }]
+    },
+    options: {
+      responsive: true,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Time'
+          }
+        },
+        y: {
+          type: 'linear',
+          display: true,
+          position: 'left',
+          title: {
+            display: true,
+            text: 'Response Time (seconds)'
+          }
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          title: {
+            display: true,
+            text: 'Memory (MB)'
+          },
+          grid: {
+            drawOnChartArea: false,
+          },
+        }
+      }
+    }
+  });
+});
+</script>

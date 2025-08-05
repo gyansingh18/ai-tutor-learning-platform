@@ -20,7 +20,7 @@ class QuestionsController < ApplicationController
       @selected_chapter = Chapter.find(params[:chapter_id])
     end
 
-    @chapters = Chapter.ordered.includes(:subject, :grade) if params[:grade_id].blank?
+    @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
   end
 
   def create
@@ -40,9 +40,17 @@ class QuestionsController < ApplicationController
 
       @question.create_answer(content: answer_content)
 
-      redirect_to @question, notice: 'Question asked successfully!'
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace("question-form", partial: "questions/answer_result", locals: { question: @question }),
+            turbo_stream.update("flash-messages", partial: "shared/flash", locals: { notice: "Question answered successfully!" })
+          ]
+        end
+        format.html { redirect_to @question, notice: 'Question asked successfully!' }
+      end
     else
-      @chapters = Chapter.ordered.includes(:subject, :grade) if params[:grade_id].blank?
+      @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
       render :new, status: :unprocessable_entity
     end
   end

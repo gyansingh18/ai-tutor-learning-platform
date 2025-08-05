@@ -11,6 +11,6 @@ class Grade < ApplicationRecord
 
   # Methods
   def display_name
-    "Grade #{name}"
+    name
   end
 end

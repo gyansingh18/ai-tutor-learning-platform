@@ -1,5 +1,6 @@
 class HomeController < ApplicationController
-  before_action :authenticate_user!
+  # Allow non-authenticated users to see the landing page
+  # before_action :authenticate_user!
 
   def index
     @grades = Grade.all

@@ -1,188 +1,299 @@
-<!-- Completely Isolated Layout - Override All CSS -->
-<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; min-height: 100vh !important; display: flex !important; flex-direction: column !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important;">
-
-  <!-- Header -->
-  <div style="background: #007bff !important; color: white !important; padding: 15px !important; flex-shrink: 0 !important; margin: 0 !important;">
-    <div style="width: 100% !important;">
-      <div style="display: flex !important; align-items: center !important; justify-content: space-between !important;">
-        <div style="flex: 1 !important;">
-          <h4 style="margin: 0 !important;">
-            <i class="fas fa-graduation-cap me-2"></i>
-            <%= @chapter.display_name %> - Task <%= @task.order %>
-          </h4>
+<div class="container-fluid mt-4">
+  <div class="row">
+    <!-- Left Panel - Task Information -->
+    <div class="col-md-4">
+      <div class="card h-100 fade-in">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-info-circle me-2"></i>
+            Task Information
+          </h5>
         </div>
-        <div style="flex: 1 !important; text-align: right !important;">
-          <div style="height: 25px !important; background: rgba(255,255,255,0.2) !important; border-radius: 4px !important; overflow: hidden !important; position: relative !important; display: flex !important; align-items: center !important; justify-content: center !important; min-width: 120px !important;">
-            <div style="height: 100% !important; background: #28a745 !important; width: <%= [@progress, 5].max %>% !important; transition: width 0.3s !important; position: absolute !important; left: 0 !important; top: 0 !important;"></div>
-            <span style="position: relative !important; z-index: 1 !important; color: white !important; font-weight: bold !important; font-size: 12px !important;"><%= @progress %>%</span>
+        <div class="card-body">
+          <div class="mb-4">
+            <h6 class="text-primary mb-2">
+              <i class="fas fa-book me-2"></i>
+              <%= @chapter.display_name %>
+            </h6>
+            <p class="text-muted mb-0">
+              <i class="fas fa-tasks me-2"></i>
+              Task <%= @task.order %> of <%= @chapter.total_tasks %>
+            </p>
+          </div>
+
+          <div class="mb-4">
+            <h6 class="text-success mb-2">
+              <i class="fas fa-question-circle me-2"></i>
+              Question
+            </h6>
+            <div class="task-content p-3 bg-light rounded">
+              <%= @task.content %>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-muted">Progress</span>
+              <span class="text-primary fw-bold"><%= @progress_percentage %>%</span>
+            </div>
+            <div class="progress" style="height: 10px;">
+              <div class="progress-bar bg-primary" role="progressbar"
+                   style="width: <%= @progress_percentage %>%"
+                   aria-valuenow="<%= @progress_percentage %>"
+                   aria-valuemin="0"
+                   aria-valuemax="100"></div>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="d-grid gap-2">
+            <% if @task.previous_task %>
+              <%= link_to learning_task_path(@chapter, @task.previous_task), class: "btn btn-outline-primary" do %>
+                <i class="fas fa-arrow-left me-2"></i>
+                Previous Task
+              <% end %>
+            <% end %>
+
+            <% if @task.next_task %>
+              <%= link_to learning_task_path(@chapter, @task.next_task), class: "btn btn-outline-primary" do %>
+                Next Task
+                <i class="fas fa-arrow-right ms-2"></i>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Panel - Answer Input -->
+    <div class="col-md-4">
+      <div class="card h-100 fade-in">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-edit me-2"></i>
+            Your Answer
+          </h5>
+        </div>
+        <div class="card-body">
+          <%= form_with url: submit_task_answer_path(@chapter, @task), method: :post, local: true, class: "h-100 d-flex flex-column" do |f| %>
+            <div class="flex-grow-1">
+              <% case @task.task_type %>
+              <% when 'multiple_choice' %>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    <i class="fas fa-list-ul me-2"></i>
+                    Select the correct answer:
+                  </label>
+                  <% LearningHelper.extract_options(@task.content).each_with_index do |option, index| %>
+                    <div class="form-check mb-2">
+                      <%= f.radio_button :answer, option, class: "form-check-input" %>
+                      <%= f.label "answer_#{index}", option, class: "form-check-label" %>
+                    </div>
+                  <% end %>
+                </div>
+              <% when 'fill_in_blank' %>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    <i class="fas fa-pencil me-2"></i>
+                    Fill in the blank:
+                  </label>
+                  <%= f.text_field :answer, class: "form-control", placeholder: "Enter your answer here..." %>
+                </div>
+              <% when 'true_false' %>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Select True or False:
+                  </label>
+                  <div class="form-check mb-2">
+                    <%= f.radio_button :answer, "True", class: "form-check-input" %>
+                    <%= f.label "answer_true", "True", class: "form-check-label" %>
+                  </div>
+                  <div class="form-check mb-2">
+                    <%= f.radio_button :answer, "False", class: "form-check-input" %>
+                    <%= f.label "answer_false", "False", class: "form-check-label" %>
+                  </div>
+                </div>
+              <% when 'short_answer' %>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    <i class="fas fa-comment me-2"></i>
+                    Write your answer:
+                  </label>
+                  <%= f.text_area :answer, class: "form-control", rows: 4, placeholder: "Enter your answer here..." %>
+                </div>
+              <% when 'coding' %>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    <i class="fas fa-code me-2"></i>
+                    Write your code:
+                  </label>
+                  <%= f.text_area :answer, class: "form-control", rows: 8, placeholder: "Enter your code here...", style: "font-family: 'Roboto Mono', monospace;" %>
+                </div>
+              <% else %>
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    <i class="fas fa-edit me-2"></i>
+                    Your answer:
+                  </label>
+                  <%= f.text_area :answer, class: "form-control", rows: 4, placeholder: "Enter your answer here..." %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="mt-auto">
+              <%= f.submit "Submit Answer", class: "btn btn-primary btn-lg w-100" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel - Results -->
+    <div class="col-md-4">
+      <div class="card h-100 fade-in">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-chart-line me-2"></i>
+            Results
+          </h5>
+        </div>
+        <div class="card-body">
+          <% if @last_answer %>
+            <div class="text-center mb-4">
+              <% if @last_answer.is_correct? %>
+                <div class="text-success mb-3">
+                  <i class="fas fa-check-circle fa-3x"></i>
+                </div>
+                <h5 class="text-success">Correct!</h5>
+                <p class="text-muted">Great job! You got it right.</p>
+              <% else %>
+                <div class="text-danger mb-3">
+                  <i class="fas fa-times-circle fa-3x"></i>
+                </div>
+                <h5 class="text-danger">Incorrect</h5>
+                <p class="text-muted">Let's review the correct answer.</p>
+              <% end %>
+            </div>
+
+            <div class="mb-4">
+              <h6 class="text-primary mb-2">
+                <i class="fas fa-comment me-2"></i>
+                Your Answer
+              </h6>
+              <div class="p-3 bg-light rounded">
+                <%= @last_answer.answer %>
+              </div>
+            </div>
+
+            <% unless @last_answer.is_correct? %>
+              <div class="mb-4">
+                <h6 class="text-success mb-2">
+                  <i class="fas fa-lightbulb me-2"></i>
+                  Correct Answer
+                </h6>
+                <div class="p-3 bg-success bg-opacity-10 rounded">
+                  <%= @correct_answer %>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <h6 class="text-info mb-2">
+                  <i class="fas fa-info-circle me-2"></i>
+                  Explanation
+                </h6>
+                <div class="p-3 bg-info bg-opacity-10 rounded">
+                  <%= @explanation %>
+                </div>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="text-center py-5">
+              <i class="fas fa-arrow-left fa-3x text-muted mb-3"></i>
+              <h5 class="text-muted">Submit your answer</h5>
+              <p class="text-muted">Your results will appear here after you submit your answer.</p>
+            </div>
+          <% end %>
+
+          <!-- Next Steps -->
+          <div class="mt-auto">
+            <% if @task.next_task %>
+              <%= link_to learning_task_path(@chapter, @task.next_task), class: "btn btn-primary w-100 mb-2" do %>
+                Next Task
+                <i class="fas fa-arrow-right ms-2"></i>
+              <% end %>
+            <% elsif @chapter.all_tasks_completed?(current_user) %>
+              <%= link_to chapter_review_path(@chapter), class: "btn btn-success w-100" do %>
+                <i class="fas fa-trophy me-2"></i>
+                View Chapter Review
+              <% end %>
+            <% end %>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Debug -->
-  <div style="background: #d1ecf1 !important; color: #0c5460 !important; padding: 12px !important; margin: 10px !important; border-radius: 4px !important; flex-shrink: 0 !important;">
-    <strong>Debug:</strong> Task ID: <%= @task.id %>, Order: <%= @task.order %>, Chapter: <%= @chapter.id %>
-  </div>
-
-  <!-- Main Content Area - Three Panels -->
-  <div style="flex: 1 !important; padding: 0 20px !important; margin-bottom: 20px !important; display: flex !important; gap: 20px !important; height: 100% !important;">
-
-    <!-- Panel 1: Explanation -->
-    <div style="flex: 1 !important; min-width: 0 !important;">
-      <div style="background: white !important; border-radius: 8px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important; height: 100% !important; display: flex !important; flex-direction: column !important;">
-        <div style="background: #17a2b8 !important; color: white !important; padding: 12px !important; border-radius: 8px 8px 0 0 !important;">
-          <h6 style="margin: 0 !important;"><i class="fas fa-book me-2"></i>Concept Explanation</h6>
-        </div>
-        <div style="flex: 1 !important; padding: 20px !important; overflow-y: auto !important;">
-          <h6 style="color: #007bff !important;"><%= @task.title %></h6>
-          <% explanation = LearningHelper.extract_explanation(@task.content) %>
-          <% if explanation.present? %>
-            <div style="padding: 15px !important; border-radius: 8px !important; background: #f8f9fa !important; margin-bottom: 15px !important;">
-              <h6 style="color: #17a2b8 !important;">📚 Concept Explanation</h6>
-              <div><%= simple_format(explanation) %></div>
-            </div>
-          <% end %>
-          <% question = LearningHelper.extract_question(@task.content) %>
-          <% if question.present? %>
-            <div style="padding: 15px !important; border-radius: 8px !important; background: #f8f9fa !important; margin-bottom: 15px !important;">
-              <h6 style="color: #ffc107 !important;">❓ Your Task</h6>
-              <div><%= simple_format(question) %></div>
-            </div>
-          <% end %>
-          <% hint = LearningHelper.extract_hint(@task.content) %>
-          <% if hint.present? %>
-            <div style="padding: 15px !important; border-radius: 8px !important; background: #f8f9fa !important; margin-bottom: 15px !important;">
-              <h6 style="color: #28a745 !important;">💡 Hint</h6>
-              <div><%= simple_format(hint) %></div>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-    <!-- Panel 2: Input -->
-    <div style="flex: 1 !important; min-width: 0 !important;">
-      <div style="background: white !important; border-radius: 8px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important; height: 100% !important; display: flex !important; flex-direction: column !important;">
-        <div style="background: #ffc107 !important; color: #212529 !important; padding: 12px !important; border-radius: 8px 8px 0 0 !important;">
-          <h6 style="margin: 0 !important;"><i class="fas fa-edit me-2"></i>Your Answer</h6>
-        </div>
-        <div style="flex: 1 !important; padding: 20px !important; overflow-y: auto !important;">
-          <%= form_with url: submit_task_answer_path(@chapter, @task), method: :post, local: true do |f| %>
-            <% if @task.multiple_choice? %>
-              <div style="margin-bottom: 15px !important;">
-                <label style="display: block !important; margin-bottom: 8px !important; font-weight: bold !important;">Select the correct answer:</label>
-                <% LearningHelper.extract_options(@task.content).each_with_index do |option, index| %>
-                  <div style="margin-bottom: 8px !important;">
-                    <%= f.radio_button :answer, option, style: "margin-right: 8px !important;" %>
-                    <%= f.label "answer_#{index}", option %>
-                  </div>
-                <% end %>
-              </div>
-            <% elsif @task.fill_in_blank? %>
-              <div style="margin-bottom: 15px !important;">
-                <label style="display: block !important; margin-bottom: 8px !important; font-weight: bold !important;">Fill in the blank:</label>
-                <%= f.text_field :answer, style: "width: 100% !important; padding: 8px !important; border: 1px solid #ddd !important; border-radius: 4px !important;", placeholder: "Enter your answer..." %>
-              </div>
-            <% elsif @task.short_answer? %>
-              <div style="margin-bottom: 15px !important;">
-                <label style="display: block !important; margin-bottom: 8px !important; font-weight: bold !important;">Write your answer:</label>
-                <%= f.text_area :answer, style: "width: 100% !important; padding: 8px !important; border: 1px solid #ddd !important; border-radius: 4px !important;", rows: 4, placeholder: "Write your detailed answer..." %>
-              </div>
-            <% elsif @task.true_false? %>
-              <div style="margin-bottom: 15px !important;">
-                <label style="display: block !important; margin-bottom: 8px !important; font-weight: bold !important;">Select true or false:</label>
-                <div style="margin-bottom: 8px !important;">
-                  <%= f.radio_button :answer, "true", style: "margin-right: 8px !important;" %>
-                  <%= f.label "answer_true", "True" %>
-                </div>
-                <div style="margin-bottom: 8px !important;">
-                  <%= f.radio_button :answer, "false", style: "margin-right: 8px !important;" %>
-                  <%= f.label "answer_false", "False" %>
-                </div>
-              </div>
-            <% elsif @task.coding? %>
-              <div style="margin-bottom: 15px !important;">
-                <label style="display: block !important; margin-bottom: 8px !important; font-weight: bold !important;">Write your code:</label>
-                <%= f.text_area :answer, style: "width: 100% !important; padding: 8px !important; border: 1px solid #ddd !important; border-radius: 4px !important; font-family: monospace !important;", rows: 8, placeholder: "Write your code here..." %>
-              </div>
-            <% end %>
-            <div style="margin-top: 20px !important;">
-              <%= f.submit "Submit Answer", style: "width: 100% !important; padding: 10px !important; background: #007bff !important; color: white !important; border: none !important; border-radius: 4px !important; cursor: pointer !important;" %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-    <!-- Panel 3: Results -->
-    <div style="flex: 1 !important; min-width: 0 !important;">
-      <div style="background: white !important; border-radius: 8px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important; height: 100% !important; display: flex !important; flex-direction: column !important;">
-        <div style="background: #28a745 !important; color: white !important; padding: 12px !important; border-radius: 8px 8px 0 0 !important;">
-          <h6 style="margin: 0 !important;"><i class="fas fa-chart-line me-2"></i>Results & Feedback</h6>
-        </div>
-        <div style="flex: 1 !important; padding: 20px !important; overflow-y: auto !important;">
-          <% if @student_answer&.answer.present? %>
-            <div style="padding: 15px !important; border-radius: 8px !important; background: #f8f9fa !important;">
-              <h6 style="color: #28a745 !important;">✅ Answer Submitted</h6>
-              <div style="margin-bottom: 15px !important;">
-                <strong>Your Answer:</strong>
-                <div style="padding: 8px !important; background: white !important; border-radius: 4px !important; border: 1px solid #ddd !important; margin-top: 5px !important;">
-                  <%= @student_answer.answer %>
-                </div>
-              </div>
-              <% if @student_answer.is_correct? %>
-                <div style="padding: 12px !important; background: #d4edda !important; color: #155724 !important; border-radius: 4px !important; margin-bottom: 15px !important;">
-                  <i class="fas fa-check-circle me-2"></i>
-                  <strong>Correct!</strong> Great job!
-                </div>
-              <% else %>
-                <div style="padding: 12px !important; background: #fff3cd !important; color: #856404 !important; border-radius: 4px !important; margin-bottom: 15px !important;">
-                  <i class="fas fa-exclamation-triangle me-2"></i>
-                  <strong>Not quite right.</strong> Keep trying!
-                </div>
-                <div style="margin-top: 15px !important;">
-                  <strong>Correct Answer:</strong>
-                  <div style="padding: 8px !important; background: #28a745 !important; color: white !important; border-radius: 4px !important; margin-top: 5px !important;">
-                    <%= LearningHelper.extract_correct_answer(@task.content) %>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          <% else %>
-            <div style="text-align: center !important; color: #6c757d !important;">
-              <i class="fas fa-arrow-left" style="font-size: 2em !important; margin-bottom: 15px !important; display: block !important;"></i>
-              <p>Submit your answer to see results here</p>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Footer Navigation -->
-  <div style="background: #f8f9fa !important; padding: 15px !important; flex-shrink: 0 !important;">
-    <div style="display: flex !important; align-items: center !important; justify-content: space-between !important;">
-      <div style="flex: 1 !important;">
-        <% unless @task.is_first? %>
-          <%= link_to "← Previous Task", previous_task_path(@chapter, @task), style: "padding: 8px 16px !important; background: transparent !important; color: #007bff !important; border: 1px solid #007bff !important; border-radius: 4px !important; text-decoration: none !important;" %>
-        <% else %>
-          <span style="color: #6c757d !important;">First Task</span>
-        <% end %>
-      </div>
-      <div style="flex: 1 !important; text-align: center !important;">
-        <span style="color: #6c757d !important;">Task <%= @task.order %> of <%= @chapter.tasks.count %></span>
-      </div>
-      <div style="flex: 1 !important; text-align: right !important;">
-        <% unless @task.is_last? %>
-          <%= link_to "Next Task →", next_task_path(@chapter, @task), style: "padding: 8px 16px !important; background: #007bff !important; color: white !important; border: none !important; border-radius: 4px !important; text-decoration: none !important;" %>
-        <% else %>
-          <span style="color: #6c757d !important;">Last Task</span>
-        <% end %>
-      </div>
-    </div>
-  </div>
-
 </div>
+
+<style>
+.task-content {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.form-check-input:checked {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.form-check-label {
+  cursor: pointer;
+  padding-left: 0.5rem;
+}
+
+.form-check-label:hover {
+  color: var(--primary-blue);
+}
+
+.card {
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn {
+  transition: var(--transition);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.progress {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  transition: width 0.6s ease;
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+
+  .row {
+    margin: 0;
+  }
+
+  .col-md-4 {
+    margin-bottom: 1rem;
+  }
+}
+</style>

@@ -4,7 +4,8 @@ class PdfMaterialsController < ApplicationController
   before_action :set_pdf_material, only: [:show, :destroy]
 
   def index
-    @pdf_materials = PdfMaterial.recent.includes(:chapter, :user)
+    @pdf_materials = PdfMaterial.includes(:chapter, :user).all
+    @chapters = Chapter.ordered.includes(:subject => :grade)
   end
 
   def show
@@ -12,7 +13,7 @@ class PdfMaterialsController < ApplicationController
 
   def new
     @pdf_material = PdfMaterial.new
-    @chapters = Chapter.ordered.includes(:subject, :grade)
+    @chapters = Chapter.ordered.includes(:subject => :grade)
   end
 
   def create
