@@ -33,3 +33,7 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore PDF files to prevent exposure of sensitive content
+app/assets/pdfs/
+*.pdf
