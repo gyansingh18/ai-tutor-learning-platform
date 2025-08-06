@@ -4,6 +4,8 @@ class UsersController < ApplicationController
   def show
     @user = current_user
     @learning_progress = get_learning_progress
+    Rails.logger.info "Learning progress type: #{@learning_progress.class}"
+    Rails.logger.info "Learning progress content: #{@learning_progress.inspect}"
     @recent_activities = get_recent_activities
   end
 
@@ -27,37 +29,14 @@ class UsersController < ApplicationController
   end
 
   def get_learning_progress
-    # Get all chapters with tasks that the user has started
-    chapters_with_progress = Chapter.joins(tasks: :student_answers)
-                                   .where(student_answers: { user: current_user })
-                                   .distinct
-
-    progress_data = []
-
-    chapters_with_progress.each do |chapter|
-      total_tasks = chapter.tasks.count
-      completed_tasks = chapter.tasks.joins(:student_answers)
-                               .where(student_answers: { user: current_user })
-                               .distinct.count
-      correct_answers = chapter.tasks.joins(:student_answers)
-                               .where(student_answers: { user: current_user, is_correct: true })
-                               .distinct.count
-
-      progress_percentage = total_tasks > 0 ? (completed_tasks.to_f / total_tasks * 100).round : 0
-      score_percentage = total_tasks > 0 ? (correct_answers.to_f / total_tasks * 100).round : 0
-
-      progress_data << {
-        chapter: chapter,
-        total_tasks: total_tasks,
-        completed_tasks: completed_tasks,
-        correct_answers: correct_answers,
-        progress_percentage: progress_percentage,
-        score_percentage: score_percentage,
-        is_completed: completed_tasks >= total_tasks && total_tasks > 0
-      }
-    end
-
-    progress_data.sort_by { |data| data[:chapter].display_name }
+    # Temporary simplified version for debugging
+    {
+      total_chapters: 10,
+      completed_chapters: 2,
+      total_tasks: 5,
+      accuracy_rate: 80,
+      progress_data: []
+    }
   end
 
   def get_recent_activities

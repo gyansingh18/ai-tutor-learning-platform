@@ -16,6 +16,15 @@
 
       <!-- Learning Progress Overview -->
       <div class="row mb-4">
+        <!-- Debug Info -->
+        <div class="col-12 mb-3">
+          <div class="alert alert-info">
+            <strong>Debug Info:</strong><br>
+            Type: <%= @learning_progress.class %><br>
+            Content: <%= @learning_progress.inspect %>
+          </div>
+        </div>
+
         <div class="col-md-3 mb-3">
           <div class="card text-center fade-in">
             <div class="card-body">
