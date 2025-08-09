@@ -6,6 +6,7 @@ class Question < ApplicationRecord
 
   # Validations
   validates :content, presence: true, length: { minimum: 3, maximum: 1000 }
+  validates :chapter_id, presence: true
 
   # Scopes
   scope :recent, -> { order(created_at: :desc) }
