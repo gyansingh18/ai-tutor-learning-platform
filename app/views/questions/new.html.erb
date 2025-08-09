@@ -14,95 +14,9 @@
       <div id="flash-messages"></div>
 
       <!-- Question Form -->
-      <div id="question-form">
-        <div class="card fade-in">
-          <div class="card-header">
-            <h5 class="mb-0">
-              <i class="fas fa-edit me-2"></i>
-              Your Question
-            </h5>
-          </div>
-          <div class="card-body">
-            <% if @selected_chapter %>
-              <div class="alert alert-info mb-4">
-                <i class="fas fa-info-circle me-2"></i>
-                <strong>Continue learning about <%= @selected_chapter.display_name %></strong>
-              </div>
-            <% end %>
-
-            <%= form_with model: @question, local: true, class: "needs-validation", novalidate: true do |form| %>
-              <div class="mb-4">
-                <label class="form-label fw-bold">
-                  <i class="fas fa-question-circle me-2"></i>
-                  What would you like to ask?
-                </label>
-                <%= form.text_area :content,
-                    class: "form-control",
-                    rows: 4,
-                    placeholder: "Describe your question in detail...",
-                    required: true %>
-                <div class="form-text">
-                  <i class="fas fa-lightbulb me-1"></i>
-                  Be specific! The more details you provide, the better the answer will be.
-                </div>
-              </div>
-
-              <div class="row mb-4">
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">
-                    <i class="fas fa-graduation-cap me-2"></i>
-                    Grade Level
-                  </label>
-                  <%= form.collection_select :grade_id, Grade.ordered, :id, :display_name,
-                      { prompt: "Select a grade" },
-                      { class: "form-select", required: true } %>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label fw-bold">
-                    <i class="fas fa-book me-2"></i>
-                    Subject
-                  </label>
-                  <%= form.collection_select :subject_id, Subject.ordered, :id, :display_name,
-                      { prompt: "Select a subject" },
-                      { class: "form-select", required: true } %>
-                </div>
-              </div>
-
-              <div class="mb-4">
-                <label class="form-label fw-bold">
-                  <i class="fas fa-list-ol me-2"></i>
-                  Chapter (Optional)
-                </label>
-                <%= form.collection_select :chapter_id, Chapter.ordered, :id, :display_name,
-                    { selected: @question.chapter_id, prompt: "Select a chapter" },
-                    { class: "form-select" } %>
-                <div class="form-text">
-                  <i class="fas fa-info-circle me-1"></i>
-                  Selecting a chapter helps provide more targeted answers.
-                </div>
-              </div>
-
-              <% if @selected_chapter %>
-                <div class="alert alert-warning mb-4">
-                  <i class="fas fa-exclamation-triangle me-2"></i>
-                  <strong>Follow-up Question:</strong> You're asking about <%= @selected_chapter.display_name %>
-                </div>
-              <% end %>
-
-              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <%= link_to questions_path, class: "btn btn-outline-secondary me-md-2" do %>
-                  <i class="fas fa-arrow-left me-2"></i>
-                  Back to Questions
-                <% end %>
-                <%= form.submit "Ask Question", class: "btn btn-primary btn-lg" do %>
-                  <i class="fas fa-paper-plane me-2"></i>
-                  Ask Question
-                <% end %>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      </div>
+      <%= turbo_frame_tag "question-form" do %>
+        <%= render "form", question: @question %>
+      <% end %>
 
       <!-- Tips Section -->
       <div class="card mt-4 fade-in">

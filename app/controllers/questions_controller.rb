@@ -42,16 +42,26 @@ class QuestionsController < ApplicationController
 
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace("question-form", partial: "questions/answer_result", locals: { question: @question }),
-            turbo_stream.update("flash-messages", partial: "shared/flash", locals: { notice: "Question answered successfully!" })
-          ]
+          render turbo_stream: turbo_stream.replace(
+            "question-form",
+            partial: "questions/answer_result",
+            locals: { question: @question }
+          )
         end
         format.html { redirect_to @question, notice: 'Question asked successfully!' }
       end
     else
       @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update(
+            "question-form",
+            partial: "form",
+            locals: { question: @question }
+          ), status: :unprocessable_entity
+        end
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
