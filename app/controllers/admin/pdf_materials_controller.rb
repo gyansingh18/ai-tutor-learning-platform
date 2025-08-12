@@ -26,7 +26,7 @@ class Admin::PdfMaterialsController < ApplicationController
       if @pdf_material.save
         # Process PDF in background
         PdfProcessorJob.perform_later(@pdf_material.id)
-        
+
         redirect_to edit_admin_chapter_path(@chapter), notice: 'PDF uploaded successfully! Processing will begin shortly.'
       else
         redirect_to edit_admin_chapter_path(@chapter), alert: "Failed to upload PDF: #{@pdf_material.errors.full_messages.join(', ')}"

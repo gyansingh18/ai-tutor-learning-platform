@@ -1,0 +1,182 @@
+<div class="container my-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Search Header -->
+      <div class="d-flex align-items-center mb-4">
+        <h2 class="me-3">Search Results</h2>
+        <% if @query.present? %>
+          <span class="badge bg-primary badge-chip">
+            <%= pluralize(@total_results, 'result') %> for "<%= @query %>"
+          </span>
+        <% end %>
+      </div>
+
+      <!-- Search Form -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <%= form_with url: search_path, method: :get, class: "d-flex", data: { turbo: false } do |form| %>
+            <%= form.text_field :q,
+                value: @query,
+                placeholder: "Search chapters, subjects, or content...",
+                class: "form-control me-2",
+                autofocus: true %>
+            <%= form.submit "Search", class: "btn btn-primary" %>
+          <% end %>
+        </div>
+      </div>
+
+      <% if @query.present? %>
+        <% if @total_results > 0 %>
+          <!-- Results by Category -->
+
+          <!-- Chapters -->
+          <% if @results[:chapters].any? %>
+            <div class="mb-4">
+              <h4 class="mb-3">
+                <i class="fas fa-book me-2"></i>
+                Chapters (<%= @results[:chapters].count %>)
+              </h4>
+              <div class="row g-3">
+                <% @results[:chapters].each do |chapter| %>
+                  <div class="col-md-6 col-lg-4">
+                    <%= link_to grade_subject_chapter_path(chapter.subject.grade, chapter.subject, chapter),
+                        class: "text-decoration-none" do %>
+                      <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                          <h6 class="card-title text-primary mb-2"><%= chapter.name %></h6>
+                          <p class="card-text small text-muted mb-1">
+                            <%= chapter.subject.name %> • <%= chapter.subject.grade.display_name %>
+                          </p>
+                          <% if chapter.description.present? %>
+                            <p class="card-text small text-secondary">
+                              <%= truncate(chapter.description, length: 100) %>
+                            </p>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Subjects -->
+          <% if @results[:subjects].any? %>
+            <div class="mb-4">
+              <h4 class="mb-3">
+                <i class="fas fa-folder me-2"></i>
+                Subjects (<%= @results[:subjects].count %>)
+              </h4>
+              <div class="row g-3">
+                <% @results[:subjects].each do |subject| %>
+                  <div class="col-md-6 col-lg-4">
+                    <%= link_to grade_subject_path(subject.grade, subject),
+                        class: "text-decoration-none" do %>
+                      <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                          <h6 class="card-title text-success mb-2"><%= subject.name %></h6>
+                          <p class="card-text small text-muted mb-1">
+                            <%= subject.grade.display_name %> • <%= pluralize(subject.chapters.count, 'chapter') %>
+                          </p>
+                          <% if subject.description.present? %>
+                            <p class="card-text small text-secondary">
+                              <%= truncate(subject.description, length: 100) %>
+                            </p>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- PDF Materials -->
+          <% if @results[:pdf_materials].any? %>
+            <div class="mb-4">
+              <h4 class="mb-3">
+                <i class="fas fa-file-pdf me-2"></i>
+                PDF Materials (<%= @results[:pdf_materials].count %>)
+              </h4>
+              <div class="list-group">
+                <% @results[:pdf_materials].each do |pdf| %>
+                  <%= link_to grade_subject_chapter_path(pdf.chapter.subject.grade, pdf.chapter.subject, pdf.chapter),
+                      class: "list-group-item list-group-item-action d-flex justify-content-between align-items-start" do %>
+                    <div>
+                      <h6 class="mb-1 text-warning"><%= pdf.title %></h6>
+                      <p class="mb-1 small text-muted">
+                        <%= pdf.chapter.name %> • <%= pdf.chapter.subject.name %>
+                      </p>
+                    </div>
+                    <small class="text-secondary">
+                      <i class="fas fa-file-pdf"></i>
+                    </small>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Content -->
+          <% if @results[:content].any? %>
+            <div class="mb-4">
+              <h4 class="mb-3">
+                <i class="fas fa-search me-2"></i>
+                Content (<%= @results[:content].count %>)
+              </h4>
+              <div class="list-group">
+                <% @results[:content].each do |chunk| %>
+                  <%= link_to grade_subject_chapter_path(
+                        chunk.pdf_material.chapter.subject.grade,
+                        chunk.pdf_material.chapter.subject,
+                        chunk.pdf_material.chapter
+                      ),
+                      class: "list-group-item list-group-item-action" do %>
+                    <div>
+                      <h6 class="mb-1"><%= chunk.pdf_material.title %></h6>
+                      <p class="mb-1 small">
+                        <%= highlight(truncate(chunk.content, length: 200), @query) %>
+                      </p>
+                      <small class="text-muted">
+                        <%= chunk.pdf_material.chapter.name %> • <%= chunk.pdf_material.chapter.subject.name %>
+                      </small>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+        <% else %>
+          <!-- No Results -->
+          <div class="text-center py-5">
+            <div class="mb-3">
+              <i class="fas fa-search fa-3x text-muted"></i>
+            </div>
+            <h4 class="text-muted">No results found</h4>
+            <p class="text-muted">
+              Try different keywords or check your spelling.
+            </p>
+            <div class="mt-4">
+              <%= link_to "Browse All Grades", grades_path, class: "btn btn-primary me-2" %>
+              <%= link_to "Ask a Question", questions_path, class: "btn btn-outline-primary" %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <!-- Empty State -->
+        <div class="text-center py-5">
+          <div class="mb-3">
+            <i class="fas fa-search fa-3x text-primary"></i>
+          </div>
+          <h4>Search AI Tutor</h4>
+          <p class="text-muted">
+            Find chapters, subjects, and learning materials quickly.
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

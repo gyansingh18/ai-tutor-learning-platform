@@ -1,0 +1,271 @@
+@import "tokens";
+
+// Dashboard page styling
+// ======================
+
+body {
+  background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 40%);
+  font-family: $font-stack;
+}
+
+// Hero section
+.dashboard-hero {
+  background: $card;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-soft;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #1f2937;
+
+    @media (max-width: 768px) {
+      font-size: 1.875rem;
+    }
+  }
+
+  .text-secondary {
+    color: $muted !important;
+    font-size: 1.125rem;
+  }
+}
+
+// Badge chips
+.badge-chip {
+  border-radius: 999px;
+  padding: $spacing-xs $spacing-sm;
+  font-weight: 600;
+  font-size: 0.875rem;
+
+  &.bg-primary-subtle {
+    background-color: $primary-subtle !important;
+    color: $brand !important;
+  }
+
+  &.bg-success-subtle {
+    background-color: $success-subtle !important;
+    color: $success !important;
+  }
+
+  &.bg-info-subtle {
+    background-color: $info-subtle !important;
+    color: #0891b2 !important;
+  }
+}
+
+// Progress cards
+.progress-cards {
+  .card {
+    border: 0;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-soft;
+    transition: transform $transition-fast;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    .card-body {
+      padding: $spacing-lg;
+    }
+  }
+}
+
+.progress-ring {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto;
+}
+
+// Quick panel styling
+.quick-panel {
+  .card-header {
+    background: white !important;
+    border-bottom: 0 !important;
+    padding: $spacing-lg $spacing-lg 0;
+  }
+
+  .list-group-item {
+    border: 0;
+    padding: $spacing-sm $spacing-lg;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background: #f1f5f9 !important;
+    }
+
+    &:first-child {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+}
+
+// Subject cards
+.subject-card {
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  .card-body {
+    padding: $spacing-lg;
+  }
+
+  .rounded-circle {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.bg-primary-subtle {
+      background-color: $primary-subtle !important;
+    }
+  }
+}
+
+// Form styling
+.form-label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: $spacing-xs;
+}
+
+.form-select,
+.form-control {
+  border: 1px solid #d1d5db;
+  border-radius: $spacing-xs;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:focus {
+    border-color: $brand;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+// Card improvements
+.card {
+  &.border-0 {
+    border: none !important;
+  }
+
+  &.shadow-sm {
+    box-shadow: $shadow-sm !important;
+  }
+
+  &.rounded-4 {
+    border-radius: $radius-lg !important;
+  }
+}
+
+// Button improvements
+.btn {
+  border-radius: $spacing-xs;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  transition: all $transition-fast;
+
+  &.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+
+  &.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+// Mobile quick actions bar
+.mobile-quick-actions {
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  z-index: 1030;
+  padding: $spacing-sm 0;
+
+  .btn {
+    flex: 1;
+    margin: 0 0.25rem;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .dashboard-hero {
+    padding: $spacing-lg;
+
+    h1 {
+      font-size: 1.875rem;
+    }
+  }
+
+  .progress-cards .card .card-body {
+    padding: $spacing-md;
+  }
+
+  .subject-card .card-body {
+    padding: $spacing-md;
+  }
+
+  // Add bottom padding to account for mobile quick actions
+  .container {
+    padding-bottom: 80px;
+  }
+}
+
+// Loading states
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+// Focus states for accessibility
+.btn:focus,
+.form-control:focus,
+.form-select:focus,
+.list-group-item:focus {
+  outline: 2px solid $brand;
+  outline-offset: 2px;
+}
+
+// Text utilities
+.text-primary {
+  color: $brand !important;
+}
+
+.text-success {
+  color: $success !important;
+}
+
+.text-secondary {
+  color: $muted !important;
+}
+
+// Search results
+.search-results {
+  .badge-chip {
+    font-size: 0.75rem;
+  }
+}
+
+mark {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+// Search form enhancements
+.search-form {
+  .form-control:focus {
+    border-color: $brand;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
