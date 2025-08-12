@@ -13,7 +13,12 @@
       </div>
     <% end %>
 
-    <%= form_with model: question, data: { controller: "validation", turbo: true }, class: "needs-validation", novalidate: true do |form| %>
+    <%= form_with model: question, data: { 
+      controller: "validation dependent-selects", 
+      turbo: true,
+      "dependent-selects-subjects-value": @subjects_by_grade.to_json,
+      "dependent-selects-chapters-value": @chapters_by_subject.to_json
+    }, class: "needs-validation", novalidate: true do |form| %>
       <div class="mb-4">
         <label class="form-label fw-bold">
           <i class="fas fa-question-circle me-2"></i>
@@ -43,7 +48,12 @@
           </label>
           <%= form.collection_select :grade_id, Grade.ordered, :id, :display_name,
               { prompt: "Select a grade" },
-              { class: "form-select #{'is-invalid' if question.errors[:grade_id].any?}", required: true } %>
+              { class: "form-select #{'is-invalid' if question.errors[:grade_id].any?}", 
+                required: true,
+                data: { 
+                  "dependent-selects-target": "grade",
+                  "action": "change->dependent-selects#gradeChanged"
+                } } %>
           <% if question.errors[:grade_id].any? %>
             <div class="invalid-feedback">
               <%= question.errors[:grade_id].join(", ") %>
@@ -55,9 +65,15 @@
             <i class="fas fa-book me-2"></i>
             Subject
           </label>
-          <%= form.collection_select :subject_id, Subject.ordered, :id, :display_name,
-              { prompt: "Select a subject" },
-              { class: "form-select #{'is-invalid' if question.errors[:subject_id].any?}", required: true } %>
+          <%= form.select :subject_id, options_for_select([["Select a subject", ""]]),
+              {},
+              { class: "form-select #{'is-invalid' if question.errors[:subject_id].any?}", 
+                required: true,
+                disabled: true,
+                data: { 
+                  "dependent-selects-target": "subject",
+                  "action": "change->dependent-selects#subjectChanged"
+                } } %>
           <% if question.errors[:subject_id].any? %>
             <div class="invalid-feedback">
               <%= question.errors[:subject_id].join(", ") %>
@@ -71,9 +87,14 @@
           <i class="fas fa-list-ol me-2"></i>
           Chapter
         </label>
-        <%= form.collection_select :chapter_id, Chapter.ordered, :id, :display_name,
-            { selected: question.chapter_id, prompt: "Select a chapter" },
-            { class: "form-select #{'is-invalid' if question.errors[:chapter_id].any?}", required: true } %>
+        <%= form.select :chapter_id, options_for_select([["Select a chapter", ""]]),
+            {},
+            { class: "form-select #{'is-invalid' if question.errors[:chapter_id].any?}", 
+              required: true,
+              disabled: true,
+              data: { 
+                "dependent-selects-target": "chapter"
+              } } %>
         <% if question.errors[:chapter_id].any? %>
           <div class="invalid-feedback">
             <%= question.errors[:chapter_id].join(", ") %>
