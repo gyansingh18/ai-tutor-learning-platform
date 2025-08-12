@@ -1,244 +1,139 @@
 <% if user_signed_in? %>
-  <!-- Authenticated User Home Page -->
-  <div class="container mt-4">
-    <div class="row">
-      <div class="col-md-8">
-        <!-- Hero Section -->
-        <div class="text-center mb-5 fade-in">
-          <h1 class="display-4 text-primary mb-3">
-            <i class="fas fa-graduation-cap me-3"></i>
-            AI Tutor Learning Platform
-          </h1>
-          <p class="lead text-muted mb-4">Your personal AI learning companion with interactive tasks and progress tracking</p>
-          <div class="d-flex justify-content-center gap-3">
-            <div class="badge bg-primary fs-6 px-3 py-2">
-              <i class="fas fa-robot me-2"></i>AI-Powered
-            </div>
-            <div class="badge bg-success fs-6 px-3 py-2">
-              <i class="fas fa-chart-line me-2"></i>Progress Tracking
-            </div>
-            <div class="badge bg-info fs-6 px-3 py-2">
-              <i class="fas fa-users me-2"></i>Personalized
-            </div>
+  <!-- Authenticated User Dashboard -->
+  <div class="container my-4 my-md-5">
+
+    <!-- Hero Section -->
+    <section class="dashboard-hero mb-4">
+      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div>
+          <h1 class="fw-bold mb-1">Hi <%= current_user.display_name || 'there' %> 👋</h1>
+          <p class="text-secondary mb-3">Ready to learn something new today?</p>
+          <div class="d-flex gap-2 flex-wrap">
+            <span class="badge bg-primary-subtle text-primary badge-chip">AI‑Powered</span>
+            <span class="badge bg-success-subtle text-success badge-chip">Progress Tracking</span>
+            <span class="badge bg-info-subtle text-info badge-chip">Personalized</span>
           </div>
         </div>
+        <div class="text-md-end">
+          <% if @resume_chapter %>
+            <%= link_to "Continue where you left off", learning_path(@resume_chapter), class: "btn btn-primary btn-lg" %>
+          <% else %>
+            <%= link_to "Start Learning", "#start-learning-form", class: "btn btn-primary btn-lg" %>
+          <% end %>
+        </div>
+      </div>
+    </section>
 
-        <!-- Learning Statistics for logged-in users -->
-        <% if @learning_stats %>
-          <div class="row mb-5 fade-in">
-            <div class="col-12">
-              <div class="stats-card">
-                <h6 class="card-title text-primary mb-4">
-                  <i class="fas fa-chart-bar me-2"></i>
-                  Your Learning Progress
-                </h6>
-                <div class="row text-center">
-                  <div class="col-md-3 mb-3">
-                    <div class="stats-number"><%= @learning_stats[:total_chapters_started] %></div>
-                    <div class="stats-label">Chapters Started</div>
-                  </div>
-                  <div class="col-md-3 mb-3">
-                    <div class="stats-number text-success"><%= @learning_stats[:completed_chapters] %></div>
-                    <div class="stats-label">Chapters Completed</div>
-                  </div>
-                  <div class="col-md-3 mb-3">
-                    <div class="stats-number text-info"><%= @learning_stats[:total_tasks_completed] %></div>
-                    <div class="stats-label">Tasks Completed</div>
-                  </div>
-                  <div class="col-md-3 mb-3">
-                    <div class="stats-number text-warning"><%= @learning_stats[:accuracy_rate] %>%</div>
-                    <div class="stats-label">Accuracy Rate</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        <% end %>
+    <!-- Progress Cards -->
+    <% if @learning_stats %>
+      <section class="progress-cards row g-3 mb-4">
+        <%= render "dashboard/progress_card", 
+            title: "Chapters Started", 
+            value: @learning_stats[:total_chapters_started] || 0, 
+            color: "primary", 
+            percent: calculate_percentage(@learning_stats[:total_chapters_started], 50) %>
+        <%= render "dashboard/progress_card", 
+            title: "Chapters Completed", 
+            value: @learning_stats[:completed_chapters] || 0, 
+            color: "success", 
+            percent: calculate_percentage(@learning_stats[:completed_chapters], @learning_stats[:total_chapters_started]) %>
+        <%= render "dashboard/progress_card", 
+            title: "Tasks Completed", 
+            value: @learning_stats[:total_tasks_completed] || 0, 
+            color: "info", 
+            percent: calculate_percentage(@learning_stats[:total_tasks_completed], 100) %>
+        <%= render "dashboard/progress_card", 
+            title: "Accuracy", 
+            value: "#{(@learning_stats[:accuracy_rate] || 0).to_i}%", 
+            color: "warning", 
+            percent: (@learning_stats[:accuracy_rate] || 0) %>
+      </section>
+    <% else %>
+      <section class="progress-cards row g-3 mb-4">
+        <%= render "dashboard/progress_card", title: "Chapters Started", value: 0, color: "primary", percent: 0 %>
+        <%= render "dashboard/progress_card", title: "Chapters Completed", value: 0, color: "success", percent: 0 %>
+        <%= render "dashboard/progress_card", title: "Tasks Completed", value: 0, color: "info", percent: 0 %>
+        <%= render "dashboard/progress_card", title: "Accuracy", value: "0%", color: "warning", percent: 0 %>
+      </section>
+    <% end %>
 
-        <!-- Resume Learning Section -->
-        <% if @resume_chapter %>
-          <div class="row mb-5 fade-in">
-            <div class="col-12">
-              <div class="card resume-card">
-                <div class="card-header">
-                  <h6 class="mb-0">
-                    <i class="fas fa-play-circle me-2"></i>
-                    Resume Learning
-                  </h6>
-                </div>
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col-md-8">
-                      <h6 class="text-white mb-2">Continue where you left off:</h6>
-                      <p class="mb-3">
-                        <strong class="text-white"><%= @resume_chapter.display_name %></strong>
-                        <br>
-                        <small class="text-light">
-                          <%= @resume_chapter.subject.name %> • <%= @resume_chapter.subject.grade.display_name %>
-                        </small>
-                      </p>
-                      <%
-                        total_tasks = @resume_chapter.tasks.count
-                        completed_tasks = @resume_chapter.tasks.joins(:student_answers)
-                                                     .where(student_answers: { user: current_user })
-                                                     .distinct.count
-                        progress_percentage = total_tasks > 0 ? (completed_tasks.to_f / total_tasks * 100).round : 0
-                      %>
-                      <div class="progress mb-2" style="height: 8px;">
-                        <div class="progress-bar bg-success" role="progressbar"
-                             style="width: <%= progress_percentage %>%"
-                             aria-valuenow="<%= progress_percentage %>"
-                             aria-valuemin="0" aria-valuemax="100"></div>
-                      </div>
-                      <small class="text-light">
-                        <%= completed_tasks %> of <%= total_tasks %> tasks completed (<%= progress_percentage %>%)
-                      </small>
-                    </div>
-                    <div class="col-md-4 text-end">
-                      <%= link_to learning_path(@resume_chapter), class: "btn btn-light btn-lg pulse" do %>
-                        <i class="fas fa-play me-2"></i>
-                        Resume Learning
-                      <% end %>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        <% end %>
-
-        <!-- Start Learning Section -->
-        <div class="card fade-in">
-          <div class="card-header">
+    <div class="row g-4">
+      <!-- Start Learning -->
+      <section class="col-12 col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-header bg-white border-0 pb-0">
             <h5 class="mb-0">
               <i class="fas fa-rocket me-2"></i>
               Start Learning
             </h5>
           </div>
           <div class="card-body">
-            <p class="card-text mb-4">Select your grade, subject, and chapter to begin your learning journey.</p>
-
+            <%= render "dashboard/start_learning_form" %>
+            <hr class="my-4">
+            <h6 class="mb-3">Recommended for you</h6>
             <div class="row g-3">
-              <div class="col-md-4">
-                <label for="grade-select" class="form-label fw-bold">
-                  <i class="fas fa-graduation-cap me-2"></i>Grade
-                </label>
-                <select class="form-select" id="grade-select">
-                  <option value="">Select Grade</option>
-                  <% @grades.each do |grade| %>
-                    <option value="<%= grade.id %>"><%= grade.display_name %></option>
-                  <% end %>
-                </select>
-              </div>
-
-              <div class="col-md-4">
-                <label for="subject-select" class="form-label fw-bold">
-                  <i class="fas fa-book me-2"></i>Subject
-                </label>
-                <select class="form-select" id="subject-select" disabled>
-                  <option value="">Select Subject</option>
-                </select>
-              </div>
-
-              <div class="col-md-4">
-                <label for="chapter-select" class="form-label fw-bold">
-                  <i class="fas fa-list-ol me-2"></i>Chapter
-                </label>
-                <select class="form-select" id="chapter-select" disabled>
-                  <option value="">Select Chapter</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="text-center mt-4">
-              <button id="startLearningBtn" class="btn btn-primary btn-lg" disabled onclick="startLearning()">
-                <i class="fas fa-graduation-cap me-2"></i>
-                Start Learning
-              </button>
+              <% recommended_subjects = Subject.includes(:chapters).limit(6) %>
+              <% if recommended_subjects.any? %>
+                <%= render partial: "dashboard/subject_card", collection: recommended_subjects, as: :subject %>
+              <% else %>
+                <div class="col-12">
+                  <p class="text-muted text-center">Start learning to get personalized recommendations!</p>
+                </div>
+              <% end %>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Quick Actions Sidebar -->
-      <div class="col-md-4">
-        <div class="card fade-in">
-          <div class="card-header">
-            <h5 class="mb-0">
+      <!-- Quick Actions + Why -->
+      <aside class="col-12 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 mb-4 quick-panel">
+          <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">
               <i class="fas fa-bolt me-2"></i>
               Quick Actions
-            </h5>
+            </h6>
           </div>
-          <div class="card-body">
-            <div class="d-grid gap-3">
-              <%= link_to profile_path, class: "btn btn-outline-primary" do %>
-                <i class="fas fa-user-graduate me-2"></i>
-                My Dashboard
+          <div class="list-group list-group-flush">
+            <%= link_to profile_path, class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center" do %>
+              <span><i class="fas fa-user-graduate me-2"></i>My Dashboard</span>
+            <% end %>
+            <%= link_to profile_path, class: "list-group-item list-group-item-action" do %>
+              <span><i class="fas fa-chart-line me-2"></i>View All Progress</span>
+            <% end %>
+            <%= link_to questions_path, class: "list-group-item list-group-item-action" do %>
+              <span><i class="fas fa-question-circle me-2"></i>Ask a Doubt</span>
+            <% end %>
+            <%= link_to history_path, class: "list-group-item list-group-item-action" do %>
+              <span><i class="fas fa-history me-2"></i>View History</span>
+            <% end %>
+            <% if current_user.admin? %>
+              <%= link_to admin_dashboard_path, class: "list-group-item list-group-item-action text-warning fw-semibold" do %>
+                <span><i class="fas fa-cog me-2"></i>Admin Dashboard</span>
               <% end %>
-              <%= link_to profile_path, class: "btn btn-outline-success" do %>
-                <i class="fas fa-chart-line me-2"></i>
-                View All Progress
-              <% end %>
-              <%= link_to questions_path, class: "btn btn-outline-secondary" do %>
-                <i class="fas fa-question-circle me-2"></i>
-                Ask a Doubt
-              <% end %>
-              <%= link_to history_path, class: "btn btn-outline-info" do %>
-                <i class="fas fa-history me-2"></i>
-                View History
-              <% end %>
-              <% if current_user.admin? %>
-                <%= link_to admin_dashboard_path, class: "btn btn-outline-warning" do %>
-                  <i class="fas fa-cog me-2"></i>
-                  Admin Dashboard
-                <% end %>
-              <% end %>
-            </div>
+            <% end %>
           </div>
         </div>
 
-        <!-- Features Card -->
-        <div class="card mt-4 fade-in">
-          <div class="card-header">
-            <h5 class="mb-0">
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-header bg-white border-0 pb-0">
+            <h6 class="mb-0">
               <i class="fas fa-star me-2"></i>
               Why Choose AI Tutor?
-            </h5>
+            </h6>
           </div>
           <div class="card-body">
-            <div class="d-flex align-items-center mb-3">
-              <i class="fas fa-robot text-primary me-3 fa-lg"></i>
-              <div>
-                <h6 class="mb-1">AI-Powered Learning</h6>
-                <small class="text-muted">Personalized explanations and feedback</small>
-              </div>
-            </div>
-            <div class="d-flex align-items-center mb-3">
-              <i class="fas fa-chart-line text-success me-3 fa-lg"></i>
-              <div>
-                <h6 class="mb-1">Progress Tracking</h6>
-                <small class="text-muted">Monitor your learning journey</small>
-              </div>
-            </div>
-            <div class="d-flex align-items-center mb-3">
-              <i class="fas fa-users text-info me-3 fa-lg"></i>
-              <div>
-                <h6 class="mb-1">Interactive Tasks</h6>
-                <small class="text-muted">Engage with hands-on exercises</small>
-              </div>
-            </div>
-            <div class="d-flex align-items-center">
-              <i class="fas fa-clock text-warning me-3 fa-lg"></i>
-              <div>
-                <h6 class="mb-1">24/7 Availability</h6>
-                <small class="text-muted">Learn at your own pace</small>
-              </div>
-            </div>
+            <ul class="list-unstyled small mb-0">
+              <li class="mb-2">🤖 Personalized explanations & feedback</li>
+              <li class="mb-2">📈 Clear progress & streaks</li>
+              <li class="mb-2">🧩 Interactive tasks with instant checks</li>
+            </ul>
           </div>
         </div>
-      </div>
+      </aside>
     </div>
   </div>
+
 
 <% else %>
   <!-- Landing Page for Non-Authenticated Users -->
@@ -401,39 +296,29 @@ document.addEventListener('DOMContentLoaded', function() {
   const chapterSelect = document.getElementById('chapter-select');
   const startLearningBtn = document.getElementById('startLearningBtn');
 
+  // Embedded data from server
+  const subjectsByGrade = <%= raw @subjects_by_grade.to_json %>;
+  const chaptersBySubject = <%= raw @chapters_by_subject.to_json %>;
+
   if (gradeSelect) {
     gradeSelect.addEventListener('change', function() {
       const gradeId = this.value;
       if (gradeId) {
-        // Show loading state
-        subjectSelect.innerHTML = '<option value="">Loading...</option>';
-        subjectSelect.disabled = true;
+        // Load subjects for selected grade
+        const subjects = subjectsByGrade[gradeId] || [];
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        subjects.forEach(subject => {
+          const option = document.createElement('option');
+          option.value = subject.id;
+          option.textContent = subject.name;
+          subjectSelect.appendChild(option);
+        });
+        subjectSelect.disabled = false;
+        
+        // Reset chapter select
         chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
         chapterSelect.disabled = true;
         startLearningBtn.disabled = true;
-
-        fetch(`/api/grades/${gradeId}/subjects`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => response.json())
-        .then(subjects => {
-          subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-          subjects.forEach(subject => {
-            const option = document.createElement('option');
-            option.value = subject.id;
-            option.textContent = subject.name;
-            subjectSelect.appendChild(option);
-          });
-          subjectSelect.disabled = false;
-        })
-        .catch(error => {
-          console.error('Error fetching subjects:', error);
-          subjectSelect.innerHTML = '<option value="">Error loading subjects</option>';
-        });
       } else {
         subjectSelect.innerHTML = '<option value="">Select Subject</option>';
         subjectSelect.disabled = true;
@@ -446,33 +331,17 @@ document.addEventListener('DOMContentLoaded', function() {
     subjectSelect.addEventListener('change', function() {
       const subjectId = this.value;
       if (subjectId) {
-        // Show loading state
-        chapterSelect.innerHTML = '<option value="">Loading...</option>';
-        chapterSelect.disabled = true;
-        startLearningBtn.disabled = true;
-
-        fetch(`/api/subjects/${subjectId}/chapters`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => response.json())
-        .then(chapters => {
-          chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-          chapters.forEach(chapter => {
-            const option = document.createElement('option');
-            option.value = chapter.id;
-            option.textContent = chapter.name;
-            chapterSelect.appendChild(option);
-          });
-          chapterSelect.disabled = false;
-        })
-        .catch(error => {
-          console.error('Error fetching chapters:', error);
-          chapterSelect.innerHTML = '<option value="">Error loading chapters</option>';
+        // Load chapters for selected subject
+        const chapters = chaptersBySubject[subjectId] || [];
+        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+        chapters.forEach(chapter => {
+          const option = document.createElement('option');
+          option.value = chapter.id;
+          option.textContent = chapter.name;
+          chapterSelect.appendChild(option);
         });
+        chapterSelect.disabled = false;
+        startLearningBtn.disabled = true;
       } else {
         chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
         chapterSelect.disabled = true;

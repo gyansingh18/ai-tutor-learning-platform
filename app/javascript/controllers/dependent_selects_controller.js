@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["grade", "subject", "chapter"]
-  static values = { 
+  static values = {
     subjects: Object,
     chapters: Object
   }
@@ -14,10 +14,10 @@ export default class extends Controller {
 
   gradeChanged() {
     const gradeId = this.gradeTarget.value
-    
+
     this.clearSubjects()
     this.clearChapters()
-    
+
     if (gradeId && this.subjectsValue[gradeId]) {
       this.loadSubjects(gradeId)
     }
@@ -25,9 +25,9 @@ export default class extends Controller {
 
   subjectChanged() {
     const subjectId = this.subjectTarget.value
-    
+
     this.clearChapters()
-    
+
     if (subjectId && this.chaptersValue[subjectId]) {
       this.loadChapters(subjectId)
     }
@@ -47,7 +47,7 @@ export default class extends Controller {
 
   populateSelect(selectElement, options, promptText) {
     selectElement.innerHTML = `<option value="">${promptText}</option>`
-    
+
     options.forEach(option => {
       const optionElement = document.createElement("option")
       optionElement.value = option.id

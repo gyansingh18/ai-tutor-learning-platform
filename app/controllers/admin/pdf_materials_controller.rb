@@ -2,6 +2,7 @@ class Admin::PdfMaterialsController < ApplicationController
   before_action :authenticate_user!
   before_action :ensure_admin!
   before_action :set_pdf_material, only: [:show, :destroy]
+  before_action :set_chapter, only: [:create, :destroy], if: -> { params[:chapter_id].present? }
 
   def index
     @pdf_materials = PdfMaterial.recent.includes(:chapter, :user)
@@ -17,6 +18,23 @@ class Admin::PdfMaterialsController < ApplicationController
   end
 
   def create
+    # Handle chapter-nested creation (from edit chapter page)
+    if @chapter.present?
+      @pdf_material = @chapter.pdf_materials.build(pdf_material_params)
+      @pdf_material.user = current_user
+
+      if @pdf_material.save
+        # Process PDF in background
+        PdfProcessorJob.perform_later(@pdf_material.id)
+
+        redirect_to edit_admin_chapter_path(@chapter), notice: 'PDF uploaded successfully! Processing will begin shortly.'
+      else
+        redirect_to edit_admin_chapter_path(@chapter), alert: "Failed to upload PDF: #{@pdf_material.errors.full_messages.join(', ')}"
+      end
+      return
+    end
+
+    # Original standalone creation logic
     # Extract grade_id and subject_id for chapter creation logic
     grade_id = params[:pdf_material][:grade_id]
     subject_id = params[:pdf_material][:subject_id]
@@ -61,6 +79,14 @@ class Admin::PdfMaterialsController < ApplicationController
   end
 
   def destroy
+    # Handle chapter-nested deletion (from edit chapter page)
+    if @chapter.present?
+      @pdf_material.destroy
+      redirect_to edit_admin_chapter_path(@chapter), notice: 'PDF deleted successfully!'
+      return
+    end
+
+    # Original standalone deletion
     @pdf_material.destroy
     redirect_to admin_pdf_materials_path, notice: 'PDF deleted successfully!'
   end
@@ -69,6 +95,10 @@ class Admin::PdfMaterialsController < ApplicationController
 
   def set_pdf_material
     @pdf_material = PdfMaterial.find(params[:id])
+  end
+
+  def set_chapter
+    @chapter = Chapter.find(params[:chapter_id]) if params[:chapter_id].present?
   end
 
   def pdf_material_params

@@ -28,6 +28,9 @@ Rails.application.routes.draw do
   patch "profile", to: "users#update"
   get "history", to: "questions#index"
 
+  # Search
+  get "search", to: "search#index"
+
   # Chat routes
   get "chat/:chapter_id", to: "chat#show", as: :chat
   post "chat/:chapter_id", to: "chat#create"
@@ -55,6 +58,7 @@ Rails.application.routes.draw do
         post :generate_tasks
       end
       resources :tasks, except: [:show]
+      resources :pdf_materials, only: [:create, :destroy]
     end
   end
 

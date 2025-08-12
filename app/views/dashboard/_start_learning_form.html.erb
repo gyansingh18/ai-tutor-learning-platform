@@ -1,0 +1,35 @@
+<%# Start Learning form partial %>
+<div class="row g-3" id="start-learning-form">
+
+  <div class="col-12 col-md-4">
+    <label for="grade-select" class="form-label">Grade</label>
+    <select id="grade-select" class="form-select">
+      <option value="">Select a grade</option>
+      <% Grade.ordered.each do |grade| %>
+        <option value="<%= grade.id %>"><%= grade.display_name %></option>
+      <% end %>
+    </select>
+  </div>
+
+  <div class="col-12 col-md-4">
+    <label for="subject-select" class="form-label">Subject</label>
+    <select id="subject-select" class="form-select" disabled>
+      <option value="">Select a subject</option>
+    </select>
+  </div>
+
+  <div class="col-12 col-md-4">
+    <label for="chapter-select" class="form-label">Chapter</label>
+    <select id="chapter-select" class="form-select" disabled>
+      <option value="">Select a chapter</option>
+    </select>
+  </div>
+
+  <div class="col-12 d-flex gap-2 flex-wrap">
+    <button type="button" id="startLearningBtn" class="btn btn-primary" disabled
+            onclick="startLearning()">
+      <i class="fas fa-play me-2"></i>Start Learning
+    </button>
+    <%= link_to "Browse All Grades", grades_path, class: "btn btn-outline-primary" %>
+  </div>
+</div>

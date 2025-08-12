@@ -8,6 +8,9 @@ gem "rails", "~> 7.1.5", ">= 7.1.5.1"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
+# Use Sass to process CSS [https://github.com/rails/sassc-rails]
+gem "sassc-rails"
+
 # Use PostgreSQL as the database for Active Record
 gem "pg", "~> 1.1"
 

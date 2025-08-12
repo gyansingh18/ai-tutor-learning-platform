@@ -606,6 +606,29 @@
             <% end %>
           </ul>
 
+          <!-- Compact Search (Desktop Only) - Authenticated Users Only -->
+          <% if user_signed_in? %>
+            <div class="d-none d-lg-flex me-3" data-controller="search">
+              <%= form_with url: search_path, method: :get,
+                  class: "d-flex",
+                  role: "search",
+                  data: {
+                    turbo: false,
+                    "search-target": "form"
+                  } do |form| %>
+                <%= form.text_field :q,
+                    placeholder: "Search chapters... (Ctrl+K)",
+                    class: "form-control form-control-sm",
+                    style: "width: 200px;",
+                    "aria-label": "Search",
+                    data: { "search-target": "input" } %>
+                <button type="submit" class="btn btn-outline-light btn-sm ms-1">
+                  <i class="fas fa-search"></i>
+                </button>
+              <% end %>
+            </div>
+          <% end %>
+
           <ul class="navbar-nav align-items-center">
             <% if user_signed_in? %>
               <li class="nav-item me-3">
@@ -616,7 +639,7 @@
               <li class="nav-item">
                 <%= link_to destroy_user_session_path,
                     data: { turbo_method: :delete },
-                    class: "btn btn-outline-light" do %>
+                    class: "btn btn-outline-light btn-sm" do %>
                   <i class="fas fa-sign-out-alt me-1"></i> Logout
                 <% end %>
               </li>
@@ -737,5 +760,28 @@
         });
       });
     </script>
+
+    <!-- Mobile Quick Actions Bar (Sticky Bottom) -->
+    <% if user_signed_in? %>
+      <div class="position-fixed bottom-0 start-0 end-0 bg-white border-top d-lg-none mobile-quick-actions" style="z-index:1030;">
+        <div class="container py-2 d-flex justify-content-between">
+          <%= link_to questions_path, class: "btn btn-outline-primary btn-sm" do %>
+            <i class="fas fa-question-circle me-1"></i>Ask
+          <% end %>
+          <% if @resume_chapter %>
+            <%= link_to learning_path(@resume_chapter), class: "btn btn-primary btn-sm" do %>
+              <i class="fas fa-play me-1"></i>Continue
+            <% end %>
+          <% else %>
+            <%= link_to root_path, class: "btn btn-primary btn-sm" do %>
+              <i class="fas fa-home me-1"></i>Learn
+            <% end %>
+          <% end %>
+          <%= link_to history_path, class: "btn btn-outline-secondary btn-sm" do %>
+            <i class="fas fa-history me-1"></i>History
+          <% end %>
+        </div>
+      </div>
+    <% end %>
   </body>
 </html>

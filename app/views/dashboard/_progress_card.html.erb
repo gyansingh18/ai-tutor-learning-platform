@@ -1,0 +1,16 @@
+<%# Progress card partial for dashboard %>
+<%# locals: title:, value:, color:, percent: (0-100) %>
+<div class="col-6 col-md-3">
+  <div class="card text-center">
+    <div class="card-body">
+      <div data-controller="ring" 
+           data-ring-percent-value="<%= percent.to_i %>" 
+           class="mx-auto mb-2 progress-ring" 
+           aria-label="<%= title %> progress: <%= percent.to_i %>%"
+           role="img">
+      </div>
+      <div class="h5 mb-0 fw-bold text-dark"><%= value %></div>
+      <small class="text-secondary"><%= title %></small>
+    </div>
+  </div>
+</div>
