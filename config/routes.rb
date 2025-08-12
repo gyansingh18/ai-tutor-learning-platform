@@ -55,6 +55,7 @@ Rails.application.routes.draw do
         post :generate_tasks
       end
       resources :tasks, except: [:show]
+      resources :pdf_materials, only: [:create, :destroy]
     end
   end
 
