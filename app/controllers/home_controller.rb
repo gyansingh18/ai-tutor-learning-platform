@@ -6,6 +6,17 @@ class HomeController < ApplicationController
     @grades = Grade.all
     @learning_stats = get_learning_stats if user_signed_in?
     @resume_chapter = get_resume_chapter if user_signed_in?
+    
+    # Prepare data for dependent selects
+    @subjects_by_grade = {}
+    @chapters_by_subject = {}
+    
+    Grade.includes(subjects: :chapters).each do |grade|
+      @subjects_by_grade[grade.id] = grade.subjects.map { |s| { id: s.id, name: s.name } }
+      grade.subjects.each do |subject|
+        @chapters_by_subject[subject.id] = subject.chapters.map { |c| { id: c.id, name: c.name } }
+      end
+    end
   end
 
   private

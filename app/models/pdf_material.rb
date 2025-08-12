@@ -1,7 +1,7 @@
 class PdfMaterial < ApplicationRecord
   # Relationships
   belongs_to :chapter
-  belongs_to :user
+  belongs_to :user, optional: true  # Made optional for bulk imports
   has_many :vector_chunks, dependent: :destroy
   has_one_attached :pdf_file
 

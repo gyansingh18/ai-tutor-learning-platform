@@ -401,39 +401,29 @@ document.addEventListener('DOMContentLoaded', function() {
   const chapterSelect = document.getElementById('chapter-select');
   const startLearningBtn = document.getElementById('startLearningBtn');
 
+  // Embedded data from server
+  const subjectsByGrade = <%= raw @subjects_by_grade.to_json %>;
+  const chaptersBySubject = <%= raw @chapters_by_subject.to_json %>;
+
   if (gradeSelect) {
     gradeSelect.addEventListener('change', function() {
       const gradeId = this.value;
       if (gradeId) {
-        // Show loading state
-        subjectSelect.innerHTML = '<option value="">Loading...</option>';
-        subjectSelect.disabled = true;
+        // Load subjects for selected grade
+        const subjects = subjectsByGrade[gradeId] || [];
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        subjects.forEach(subject => {
+          const option = document.createElement('option');
+          option.value = subject.id;
+          option.textContent = subject.name;
+          subjectSelect.appendChild(option);
+        });
+        subjectSelect.disabled = false;
+        
+        // Reset chapter select
         chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
         chapterSelect.disabled = true;
         startLearningBtn.disabled = true;
-
-        fetch(`/api/grades/${gradeId}/subjects`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => response.json())
-        .then(subjects => {
-          subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-          subjects.forEach(subject => {
-            const option = document.createElement('option');
-            option.value = subject.id;
-            option.textContent = subject.name;
-            subjectSelect.appendChild(option);
-          });
-          subjectSelect.disabled = false;
-        })
-        .catch(error => {
-          console.error('Error fetching subjects:', error);
-          subjectSelect.innerHTML = '<option value="">Error loading subjects</option>';
-        });
       } else {
         subjectSelect.innerHTML = '<option value="">Select Subject</option>';
         subjectSelect.disabled = true;
@@ -446,33 +436,17 @@ document.addEventListener('DOMContentLoaded', function() {
     subjectSelect.addEventListener('change', function() {
       const subjectId = this.value;
       if (subjectId) {
-        // Show loading state
-        chapterSelect.innerHTML = '<option value="">Loading...</option>';
-        chapterSelect.disabled = true;
-        startLearningBtn.disabled = true;
-
-        fetch(`/api/subjects/${subjectId}/chapters`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => response.json())
-        .then(chapters => {
-          chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-          chapters.forEach(chapter => {
-            const option = document.createElement('option');
-            option.value = chapter.id;
-            option.textContent = chapter.name;
-            chapterSelect.appendChild(option);
-          });
-          chapterSelect.disabled = false;
-        })
-        .catch(error => {
-          console.error('Error fetching chapters:', error);
-          chapterSelect.innerHTML = '<option value="">Error loading chapters</option>';
+        // Load chapters for selected subject
+        const chapters = chaptersBySubject[subjectId] || [];
+        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+        chapters.forEach(chapter => {
+          const option = document.createElement('option');
+          option.value = chapter.id;
+          option.textContent = chapter.name;
+          chapterSelect.appendChild(option);
         });
+        chapterSelect.disabled = false;
+        startLearningBtn.disabled = true;
       } else {
         chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
         chapterSelect.disabled = true;
