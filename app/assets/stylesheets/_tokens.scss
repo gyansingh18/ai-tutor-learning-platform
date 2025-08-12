@@ -1,0 +1,43 @@
+// Design Tokens for AI Tutor Dashboard
+// ========================================
+
+// Color system
+$brand: #3b82f6;         // primary blue
+$brand-2: #6d28d9;       // accent purple
+$bg-soft: #f8fafc;       // page background
+$card: #ffffff;          // card background
+$success: #16a34a;       // success green
+$warning: #f59e0b;       // warning orange
+$muted: #64748b;         // muted text
+
+// Additional utility colors
+$primary-subtle: #dbeafe;
+$success-subtle: #dcfce7;
+$info-subtle: #e0f2fe;
+$warning-subtle: #fef3c7;
+
+// Border radius
+$radius-sm: 0.5rem;
+$radius-md: 0.75rem;
+$radius-lg: 1rem;
+$radius-xl: 1rem;
+
+// Shadows
+$shadow-soft: 0 6px 24px rgba(0,0,0,.06);
+$shadow-sm: 0 1px 3px rgba(0,0,0,.1);
+$shadow-md: 0 4px 12px rgba(0,0,0,.1);
+
+// Typography
+$font-stack: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
+
+// Spacing
+$spacing-xs: 0.5rem;
+$spacing-sm: 0.75rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+
+// Transitions
+$transition-fast: 0.15s ease;
+$transition-normal: 0.3s ease;
+$transition-slow: 0.5s ease;

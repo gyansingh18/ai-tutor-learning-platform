@@ -1,0 +1,21 @@
+<%# Subject card partial for recommendations %>
+<%# locals: subject %>
+<% if defined?(subject) && subject %>
+  <div class="col-6 col-md-4">
+    <%= link_to grade_subject_path(subject.grade, subject), class: "text-decoration-none" do %>
+      <div class="card subject-card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <div class="rounded-circle bg-primary-subtle p-2">
+              <i class="fas fa-book text-primary" aria-hidden="true"></i>
+            </div>
+            <h6 class="mb-0 text-dark fw-semibold"><%= subject.name %></h6>
+          </div>
+          <small class="text-secondary">
+            <%= pluralize(subject.chapters.count, "chapter") %> available
+          </small>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
