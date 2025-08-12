@@ -38,7 +38,8 @@ class OpenaiService
         }
       )
 
-      response.dig("choices", 0, "message", "content")
+      content = response.dig("choices", 0, "message", "content")
+      clean_response(content)
     rescue => e
       Rails.logger.error "OpenAI API Error: #{e.message}"
       "I'm sorry, I'm having trouble processing your request right now. Please try again later."
@@ -83,7 +84,8 @@ STYLE GUIDELINES:
         }
       )
 
-      response.dig("choices", 0, "message", "content")
+      content = response.dig("choices", 0, "message", "content")
+      clean_response(content)
     rescue => e
       Rails.logger.error "OpenAI API Error: #{e.message}"
       Rails.logger.error "Error class: #{e.class}"
@@ -159,7 +161,8 @@ ALWAYS end with a relevant follow-up question based on the conversation context.
         }
       )
 
-      response.dig("choices", 0, "message", "content")
+      content = response.dig("choices", 0, "message", "content")
+      clean_response(content)
     rescue => e
       Rails.logger.error "OpenAI API Error: #{e.message}"
       Rails.logger.error "Error class: #{e.class}"
@@ -213,13 +216,31 @@ ALWAYS end with a relevant follow-up question based on the conversation context.
       }
     )
 
-    response.dig("choices", 0, "message", "content")
+    content = response.dig("choices", 0, "message", "content")
+    clean_response(content)
   rescue => e
     Rails.logger.error "OpenAI Chapter Explanation Error: #{e.message}"
     "I'm sorry, I'm having trouble generating the chapter explanation right now. Please try again later."
   end
 
   private
+
+  def clean_response(content)
+    return content unless content
+
+    # Remove markdown bold formatting (**text** and *text*)
+    content = content.gsub(/\*\*([^*]+)\*\*/, '\1')  # Remove **bold**
+    content = content.gsub(/\*([^*]+)\*/, '\1')      # Remove *italic*
+
+    # Remove markdown headers (### text)
+    content = content.gsub(/^#+\s*/, '')
+
+    # Clean up any remaining standalone asterisks
+    content = content.gsub(/^\*\s+/, '- ')           # Convert * bullets to -
+    content = content.gsub(/\s\*\s/, ' ')            # Remove standalone *
+
+    content.strip
+  end
 
   def build_rag_prompt(question, chapter, context_chunks)
     context_text = context_chunks.map(&:content).join("\n\n")

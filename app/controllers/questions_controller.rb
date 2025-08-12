@@ -21,6 +21,17 @@ class QuestionsController < ApplicationController
     end
 
     @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
+    
+    # Prepare data for dependent selects
+    @subjects_by_grade = {}
+    @chapters_by_subject = {}
+    
+    Grade.includes(subjects: :chapters).each do |grade|
+      @subjects_by_grade[grade.id] = grade.subjects.map { |s| { id: s.id, name: s.name } }
+      grade.subjects.each do |subject|
+        @chapters_by_subject[subject.id] = subject.chapters.map { |c| { id: c.id, name: c.name } }
+      end
+    end
   end
 
   def create
@@ -42,16 +53,26 @@ class QuestionsController < ApplicationController
 
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace("question-form", partial: "questions/answer_result", locals: { question: @question }),
-            turbo_stream.update("flash-messages", partial: "shared/flash", locals: { notice: "Question answered successfully!" })
-          ]
+          render turbo_stream: turbo_stream.replace(
+            "question-form",
+            partial: "questions/answer_result",
+            locals: { question: @question }
+          )
         end
         format.html { redirect_to @question, notice: 'Question asked successfully!' }
       end
     else
       @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update(
+            "question-form",
+            partial: "form",
+            locals: { question: @question }
+          ), status: :unprocessable_entity
+        end
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -67,7 +88,7 @@ class QuestionsController < ApplicationController
     if params[:grade_id].present?
       params.require(:question).permit(:content)
     else
-      params.require(:question).permit(:content, :chapter_id)
+      params.require(:question).permit(:content, :chapter_id, :grade_id, :subject_id)
     end
   end
 end
