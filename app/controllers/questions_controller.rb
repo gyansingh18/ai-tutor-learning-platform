@@ -171,14 +171,14 @@ class QuestionsController < ApplicationController
   def get_cached_subjects_by_grade
     Rails.cache.fetch("subjects_by_grade", expires_in: 30.minutes) do
       subjects_by_grade = {}
-      
+
       # Get existing records from database instead of scanning S3
       Grade.includes(subjects: :chapters).each do |grade|
         subjects_by_grade[grade.id.to_s] = grade.subjects.map do |subject|
           { id: subject.id, name: subject.name }
         end
       end
-      
+
       subjects_by_grade
     end
   end
@@ -186,14 +186,14 @@ class QuestionsController < ApplicationController
   def get_cached_chapters_by_subject
     Rails.cache.fetch("chapters_by_subject", expires_in: 30.minutes) do
       chapters_by_subject = {}
-      
+
       # Get existing records from database instead of scanning S3
       Subject.includes(:chapters).each do |subject|
         chapters_by_subject[subject.id.to_s] = subject.chapters.map do |chapter|
           { id: chapter.id, name: chapter.name }
         end
       end
-      
+
       chapters_by_subject
     end
   end

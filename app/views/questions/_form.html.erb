@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Embedded data from server
   const subjectsByGrade = <%= raw @subjects_by_grade.to_json %>;
   const chaptersBySubject = <%= raw @chapters_by_subject.to_json %>;
-  
+
   // Get form elements
   const gradeSelect = document.getElementById('ask-grade-select');
   const subjectSelect = document.getElementById('ask-subject-select');
@@ -153,13 +153,13 @@ document.addEventListener('DOMContentLoaded', function() {
   // Grade change handler
   gradeSelect.addEventListener('change', function() {
     const selectedGradeId = this.value;
-    
+
     // Clear and disable subject and chapter selects
     subjectSelect.innerHTML = '<option value="">Select a subject</option>';
     subjectSelect.disabled = !selectedGradeId;
     chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
     chapterSelect.disabled = true;
-    
+
     if (selectedGradeId && subjectsByGrade[selectedGradeId]) {
       // Populate subjects for selected grade
       subjectsByGrade[selectedGradeId].forEach(function(subject) {
@@ -174,11 +174,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // Subject change handler
   subjectSelect.addEventListener('change', function() {
     const selectedSubjectId = this.value;
-    
+
     // Clear and disable chapter select
     chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
     chapterSelect.disabled = !selectedSubjectId;
-    
+
     if (selectedSubjectId && chaptersBySubject[selectedSubjectId]) {
       // Populate chapters for selected subject
       chaptersBySubject[selectedSubjectId].forEach(function(chapter) {
