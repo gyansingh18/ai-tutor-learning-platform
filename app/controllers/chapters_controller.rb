@@ -21,11 +21,12 @@ class ChaptersController < ApplicationController
       # Extract chapter number from chapter name
       chapter_num = chapter_name.match(/\d+/).to_s.to_i
       
-      # Try different possible filename patterns
+      # Try different possible filename patterns based on actual S3 structure
       possible_keys = [
-        "grade_#{grade_number}/#{subject_name.to_s.parameterize}/ch#{chapter_num}.pdf",
-        "grade_#{grade_number}/#{subject_name.to_s.parameterize}/chapter_#{chapter_num}.pdf",
-        "grade_#{grade_number}/#{subject_name.to_s.parameterize}/#{chapter_name.to_s.parameterize}.pdf"
+        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/jeff#{chapter_num}.pdf",
+        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/chapter_#{chapter_num}.pdf",
+        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/#{chapter_num}.pdf",
+        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/#{chapter_name.to_s.parameterize}.pdf"
       ]
       
       pdf_files = []

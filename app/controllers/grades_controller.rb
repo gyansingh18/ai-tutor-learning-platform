@@ -23,12 +23,12 @@ class GradesController < ApplicationController
   # Get real grades from S3 bucket structure
   def get_real_grades_from_s3
     begin
-      # List all objects in bucket to find grade folders
+      # List all objects in bucket to find class folders
       resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, delimiter: '/')
       grades = []
       
       resp.common_prefixes.each do |prefix|
-        if prefix.prefix.match(/grade_(\d+)\//)
+        if prefix.prefix.match(/pdfs\/class_(\d+)\//)
           grades << $1.to_i
         end
       end
@@ -43,12 +43,12 @@ class GradesController < ApplicationController
   # Get real subjects for a grade from S3
   def get_real_subjects_from_s3(grade_number)
     begin
-      prefix = "grade_#{grade_number}/"
+      prefix = "pdfs/class_#{grade_number}/"
       resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, prefix: prefix, delimiter: '/')
       subjects = []
       
       resp.common_prefixes.each do |prefix_obj|
-        if prefix_obj.prefix.match(/grade_\d+\/([^\/]+)\//)
+        if prefix_obj.prefix.match(/pdfs\/class_\d+\/([^\/]+)\//)
           subjects << $1.humanize
         end
       end
