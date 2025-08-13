@@ -27,21 +27,25 @@ class QuestionsController < ApplicationController
       @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
     end
 
-    # Prepare REAL data from S3 for dependent selects
+    # ALWAYS prepare REAL data from S3 for dependent selects
     @subjects_by_grade = {}
     @chapters_by_subject = {}
     
     # Get real grades from S3 bucket structure
     real_grades = get_real_grades_from_s3
+    puts "DEBUG: Found grades: #{real_grades.inspect}"
     
     real_grades.each do |grade_number|
       grade = Grade.find_or_create_by(name: "Grade #{grade_number}")
+      puts "DEBUG: Processing grade: #{grade.name}"
       
       # Get real subjects for this grade from S3
       real_subjects = get_real_subjects_from_s3(grade_number)
+      puts "DEBUG: Found subjects for #{grade.name}: #{real_subjects.inspect}"
       
       @subjects_by_grade[grade.id] = real_subjects.map { |subject_name| 
         subject = Subject.find_or_create_by(name: subject_name, grade: grade)
+        puts "DEBUG: Created/found subject: #{subject.name} for grade #{grade.name}"
         { id: subject.id, name: subject.name } 
       }
       
@@ -51,12 +55,17 @@ class QuestionsController < ApplicationController
         next unless subject
         
         real_chapters = get_real_chapters_from_s3(grade_number, subject_name)
+        puts "DEBUG: Found chapters for #{subject.name}: #{real_chapters.inspect}"
         @chapters_by_subject[subject.id] = real_chapters.map { |chapter_name|
           chapter = Chapter.find_or_create_by(name: chapter_name, subject: subject)
+          puts "DEBUG: Created/found chapter: #{chapter.name} for subject #{subject.name}"
           { id: chapter.id, name: chapter.name }
         }
       end
     end
+    
+    puts "DEBUG: Final @subjects_by_grade: #{@subjects_by_grade.inspect}"
+    puts "DEBUG: Final @chapters_by_subject: #{@chapters_by_subject.inspect}"
   end
 
   def create
