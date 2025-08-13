@@ -10,7 +10,7 @@ class GradesController < ApplicationController
 
   def show
     @grade = Grade.find(params[:id])
-    
+
     # Get real subjects for this grade from S3
     grade_number = @grade.name.match(/Grade (\d+)/)[1].to_i
     @subjects = get_real_subjects_from_s3(grade_number).map do |subject_name|
@@ -26,13 +26,13 @@ class GradesController < ApplicationController
       # List all objects in bucket to find class folders
       resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, delimiter: '/')
       grades = []
-      
+
       resp.common_prefixes.each do |prefix|
         if prefix.prefix.match(/pdfs\/class_(\d+)\//)
           grades << $1.to_i
         end
       end
-      
+
       grades.sort
     rescue => e
       Rails.logger.error "Error getting grades from S3: #{e.message}"
@@ -46,13 +46,13 @@ class GradesController < ApplicationController
       prefix = "pdfs/class_#{grade_number}/"
       resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, prefix: prefix, delimiter: '/')
       subjects = []
-      
+
       resp.common_prefixes.each do |prefix_obj|
         if prefix_obj.prefix.match(/pdfs\/class_\d+\/([^\/]+)\//)
           subjects << $1.humanize
         end
       end
-      
+
       subjects.sort
     rescue => e
       Rails.logger.error "Error getting subjects from S3: #{e.message}"

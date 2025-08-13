@@ -55,10 +55,10 @@
             <i class="fas fa-graduation-cap me-2"></i>
             Grade Level
           </label>
-          <%= form.select :grade_id, 
-              options_for_select(@subjects_by_grade.keys.map { |grade_id| 
+          <%= form.select :grade_id,
+              options_for_select(@subjects_by_grade.keys.map { |grade_id|
                 grade = Grade.find(grade_id)
-                [grade.name, grade_id] 
+                [grade.name, grade_id]
               }.unshift(["Select a grade", ""])),
               {},
               { class: "form-select #{'is-invalid' if question.errors[:grade_id].any?}",
