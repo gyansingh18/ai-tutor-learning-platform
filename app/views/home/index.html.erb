@@ -484,6 +484,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Embedded data from server
   const subjectsByGrade = <%= raw @subjects_by_grade.to_json %>;
   const chaptersBySubject = <%= raw @chapters_by_subject.to_json %>;
+  
+  // Debug output
+  console.log('Homepage subjectsByGrade:', subjectsByGrade);
+  console.log('Homepage chaptersBySubject:', chaptersBySubject);
 
   if (gradeSelect) {
     gradeSelect.addEventListener('change', function() {
