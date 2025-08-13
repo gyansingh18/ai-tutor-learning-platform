@@ -9,8 +9,8 @@
     <% unless user_signed_in? %>
       <div class="alert alert-info mb-4">
         <i class="fas fa-info-circle me-2"></i>
-        <strong>Sign in required:</strong> You need to 
-        <%= link_to "sign in", new_user_session_path, class: "alert-link" %> 
+        <strong>Sign in required:</strong> You need to
+        <%= link_to "sign in", new_user_session_path, class: "alert-link" %>
         to submit questions. You can still explore the grade and subject options below.
       </div>
     <% end %>
@@ -22,8 +22,8 @@
       </div>
     <% end %>
 
-    <%= form_with model: question, data: { 
-      controller: "validation dependent-selects", 
+    <%= form_with model: question, data: {
+      controller: "validation dependent-selects",
       turbo: true,
       "dependent-selects-subjects-value": @subjects_by_grade.to_json,
       "dependent-selects-chapters-value": @chapters_by_subject.to_json
@@ -57,9 +57,9 @@
           </label>
           <%= form.collection_select :grade_id, Grade.ordered, :id, :display_name,
               { prompt: "Select a grade" },
-              { class: "form-select #{'is-invalid' if question.errors[:grade_id].any?}", 
+              { class: "form-select #{'is-invalid' if question.errors[:grade_id].any?}",
                 required: true,
-                data: { 
+                data: {
                   "dependent-selects-target": "grade",
                   "action": "change->dependent-selects#gradeChanged"
                 } } %>
@@ -76,10 +76,10 @@
           </label>
           <%= form.select :subject_id, options_for_select([["Select a subject", ""]]),
               {},
-              { class: "form-select #{'is-invalid' if question.errors[:subject_id].any?}", 
+              { class: "form-select #{'is-invalid' if question.errors[:subject_id].any?}",
                 required: true,
                 disabled: true,
-                data: { 
+                data: {
                   "dependent-selects-target": "subject",
                   "action": "change->dependent-selects#subjectChanged"
                 } } %>
@@ -98,10 +98,10 @@
         </label>
         <%= form.select :chapter_id, options_for_select([["Select a chapter", ""]]),
             {},
-            { class: "form-select #{'is-invalid' if question.errors[:chapter_id].any?}", 
+            { class: "form-select #{'is-invalid' if question.errors[:chapter_id].any?}",
               required: true,
               disabled: true,
-              data: { 
+              data: {
                 "dependent-selects-target": "chapter"
               } } %>
         <% if question.errors[:chapter_id].any? %>
@@ -127,8 +127,8 @@
           <i class="fas fa-arrow-left me-2"></i>
           Back to Questions
         <% end %>
-        <%= form.submit "Ask Question", 
-            class: "btn btn-primary btn-lg #{'disabled' unless user_signed_in?}", 
+        <%= form.submit "Ask Question",
+            class: "btn btn-primary btn-lg #{'disabled' unless user_signed_in?}",
             disabled: !user_signed_in? do %>
           <i class="fas fa-paper-plane me-2"></i>
           <%= user_signed_in? ? "Ask Question" : "Sign In to Ask Question" %>
