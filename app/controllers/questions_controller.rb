@@ -1,5 +1,7 @@
 class QuestionsController < ApplicationController
   # before_action :authenticate_user!  # Now handled globally
+  skip_before_action :authenticate_user!, only: [:new]
+  before_action :authenticate_user!, only: [:create, :index, :show]
   before_action :set_grade_and_subject_and_chapter, only: [:new, :create], if: -> { params[:grade_id].present? }
 
   def index
@@ -20,12 +22,15 @@ class QuestionsController < ApplicationController
       @selected_chapter = Chapter.find(params[:chapter_id])
     end
 
-    @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
-    
-    # Prepare data for dependent selects
+    # Only show user-specific data if authenticated
+    if user_signed_in?
+      @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
+    end
+
+    # Prepare data for dependent selects (always available)
     @subjects_by_grade = {}
     @chapters_by_subject = {}
-    
+
     Grade.includes(subjects: :chapters).each do |grade|
       @subjects_by_grade[grade.id] = grade.subjects.map { |s| { id: s.id, name: s.name } }
       grade.subjects.each do |subject|

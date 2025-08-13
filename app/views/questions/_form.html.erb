@@ -6,6 +6,15 @@
     </h5>
   </div>
   <div class="card-body">
+    <% unless user_signed_in? %>
+      <div class="alert alert-info mb-4">
+        <i class="fas fa-info-circle me-2"></i>
+        <strong>Sign in required:</strong> You need to 
+        <%= link_to "sign in", new_user_session_path, class: "alert-link" %> 
+        to submit questions. You can still explore the grade and subject options below.
+      </div>
+    <% end %>
+
     <% if @selected_chapter %>
       <div class="alert alert-info mb-4">
         <i class="fas fa-info-circle me-2"></i>
@@ -118,9 +127,11 @@
           <i class="fas fa-arrow-left me-2"></i>
           Back to Questions
         <% end %>
-        <%= form.submit "Ask Question", class: "btn btn-primary btn-lg" do %>
+        <%= form.submit "Ask Question", 
+            class: "btn btn-primary btn-lg #{'disabled' unless user_signed_in?}", 
+            disabled: !user_signed_in? do %>
           <i class="fas fa-paper-plane me-2"></i>
-          Ask Question
+          <%= user_signed_in? ? "Ask Question" : "Sign In to Ask Question" %>
         <% end %>
       </div>
     <% end %>
