@@ -50,7 +50,9 @@ class QuestionsController < ApplicationController
       puts "DEBUG: Found subjects for #{grade.name}: #{real_subjects.inspect}"
       
       @subjects_by_grade[grade.id] = real_subjects.map { |subject_name| 
-        subject = Subject.find_or_create_by(name: subject_name, grade: grade)
+        subject = Subject.find_or_create_by(name: subject_name, grade: grade) do |s|
+          s.description = "#{subject_name} for #{grade.name}"
+        end
         puts "DEBUG: Created/found subject: #{subject.name} (ID: #{subject.id}) for grade #{grade.name}"
         { id: subject.id, name: subject.name } 
       }
