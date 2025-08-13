@@ -1,22 +1,9 @@
 <%# Start Learning form partial %>
 <div class="row g-3" id="start-learning-form">
-  
-<!-- DEBUG: Let's see what data we have -->
-<% if Rails.env.production? %>
-  <div style="display:none;">
-    DEBUG subjects_by_grade: <%= @subjects_by_grade.inspect %>
-    DEBUG chapters_by_subject: <%= @chapters_by_subject.inspect %>
-  </div>
-<% end %>
 
   <div class="col-12 col-md-4">
     <label for="grade-select" class="form-label">Grade</label>
-    <select id="grade-select" class="form-select"
-            data-controller="dependent-selects"
-            data-dependent-selects-subjects-value="<%= @subjects_by_grade.to_json %>"
-            data-dependent-selects-chapters-value="<%= @chapters_by_subject.to_json %>"
-            data-dependent-selects-target="grade"
-            data-action="change->dependent-selects#gradeChanged">
+    <select id="grade-select" class="form-select">
       <option value="">Select a grade</option>
       <% if @subjects_by_grade %>
         <% @subjects_by_grade.keys.each do |grade_id| %>
@@ -29,17 +16,14 @@
 
   <div class="col-12 col-md-4">
     <label for="subject-select" class="form-label">Subject</label>
-    <select id="subject-select" class="form-select" disabled
-            data-dependent-selects-target="subject"
-            data-action="change->dependent-selects#subjectChanged">
+    <select id="subject-select" class="form-select" disabled>
       <option value="">Select a subject</option>
     </select>
   </div>
 
   <div class="col-12 col-md-4">
     <label for="chapter-select" class="form-label">Chapter</label>
-    <select id="chapter-select" class="form-select" disabled
-            data-dependent-selects-target="chapter">
+    <select id="chapter-select" class="form-select" disabled>
       <option value="">Select a chapter</option>
     </select>
   </div>
