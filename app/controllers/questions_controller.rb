@@ -130,7 +130,7 @@ class QuestionsController < ApplicationController
   def get_real_grades_from_s3
     begin
       # List all objects in bucket to find class folders
-      resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, delimiter: '/')
+      resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, prefix: 'pdfs/', delimiter: '/')
       grades = []
       
       resp.common_prefixes.each do |prefix|
