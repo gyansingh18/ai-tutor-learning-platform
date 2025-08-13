@@ -1,5 +1,4 @@
 class SubjectsController < ApplicationController
-  before_action :authenticate_user!, except: [:chapters]
   before_action :set_grade
 
   def index

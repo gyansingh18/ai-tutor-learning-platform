@@ -1,5 +1,5 @@
 class SearchController < ApplicationController
-  before_action :authenticate_user!
+  # before_action :authenticate_user!  # Now handled globally
 
   def index
     @query = params[:q]&.strip

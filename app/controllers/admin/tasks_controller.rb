@@ -1,5 +1,5 @@
 class Admin::TasksController < ApplicationController
-  before_action :authenticate_user!
+  # before_action :authenticate_user!  # Now handled globally
   before_action :ensure_admin
   before_action :set_chapter
   before_action :set_task, only: [:show, :edit, :update, :destroy]

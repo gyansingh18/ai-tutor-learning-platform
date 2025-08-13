@@ -1,5 +1,5 @@
 class AnswersController < ApplicationController
-  before_action :authenticate_user!
+  # before_action :authenticate_user!  # Now handled globally
   before_action :set_question
 
   def create

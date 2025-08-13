@@ -1,5 +1,5 @@
 class PdfMaterialsController < ApplicationController
-  before_action :authenticate_user!
+  # before_action :authenticate_user!  # Now handled globally
   before_action :ensure_admin!
   before_action :set_pdf_material, only: [:show, :destroy]
 

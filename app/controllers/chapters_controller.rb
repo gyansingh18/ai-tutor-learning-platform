@@ -1,5 +1,5 @@
 class ChaptersController < ApplicationController
-  before_action :authenticate_user!
+  # before_action :authenticate_user!  # Now handled globally
   before_action :set_grade_and_subject
 
   def index

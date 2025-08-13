@@ -1,5 +1,5 @@
 class LearningController < ApplicationController
-  before_action :authenticate_user!
+  # before_action :authenticate_user!  # Now handled globally
   before_action :set_chapter
   before_action :set_task, only: [:show_task, :submit_answer, :next_task, :previous_task]
 

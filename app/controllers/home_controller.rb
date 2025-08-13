@@ -1,16 +1,16 @@
 class HomeController < ApplicationController
-  # Allow non-authenticated users to see the landing page
+  skip_before_action :authenticate_user!
   # before_action :authenticate_user!
 
   def index
     @grades = Grade.all
     @learning_stats = get_learning_stats if user_signed_in?
     @resume_chapter = get_resume_chapter if user_signed_in?
-    
+
     # Prepare data for dependent selects
     @subjects_by_grade = {}
     @chapters_by_subject = {}
-    
+
     Grade.includes(subjects: :chapters).each do |grade|
       @subjects_by_grade[grade.id] = grade.subjects.map { |s| { id: s.id, name: s.name } }
       grade.subjects.each do |subject|

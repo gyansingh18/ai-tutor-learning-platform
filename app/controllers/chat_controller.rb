@@ -1,5 +1,5 @@
 class ChatController < ApplicationController
-  before_action :authenticate_user!
+  # before_action :authenticate_user!  # Now handled globally
 
   def index
     @chapter = Chapter.find(params[:chapter_id]) if params[:chapter_id].present?
