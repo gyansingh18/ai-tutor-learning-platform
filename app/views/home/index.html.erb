@@ -27,25 +27,25 @@
     <!-- Progress Cards -->
     <% if @learning_stats %>
       <section class="progress-cards row g-3 mb-4">
-        <%= render "dashboard/progress_card", 
-            title: "Chapters Started", 
-            value: @learning_stats[:total_chapters_started] || 0, 
-            color: "primary", 
+        <%= render "dashboard/progress_card",
+            title: "Chapters Started",
+            value: @learning_stats[:total_chapters_started] || 0,
+            color: "primary",
             percent: calculate_percentage(@learning_stats[:total_chapters_started], 50) %>
-        <%= render "dashboard/progress_card", 
-            title: "Chapters Completed", 
-            value: @learning_stats[:completed_chapters] || 0, 
-            color: "success", 
+        <%= render "dashboard/progress_card",
+            title: "Chapters Completed",
+            value: @learning_stats[:completed_chapters] || 0,
+            color: "success",
             percent: calculate_percentage(@learning_stats[:completed_chapters], @learning_stats[:total_chapters_started]) %>
-        <%= render "dashboard/progress_card", 
-            title: "Tasks Completed", 
-            value: @learning_stats[:total_tasks_completed] || 0, 
-            color: "info", 
+        <%= render "dashboard/progress_card",
+            title: "Tasks Completed",
+            value: @learning_stats[:total_tasks_completed] || 0,
+            color: "info",
             percent: calculate_percentage(@learning_stats[:total_tasks_completed], 100) %>
-        <%= render "dashboard/progress_card", 
-            title: "Accuracy", 
-            value: "#{(@learning_stats[:accuracy_rate] || 0).to_i}%", 
-            color: "warning", 
+        <%= render "dashboard/progress_card",
+            title: "Accuracy",
+            value: "#{(@learning_stats[:accuracy_rate] || 0).to_i}%",
+            color: "warning",
             percent: (@learning_stats[:accuracy_rate] || 0) %>
       </section>
     <% else %>
@@ -136,55 +136,111 @@
 
 
 <% else %>
-  <!-- Landing Page for Non-Authenticated Users -->
+  <!-- Modern Landing Page for Non-Authenticated Users -->
 
-  <!-- Hero Section -->
-  <section class="hero-section text-white py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-6 fade-in">
-          <h1 class="display-3 fw-bold mb-4">
-            <i class="fas fa-graduation-cap me-3"></i>
-            AI-Powered Learning<br>
-            <span class="text-warning">Reimagined</span>
+  <!-- Hero Section with Split Layout -->
+  <section class="hero-section text-white py-5 position-relative overflow-hidden">
+    <!-- Animated Background Shapes -->
+    <div class="hero-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+
+    <div class="container position-relative">
+      <div class="row align-items-center min-vh-100">
+        <div class="col-lg-6 fade-in-up">
+          <h1 class="hero-headline mb-4">
+            AI-Powered Learning,<br>
+            <span class="text-gradient-warning">Reimagined for You</span>
           </h1>
-          <p class="lead mb-4">
+          <p class="hero-subheadline mb-4">
+            Personalized learning paths, instant feedback, and interactive lessons that grow with you.
             Experience the future of education with our intelligent AI tutor.
-            Get personalized learning paths, instant feedback, and interactive exercises
-            that adapt to your learning style.
           </p>
-          <div class="d-flex gap-3 mb-4">
-            <%= link_to new_user_registration_path, class: "btn btn-warning btn-lg" do %>
+          <div class="hero-cta-group mb-5">
+            <%= link_to new_user_registration_path, class: "btn btn-warning btn-lg btn-primary-cta me-3 mb-3" do %>
               <i class="fas fa-rocket me-2"></i>
               Start Learning Free
             <% end %>
-            <%= link_to "#features", class: "btn btn-outline-light btn-lg" do %>
+            <%= link_to "#features", class: "btn btn-outline-light btn-lg btn-secondary-cta mb-3" do %>
               <i class="fas fa-play me-2"></i>
               Watch Demo
             <% end %>
           </div>
-          <div class="d-flex align-items-center text-light">
-            <div class="me-4">
-              <h4 class="mb-0">10,000+</h4>
-              <small>Students Learning</small>
-            </div>
-            <div class="me-4">
-              <h4 class="mb-0">500+</h4>
-              <small>Chapters Available</small>
-            </div>
-            <div>
-              <h4 class="mb-0">95%</h4>
-              <small>Success Rate</small>
+
+          <!-- Social Proof Stats -->
+          <div class="social-proof-stats">
+            <div class="row text-center">
+              <div class="col-4">
+                <div class="stat-item">
+                  <h3 class="stat-number mb-1">10,000+</h3>
+                  <small class="stat-label">Students Learning</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="stat-item">
+                  <h3 class="stat-number mb-1">500+</h3>
+                  <small class="stat-label">Chapters Available</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="stat-item">
+                  <h3 class="stat-number mb-1">95%</h3>
+                  <small class="stat-label">Success Rate</small>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="col-lg-6 fade-in">
-          <div class="text-center">
-            <div class="hero-image-container">
-              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80"
-                   alt="Students learning with AI"
-                   class="img-fluid rounded-3 shadow-lg"
-                   style="max-height: 400px; object-fit: cover;">
+
+        <div class="col-lg-6 fade-in-up" data-delay="200">
+          <div class="hero-illustration text-center">
+            <!-- Interactive SVG Illustration -->
+            <div class="ai-learning-illustration">
+              <svg width="500" height="400" viewBox="0 0 500 400" class="hero-svg">
+                <!-- Background Circle -->
+                <circle cx="250" cy="200" r="180" fill="url(#gradient-bg)" opacity="0.1"/>
+
+                <!-- AI Brain Icon -->
+                <g class="ai-brain" transform="translate(250, 200)">
+                  <circle cx="0" cy="0" r="60" fill="url(#gradient-primary)" class="brain-glow"/>
+                  <path d="M-30,-20 Q-40,-40 -20,-50 Q0,-60 20,-50 Q40,-40 30,-20 Q40,0 30,20 Q20,40 0,50 Q-20,40 -30,20 Z"
+                        fill="white" class="brain-shape"/>
+                  <circle cx="-15" cy="-10" r="3" fill="#3B82F6"/>
+                  <circle cx="15" cy="-10" r="3" fill="#3B82F6"/>
+                  <circle cx="0" cy="10" r="3" fill="#3B82F6"/>
+                </g>
+
+                <!-- Floating Elements -->
+                <g class="floating-elements">
+                  <circle cx="100" cy="100" r="8" fill="#FBBF24" class="float-1"/>
+                  <circle cx="400" cy="150" r="6" fill="#10B981" class="float-2"/>
+                  <circle cx="80" cy="300" r="10" fill="#EF4444" class="float-3"/>
+                  <circle cx="420" cy="320" r="7" fill="#8B5CF6" class="float-4"/>
+                </g>
+
+                <!-- Connection Lines -->
+                <g class="connection-lines" stroke="#3B82F6" stroke-width="2" opacity="0.3">
+                  <line x1="100" y1="100" x2="250" y2="200" class="line-1"/>
+                  <line x1="400" y1="150" x2="250" y2="200" class="line-2"/>
+                  <line x1="80" y1="300" x2="250" y2="200" class="line-3"/>
+                  <line x1="420" y1="320" x2="250" y2="200" class="line-4"/>
+                </g>
+
+                <!-- Gradients -->
+                <defs>
+                  <linearGradient id="gradient-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                  </linearGradient>
+                  <linearGradient id="gradient-primary" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#2563EB" />
+                    <stop offset="100%" style="stop-color:#3B82F6" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
           </div>
         </div>
@@ -192,71 +248,74 @@
     </div>
   </section>
 
-  <!-- Features Section -->
-  <section id="features" class="py-5">
+  <!-- Why Choose AI Tutor Section -->
+  <section id="features" class="features-section py-5">
     <div class="container">
-      <div class="text-center mb-5">
-        <h2 class="display-5 fw-bold text-primary mb-3">Why Choose AI Tutor?</h2>
-        <p class="lead text-muted">Discover the features that make learning engaging, effective, and personalized</p>
+      <div class="text-center mb-5 fade-in-up">
+        <h2 class="section-headline mb-3">Why Choose AI Tutor?</h2>
+        <p class="section-subheadline">Discover the features that make learning engaging, effective, and personalized</p>
       </div>
 
       <div class="row g-4">
-        <div class="col-lg-4 col-md-6 fade-in">
-          <div class="card h-100 feature-card">
-            <div class="card-body text-center p-4">
-              <div class="feature-icon mb-3">
-                <i class="fas fa-robot fa-3x text-primary"></i>
+        <div class="col-lg-4 col-md-6 fade-in-up" data-delay="100">
+          <div class="feature-card h-100">
+            <div class="feature-card-body text-center p-4">
+              <div class="feature-icon mb-4">
+                <i class="fas fa-robot"></i>
               </div>
-              <h4 class="card-title">AI-Powered Tutoring</h4>
-              <p class="card-text text-muted">
+              <h4 class="feature-title mb-3">AI-Powered Tutoring</h4>
+              <p class="feature-description mb-4">
                 Our advanced AI understands your learning style and provides personalized explanations,
                 adapting to your pace and knowledge level.
               </p>
-              <ul class="list-unstyled text-start">
+              <ul class="feature-benefits list-unstyled text-start mb-4">
                 <li><i class="fas fa-check text-success me-2"></i>Personalized explanations</li>
                 <li><i class="fas fa-check text-success me-2"></i>Adaptive difficulty</li>
                 <li><i class="fas fa-check text-success me-2"></i>Instant feedback</li>
               </ul>
+              <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
             </div>
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 fade-in">
-          <div class="card h-100 feature-card">
-            <div class="card-body text-center p-4">
-              <div class="feature-icon mb-3">
-                <i class="fas fa-gamepad fa-3x text-success"></i>
+        <div class="col-lg-4 col-md-6 fade-in-up" data-delay="200">
+          <div class="feature-card h-100">
+            <div class="feature-card-body text-center p-4">
+              <div class="feature-icon mb-4">
+                <i class="fas fa-gamepad"></i>
               </div>
-              <h4 class="card-title">Interactive Learning</h4>
-              <p class="card-text text-muted">
+              <h4 class="feature-title mb-3">Interactive Learning</h4>
+              <p class="feature-description mb-4">
                 Engage with hands-on exercises, quizzes, and interactive tasks that make learning
                 fun and memorable.
               </p>
-              <ul class="list-unstyled text-start">
+              <ul class="feature-benefits list-unstyled text-start mb-4">
                 <li><i class="fas fa-check text-success me-2"></i>Interactive exercises</li>
                 <li><i class="fas fa-check text-success me-2"></i>Gamified learning</li>
                 <li><i class="fas fa-check text-success me-2"></i>Real-time progress</li>
               </ul>
+              <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
             </div>
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 fade-in">
-          <div class="card h-100 feature-card">
-            <div class="card-body text-center p-4">
-              <div class="feature-icon mb-3">
-                <i class="fas fa-chart-line fa-3x text-info"></i>
+        <div class="col-lg-4 col-md-6 fade-in-up" data-delay="300">
+          <div class="feature-card h-100">
+            <div class="feature-card-body text-center p-4">
+              <div class="feature-icon mb-4">
+                <i class="fas fa-chart-line"></i>
               </div>
-              <h4 class="card-title">Progress Tracking</h4>
-              <p class="card-text text-muted">
+              <h4 class="feature-title mb-3">Progress Tracking</h4>
+              <p class="feature-description mb-4">
                 Monitor your learning journey with detailed analytics, progress reports,
                 and achievement badges.
               </p>
-              <ul class="list-unstyled text-start">
+              <ul class="feature-benefits list-unstyled text-start mb-4">
                 <li><i class="fas fa-check text-success me-2"></i>Detailed analytics</li>
                 <li><i class="fas fa-check text-success me-2"></i>Progress reports</li>
                 <li><i class="fas fa-check text-success me-2"></i>Achievement badges</li>
               </ul>
+              <a href="#" class="feature-link">Learn More <i class="fas fa-arrow-right ms-1"></i></a>
             </div>
           </div>
         </div>
@@ -264,27 +323,153 @@
     </div>
   </section>
 
-  <!-- CTA Section -->
-  <section class="py-5 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container text-center">
-      <h2 class="display-4 fw-bold mb-4">Ready to Transform Your Learning?</h2>
-      <p class="lead mb-4">
-        Join thousands of students who are already experiencing the future of education
-      </p>
-      <div class="d-flex justify-content-center gap-3 flex-wrap">
-        <%= link_to new_user_registration_path, class: "btn btn-warning btn-lg" do %>
-          <i class="fas fa-rocket me-2"></i>
-          Start Learning Free
-        <% end %>
-        <%= link_to new_user_session_path, class: "btn btn-outline-light btn-lg" do %>
-          <i class="fas fa-sign-in-alt me-2"></i>
-          Sign In
-        <% end %>
+  <!-- Social Proof Section -->
+  <section class="social-proof-section py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-5 fade-in-up">
+        <h2 class="section-headline mb-3">Trusted by Students Worldwide</h2>
+        <p class="section-subheadline">Join thousands of learners who have transformed their education</p>
       </div>
-      <p class="mt-3 text-light">
-        <i class="fas fa-shield-alt me-2"></i>
-        No credit card required • Free forever • Cancel anytime
-      </p>
+
+      <div class="row g-4 mb-5">
+        <div class="col-md-4 text-center fade-in-up" data-delay="100">
+          <div class="social-proof-stat">
+            <div class="stat-icon mb-3">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="stat-number">10,000+</h3>
+            <p class="stat-label">Active Students</p>
+          </div>
+        </div>
+        <div class="col-md-4 text-center fade-in-up" data-delay="200">
+          <div class="social-proof-stat">
+            <div class="stat-icon mb-3">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h3 class="stat-number">500+</h3>
+            <p class="stat-label">Learning Chapters</p>
+          </div>
+        </div>
+        <div class="col-md-4 text-center fade-in-up" data-delay="300">
+          <div class="social-proof-stat">
+            <div class="stat-icon mb-3">
+              <i class="fas fa-star"></i>
+            </div>
+            <h3 class="stat-number">95%</h3>
+            <p class="stat-label">Success Rate</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonials -->
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6 fade-in-up" data-delay="100">
+          <div class="testimonial-card">
+            <div class="testimonial-content p-4">
+              <div class="testimonial-rating mb-3">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+              </div>
+              <p class="testimonial-text mb-3">
+                "AI Tutor completely changed how I study. The personalized feedback and interactive exercises make learning so much more engaging!"
+              </p>
+              <div class="testimonial-author d-flex align-items-center">
+                <div class="author-avatar me-3">
+                  <i class="fas fa-user-circle fa-2x text-primary"></i>
+                </div>
+                <div>
+                  <h6 class="author-name mb-0">Sarah Chen</h6>
+                  <small class="author-title text-muted">Computer Science Student</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 fade-in-up" data-delay="200">
+          <div class="testimonial-card">
+            <div class="testimonial-content p-4">
+              <div class="testimonial-rating mb-3">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+              </div>
+              <p class="testimonial-text mb-3">
+                "The progress tracking and adaptive learning really help me stay motivated. I can see my improvement every day!"
+              </p>
+              <div class="testimonial-author d-flex align-items-center">
+                <div class="author-avatar me-3">
+                  <i class="fas fa-user-circle fa-2x text-primary"></i>
+                </div>
+                <div>
+                  <h6 class="author-name mb-0">Marcus Rodriguez</h6>
+                  <small class="author-title text-muted">Engineering Student</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 fade-in-up" data-delay="300">
+          <div class="testimonial-card">
+            <div class="testimonial-content p-4">
+              <div class="testimonial-rating mb-3">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+              </div>
+              <p class="testimonial-text mb-3">
+                "Finally, a learning platform that adapts to my pace! The AI explanations are so clear and helpful."
+              </p>
+              <div class="testimonial-author d-flex align-items-center">
+                <div class="author-avatar me-3">
+                  <i class="fas fa-user-circle fa-2x text-primary"></i>
+                </div>
+                <div>
+                  <h6 class="author-name mb-0">Emma Thompson</h6>
+                  <small class="author-title text-muted">Mathematics Student</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="final-cta-section py-5 text-white">
+    <div class="container text-center">
+      <div class="final-cta-content fade-in-up">
+        <h2 class="final-cta-headline mb-4">Your Learning Journey Starts Here</h2>
+        <p class="final-cta-subtitle mb-5">
+          Join thousands of students upgrading their skills with AI Tutor.
+          Start your free learning experience today.
+        </p>
+        <div class="final-cta-buttons d-flex justify-content-center gap-3 flex-wrap mb-4">
+          <%= link_to new_user_registration_path, class: "btn btn-warning btn-lg btn-primary-cta" do %>
+            <i class="fas fa-rocket me-2"></i>
+            Start Free Today
+          <% end %>
+          <%= link_to new_user_session_path, class: "btn btn-outline-light btn-lg btn-secondary-cta" do %>
+            <i class="fas fa-sign-in-alt me-2"></i>
+            Sign In
+          <% end %>
+        </div>
+        <div class="trust-indicators">
+          <p class="trust-text mb-0">
+            <i class="fas fa-shield-alt me-2"></i>
+            No credit card required • Free forever • Cancel anytime
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 <% end %>
@@ -314,7 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
           subjectSelect.appendChild(option);
         });
         subjectSelect.disabled = false;
-        
+
         // Reset chapter select
         chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
         chapterSelect.disabled = true;
@@ -353,6 +538,37 @@ document.addEventListener('DOMContentLoaded', function() {
       startLearningBtn.disabled = !this.value;
     });
   }
+
+  // Enhanced animations for landing page
+  if (!document.querySelector('.dashboard-hero')) {
+    // Landing page specific animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, observerOptions);
+
+    // Observe all animated elements
+    document.querySelectorAll('.fade-in-up, .feature-card, .testimonial-card, .social-proof-stat').forEach(el => {
+      observer.observe(el);
+    });
+
+    // Animate SVG elements
+    const svgElements = document.querySelectorAll('.ai-brain, .floating-elements, .connection-lines');
+    svgElements.forEach((el, index) => {
+      setTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'scale(1)';
+      }, index * 200);
+    });
+  }
 });
 
 function startLearning() {
@@ -364,61 +580,569 @@ function startLearning() {
 </script>
 
 <style>
-/* Landing Page Specific Styles */
+/* Modern Landing Page Styles */
 .hero-section {
-  min-height: 80vh;
+  background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #8B5CF6 100%);
+  min-height: 100vh;
   display: flex;
   align-items: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.hero-image-container {
+.hero-section .container {
+  position: relative;
+  z-index: 5;
+}
+
+.hero-section .row {
+  position: relative;
+  z-index: 5;
+}
+
+.hero-cta-group {
+  position: relative;
+  z-index: 10;
+}
+
+.hero-cta-group .btn {
+  position: relative;
+  z-index: 20;
+}
+
+.hero-bg-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+  width: 100px;
+  height: 100px;
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 150px;
+  height: 150px;
+  top: 20%;
+  right: 10%;
+  animation-delay: 2s;
+}
+
+.shape-3 {
+  width: 80px;
+  height: 80px;
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+.shape-4 {
+  width: 120px;
+  height: 120px;
+  bottom: 10%;
+  right: 20%;
+  animation-delay: 1s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+.hero-headline {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.text-gradient-warning {
+  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subheadline {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  opacity: 0.95;
+  margin-bottom: 2rem;
+}
+
+.hero-cta-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary-cta {
+  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  border: none;
+  color: #1F2937;
+  font-weight: 700;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+  position: relative;
+  z-index: 20;
+}
+
+.btn-primary-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.6);
+  color: #1F2937;
+}
+
+.btn-secondary-cta {
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  color: white;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary-cta:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.social-proof-stats {
+  margin-top: 3rem;
+}
+
+.stat-item {
+  padding: 1rem;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #FBBF24;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.hero-illustration {
+  position: relative;
+  z-index: 2;
+}
+
+.ai-learning-illustration {
   position: relative;
 }
 
-.hero-image-container::before {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background: linear-gradient(45deg, #667eea, #764ba2);
-  border-radius: 20px;
-  z-index: -1;
-  opacity: 0.3;
+.hero-svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.ai-brain {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.8s ease;
+}
+
+.floating-elements {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.8s ease;
+}
+
+.connection-lines {
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+.brain-glow {
+  filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.6));
+}
+
+.brain-shape {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+/* Features Section */
+.features-section {
+  background: white;
+}
+
+.section-headline {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 1rem;
+}
+
+.section-subheadline {
+  font-size: 1.125rem;
+  color: #6B7280;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .feature-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: white;
   border: none;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #2563EB, #3B82F6);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
 }
 
 .feature-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 25px rgba(0,0,0,0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.feature-card-body {
+  padding: 2rem;
 }
 
 .feature-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  border-radius: 50%;
+  background: linear-gradient(135deg, #F0F9FF, #E0F2FE);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.feature-icon i {
+  font-size: 2rem;
+  color: #2563EB;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  background: linear-gradient(135deg, #2563EB, #3B82F6);
+  transform: scale(1.1);
+}
+
+.feature-card:hover .feature-icon i {
+  color: white;
+}
+
+.feature-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 1rem;
+}
+
+.feature-description {
+  color: #6B7280;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.feature-benefits {
+  margin-bottom: 1.5rem;
+}
+
+.feature-benefits li {
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.feature-link {
+  color: #2563EB;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.feature-link:hover {
+  color: #1D4ED8;
+  transform: translateX(5px);
+}
+
+/* Social Proof Section */
+.social-proof-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+}
+
+.social-proof-stat {
+  padding: 2rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.social-proof-stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #2563EB, #3B82F6);
+  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
 }
 
+.stat-icon i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.stat-number {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #2563EB;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: #6B7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Testimonials */
+.testimonial-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.testimonial-content {
+  padding: 2rem;
+}
+
+.testimonial-rating {
+  color: #FBBF24;
+}
+
+.testimonial-text {
+  color: #374151;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.testimonial-author {
+  margin-top: 1.5rem;
+}
+
+.author-name {
+  font-weight: 600;
+  color: #1F2937;
+}
+
+.author-title {
+  font-size: 0.875rem;
+}
+
+/* Final CTA Section */
+.final-cta-section {
+  background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 50%, #8B5CF6 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.final-cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  opacity: 0.3;
+}
+
+.final-cta-content {
+  position: relative;
+  z-index: 2;
+}
+
+.final-cta-headline {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+}
+
+.final-cta-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.95;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.trust-indicators {
+  margin-top: 2rem;
+}
+
+.trust-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+}
+
+/* Animations */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.fade-in-up.animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in-up[data-delay="100"] { transition-delay: 0.1s; }
+.fade-in-up[data-delay="200"] { transition-delay: 0.2s; }
+.fade-in-up[data-delay="300"] { transition-delay: 0.3s; }
+
 /* Responsive Design */
 @media (max-width: 768px) {
-  .hero-section {
-    min-height: 60vh;
+  .hero-headline {
+    font-size: 2.5rem;
     text-align: center;
   }
 
-  .display-3 {
-    font-size: 2.5rem;
+  .hero-cta-group {
+    justify-content: center;
+  }
+
+  .btn-primary-cta,
+  .btn-secondary-cta {
+    width: 100%;
+    text-align: center;
+  }
+
+  .social-proof-stats .row {
+    text-align: center;
+  }
+
+  .final-cta-headline {
+    font-size: 2rem;
+  }
+
+  .section-headline {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section {
+    min-height: 80vh;
+    padding: 3rem 0;
+  }
+
+  .hero-headline {
+    font-size: 2rem;
+  }
+
+  .hero-subheadline {
+    font-size: 1.1rem;
+  }
+
+  .feature-card-body {
+    padding: 1.5rem;
+  }
+
+  .testimonial-content {
+    padding: 1.5rem;
+  }
+}
+
+/* Enhanced focus states for accessibility */
+.btn:focus,
+.feature-link:focus {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .hero-section {
+    background: #1E40AF;
+  }
+
+  .text-gradient-warning {
+    color: #F59E0B;
+    -webkit-text-fill-color: #F59E0B;
+  }
+
+  .feature-card {
+    border: 2px solid #E5E7EB;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-up,
+  .feature-card,
+  .testimonial-card,
+  .social-proof-stat {
+    transition: none;
+    animation: none;
+  }
+
+  .shape {
+    animation: none;
   }
 }
 </style>

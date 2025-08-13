@@ -2,12 +2,12 @@ require 'pdf-reader'
 
 class PdfChapterExtractorService
   def initialize(pdf_directory = nil)
-    @pdf_directory = pdf_directory || Rails.root.join('app', 'assets', 'pdfs')
+    @pdf_directory = pdf_directory || "pdfs"  # Changed from local path to S3 prefix
     @openai_service = OpenaiService.new
   end
 
   def extract_real_chapter_names
-    puts "📖 EXTRACTING REAL CHAPTER NAMES FROM PDF CONTENT"
+    puts "📖 EXTRACTING REAL CHAPTER NAMES FROM PDF CONTENT (S3)"
     puts "=" * 60
 
     processed_count = 0
@@ -15,14 +15,14 @@ class PdfChapterExtractorService
 
     Chapter.all.each do |chapter|
       begin
-        # Find PDF file for this chapter
-        pdf_file = find_pdf_for_chapter(chapter)
+        # Find PDF file for this chapter in S3
+        pdf_key = find_pdf_for_chapter_in_s3(chapter)
 
-        if pdf_file
+        if pdf_key
           puts "  📄 Processing: #{chapter.name} (#{chapter.subject.name} - #{chapter.subject.grade.name})"
 
-          # Read PDF content and extract real chapter name
-          real_chapter_name = extract_chapter_name_from_pdf(pdf_file)
+          # Read PDF content from S3 and extract real chapter name
+          real_chapter_name = extract_chapter_name_from_s3_pdf(pdf_key)
 
           if real_chapter_name.present? && real_chapter_name != chapter.name
             old_name = chapter.name
@@ -46,34 +46,60 @@ class PdfChapterExtractorService
     puts "  ❌ Errors: #{error_count} chapters"
   end
 
-  def find_pdf_for_chapter(chapter)
-    # Look for PDF files that match the chapter's subject and grade
+  def find_pdf_for_chapter_in_s3(chapter)
+    # Look for PDF files in S3 that match the chapter's subject and grade
     subject_folder = map_subject_to_folder(chapter.subject.name)
     grade_folder = "class_#{chapter.subject.grade.name.match(/Grade (\d+)/)[1]}"
 
-    pdf_pattern = File.join(@pdf_directory, grade_folder, subject_folder, '**/*.pdf')
+    s3_prefix = "#{@pdf_directory}/#{grade_folder}/#{subject_folder}/"
 
-    Dir.glob(pdf_pattern).find do |pdf_path|
+    # Use S3 service to find PDFs
+    pdfs = S3PdfService.list_pdfs_by_prefix(s3_prefix)
+
+    pdfs.find do |pdf_key|
       # Try to match by chapter number in filename
-      chapter_num = extract_chapter_number_from_filename(File.basename(pdf_path))
+      chapter_num = extract_chapter_number_from_filename(File.basename(pdf_key))
       chapter.name.include?(chapter_num.to_s) if chapter_num
     end
   end
 
-  def extract_chapter_name_from_pdf(pdf_path)
+  def extract_chapter_name_from_s3_pdf(pdf_key)
     begin
+      # Download PDF content from S3 temporarily
+      temp_file = download_pdf_from_s3(pdf_key)
+
       # Read PDF content
-      pdf = PDF::Reader.new(pdf_path)
+      pdf = PDF::Reader.new(temp_file.path)
       text_content = extract_text_from_pdf(pdf)
 
       # Use AI to extract real chapter name
-      real_chapter_name = extract_chapter_name_with_ai(text_content, File.basename(pdf_path))
+      real_chapter_name = extract_chapter_name_with_ai(text_content, File.basename(pdf_key))
+
+      # Clean up temp file
+      temp_file.close
+      temp_file.unlink
 
       real_chapter_name
     rescue => e
-      puts "    ❌ Error reading PDF: #{e.message}"
+      puts "    ❌ Error reading PDF from S3: #{e.message}"
       nil
     end
+  end
+
+  def download_pdf_from_s3(pdf_key)
+    require 'tempfile'
+
+    # Create temporary file
+    temp_file = Tempfile.new(['pdf', '.pdf'])
+
+    # Download from S3
+    S3_CLIENT.get_object(
+      bucket: S3_BUCKET,
+      key: pdf_key,
+      response_target: temp_file.path
+    )
+
+    temp_file
   end
 
   def extract_text_from_pdf(pdf)

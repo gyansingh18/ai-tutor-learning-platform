@@ -1,63 +1,113 @@
 class PdfTestService
-  def initialize
-    @pdf_directory = Rails.root.join('app', 'assets', 'pdfs')
+  def initialize(pdf_directory = nil)
+    @pdf_directory = pdf_directory || "pdfs"  # Changed from local path to S3 prefix
   end
 
   def test_pdf_reading
-    puts "🔍 Testing PDF Reading Capabilities..."
+    puts "🔍 Testing PDF Reading Capabilities (S3)"
     puts "📁 PDF Directory: #{@pdf_directory}"
 
-    # Test reading each PDF
-    Dir.glob(File.join(@pdf_directory, '**/*.pdf')).each do |pdf_path|
-      puts "\n" + "="*60
-      puts "📄 Testing: #{File.basename(pdf_path)}"
-      puts "📍 Path: #{pdf_path}"
+    # Test reading PDFs from S3
+    pdfs = S3PdfService.list_pdfs_by_prefix(@pdf_directory)
 
-      test_single_pdf(pdf_path)
+    if pdfs.any?
+      puts "📊 Found #{pdfs.count} PDFs in S3"
+
+      # Test first few PDFs
+      pdfs.first(3).each do |pdf_key|
+        puts "📄 Testing: #{File.basename(pdf_key)}"
+        puts "📍 S3 Key: #{pdf_key}"
+
+        test_single_pdf_from_s3(pdf_key)
+        puts "---"
+      end
+    else
+      puts "⚠️  No PDFs found in S3"
     end
   end
 
-  def test_single_pdf(pdf_path)
+  def test_single_pdf_from_s3(pdf_key)
     begin
+      # Download PDF from S3 temporarily
+      temp_file = download_pdf_from_s3(pdf_key)
+
       # Read PDF
-      pdf = PDF::Reader.new(pdf_path)
+      pdf = PDF::Reader.new(temp_file.path)
 
-      # Extract basic information
-      basic_info = extract_basic_info(pdf, pdf_path)
-      puts "📊 Basic Info:"
-      puts "   - Pages: #{basic_info[:page_count]}"
-      puts "   - File Size: #{basic_info[:file_size]}"
-      puts "   - PDF Version: #{basic_info[:version]}"
+      basic_info = extract_basic_info_from_s3(pdf, pdf_key)
+      puts "   ✅ PDF Version: #{basic_info[:version]}"
+      puts "   📄 Page Count: #{basic_info[:page_count]}"
+      puts "   📏 File Size: #{basic_info[:file_size]}"
 
-      # Extract text sample
       text_sample = extract_text_sample(pdf)
-      puts "📝 Text Sample (first 500 chars):"
-      puts "   #{text_sample[0..500]}..."
+      chapter_info = extract_chapter_info_from_s3(pdf_key, text_sample)
 
-      # Extract chapter information
-      chapter_info = extract_chapter_info(pdf_path, text_sample)
-      puts "📚 Chapter Info:"
-      puts "   - Chapter Name: #{chapter_info[:chapter_name]}"
-      puts "   - Subject: #{chapter_info[:subject]}"
-      puts "   - Grade: #{chapter_info[:grade]}"
-      puts "   - Description: #{chapter_info[:description]}"
+      puts "   📚 Chapter: #{chapter_info[:chapter_name]}"
+      puts "   🎯 Subject: #{chapter_info[:subject]}"
+      puts "   📖 Grade: #{chapter_info[:grade]}"
 
-      # Test AI extraction
-      ai_info = extract_with_ai(text_sample)
-      puts "🤖 AI Analysis:"
-      puts "   - AI Chapter Name: #{ai_info[:chapter_name]}"
-      puts "   - AI Description: #{ai_info[:description]}"
-      puts "   - AI Topics: #{ai_info[:topics]}"
-
-      # Test content analysis
-      content_analysis = analyze_content(text_sample)
-      puts "📈 Content Analysis:"
-      puts "   - Word Count: #{content_analysis[:word_count]}"
-      puts "   - Reading Level: #{content_analysis[:reading_level]}"
-      puts "   - Technical Terms: #{content_analysis[:technical_terms]}"
+      # Clean up temp file
+      temp_file.close
+      temp_file.unlink
 
     rescue => e
-      puts "❌ Error reading PDF: #{e.message}"
+      puts "   ❌ Error reading PDF from S3: #{e.message}"
+    end
+  end
+
+  def download_pdf_from_s3(pdf_key)
+    require 'tempfile'
+
+    # Create temporary file
+    temp_file = Tempfile.new(['pdf', '.pdf'])
+
+    # Download from S3
+    S3_CLIENT.get_object(
+      bucket: S3_BUCKET,
+      key: pdf_key,
+      response_target: temp_file.path
+    )
+
+    temp_file
+  end
+
+  def extract_basic_info_from_s3(pdf, pdf_key)
+    {
+      page_count: pdf.page_count,
+      file_size: "#{(get_s3_file_size(pdf_key) / 1024.0).round(2)} KB",
+      version: pdf.pdf_version,
+      info: pdf.info,
+      metadata: pdf.metadata
+    }
+  end
+
+  def get_s3_file_size(pdf_key)
+    resp = S3_CLIENT.head_object(bucket: S3_BUCKET, key: pdf_key)
+    resp.content_length
+  end
+
+  def extract_chapter_info_from_s3(pdf_key, text_sample)
+    # Extract info from S3 key path
+    path_parts = pdf_key.split('/')
+
+    if path_parts.length >= 3
+      grade = path_parts[1]&.gsub('class_', 'Grade ')
+      subject = path_parts[2]&.capitalize
+      filename = File.basename(pdf_key, '.pdf')
+
+      {
+        chapter_name: filename,
+        subject: subject,
+        grade: grade,
+        text_sample: text_sample[0..200]
+      }
+    else
+      {
+        chapter_name: File.basename(pdf_key, '.pdf'),
+        subject: 'Unknown',
+        grade: 'Unknown',
+        text_sample: text_sample[0..200]
+      }
     end
   end
 

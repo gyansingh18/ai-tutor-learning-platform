@@ -86,12 +86,7 @@ Rails.application.routes.draw do
     end
   end
 
-  # Test routes for AI Visual Explanations
-  get "test", to: "test#index", as: :test_index
-  get "test/explain", to: "test#explain", as: :test_explain
-  post "test/continue_explanation", to: "test#continue_explanation", as: :test_continue_explanation
-  get "test/batch", to: "test#batch_test", as: :test_batch
-  get "test/performance", to: "test#performance_test", as: :test_performance
+
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

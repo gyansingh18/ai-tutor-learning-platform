@@ -36,4 +36,10 @@
 
 # Ignore PDF files to prevent exposure of sensitive content
 app/assets/pdfs/
+public/pdfs/
 *.pdf
+!app/assets/pdfs/.keep
+
+# S3 credentials (keep local, use ENV in production)
+.env
+.env.local
