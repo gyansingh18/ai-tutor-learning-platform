@@ -22,7 +22,7 @@ client = OpenAI::Client.new(access_token: api_key)
 
 begin
   puts "🧪 Testing OpenAI API..."
-  
+
   # Test with a simple chat completion
   response = client.chat(
     parameters: {
@@ -33,7 +33,7 @@ begin
       max_tokens: 50
     }
   )
-  
+
   if response.dig("choices", 0, "message", "content")
     puts "✅ OpenAI API is working!"
     puts "Response: #{response.dig("choices", 0, "message", "content")}"
@@ -41,9 +41,9 @@ begin
     puts "❌ Unexpected response format"
     puts response.inspect
   end
-  
+
 rescue => e
   puts "❌ OpenAI API test failed:"
   puts "Error: #{e.message}"
   puts "Please check your API key and internet connection."
-end 
+end

@@ -1,19 +1,62 @@
 class GradesController < ApplicationController
-  # before_action :authenticate_user!, except: [:subjects]
   skip_before_action :authenticate_user!, only: [:index, :show]
 
   def index
-    @grades = Grade.ordered
+    # Get real grades from S3 bucket structure
+    @grades = get_real_grades_from_s3.map do |grade_number|
+      Grade.find_or_create_by(name: "Grade #{grade_number}")
+    end
   end
 
   def show
     @grade = Grade.find(params[:id])
-    @subjects = @grade.subjects.ordered
+    
+    # Get real subjects for this grade from S3
+    grade_number = @grade.name.match(/Grade (\d+)/)[1].to_i
+    @subjects = get_real_subjects_from_s3(grade_number).map do |subject_name|
+      Subject.find_or_create_by(name: subject_name, grade: @grade)
+    end
   end
 
-  def subjects
-    @grade = Grade.find(params[:grade_id])
-    @subjects = @grade.subjects.ordered
-    render json: @subjects.map { |subject| { id: subject.id, name: subject.name } }
+  private
+
+  # Get real grades from S3 bucket structure
+  def get_real_grades_from_s3
+    begin
+      # List all objects in bucket to find grade folders
+      resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, delimiter: '/')
+      grades = []
+      
+      resp.common_prefixes.each do |prefix|
+        if prefix.prefix.match(/grade_(\d+)\//)
+          grades << $1.to_i
+        end
+      end
+      
+      grades.sort
+    rescue => e
+      Rails.logger.error "Error getting grades from S3: #{e.message}"
+      []
+    end
+  end
+
+  # Get real subjects for a grade from S3
+  def get_real_subjects_from_s3(grade_number)
+    begin
+      prefix = "grade_#{grade_number}/"
+      resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, prefix: prefix, delimiter: '/')
+      subjects = []
+      
+      resp.common_prefixes.each do |prefix_obj|
+        if prefix_obj.prefix.match(/grade_\d+\/([^\/]+)\//)
+          subjects << $1.humanize
+        end
+      end
+      
+      subjects.sort
+    rescue => e
+      Rails.logger.error "Error getting subjects from S3: #{e.message}"
+      []
+    end
   end
 end
