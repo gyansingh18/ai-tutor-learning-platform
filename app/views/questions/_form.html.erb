@@ -62,11 +62,8 @@
               }.unshift(["Select a grade", ""])),
               {},
               { class: "form-select #{'is-invalid' if question.errors[:grade_id].any?}",
-                required: true,
-                data: {
-                  "dependent-selects-target": "grade",
-                  "action": "change->dependent-selects#gradeChanged"
-                } } %>
+                id: "ask-grade-select",
+                required: true } %>
           <% if question.errors[:grade_id].any? %>
             <div class="invalid-feedback">
               <%= question.errors[:grade_id].join(", ") %>
@@ -81,12 +78,9 @@
           <%= form.select :subject_id, options_for_select([["Select a subject", ""]]),
               {},
               { class: "form-select #{'is-invalid' if question.errors[:subject_id].any?}",
+                id: "ask-subject-select",
                 required: true,
-                disabled: true,
-                data: {
-                  "dependent-selects-target": "subject",
-                  "action": "change->dependent-selects#subjectChanged"
-                } } %>
+                disabled: true } %>
           <% if question.errors[:subject_id].any? %>
             <div class="invalid-feedback">
               <%= question.errors[:subject_id].join(", ") %>
@@ -103,11 +97,9 @@
         <%= form.select :chapter_id, options_for_select([["Select a chapter", ""]]),
             {},
             { class: "form-select #{'is-invalid' if question.errors[:chapter_id].any?}",
+              id: "ask-chapter-select",
               required: true,
-              disabled: true,
-              data: {
-                "dependent-selects-target": "chapter"
-              } } %>
+              disabled: true } %>
         <% if question.errors[:chapter_id].any? %>
           <div class="invalid-feedback">
             <%= question.errors[:chapter_id].join(", ") %>
@@ -141,3 +133,61 @@
     <% end %>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Embedded data from server
+  const subjectsByGrade = <%= raw @subjects_by_grade.to_json %>;
+  const chaptersBySubject = <%= raw @chapters_by_subject.to_json %>;
+  
+  // Get form elements
+  const gradeSelect = document.getElementById('ask-grade-select');
+  const subjectSelect = document.getElementById('ask-subject-select');
+  const chapterSelect = document.getElementById('ask-chapter-select');
+
+  if (!gradeSelect || !subjectSelect || !chapterSelect) {
+    console.log('Ask Question form elements not found');
+    return;
+  }
+
+  // Grade change handler
+  gradeSelect.addEventListener('change', function() {
+    const selectedGradeId = this.value;
+    
+    // Clear and disable subject and chapter selects
+    subjectSelect.innerHTML = '<option value="">Select a subject</option>';
+    subjectSelect.disabled = !selectedGradeId;
+    chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
+    chapterSelect.disabled = true;
+    
+    if (selectedGradeId && subjectsByGrade[selectedGradeId]) {
+      // Populate subjects for selected grade
+      subjectsByGrade[selectedGradeId].forEach(function(subject) {
+        const option = document.createElement('option');
+        option.value = subject.id;
+        option.textContent = subject.name;
+        subjectSelect.appendChild(option);
+      });
+    }
+  });
+
+  // Subject change handler
+  subjectSelect.addEventListener('change', function() {
+    const selectedSubjectId = this.value;
+    
+    // Clear and disable chapter select
+    chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
+    chapterSelect.disabled = !selectedSubjectId;
+    
+    if (selectedSubjectId && chaptersBySubject[selectedSubjectId]) {
+      // Populate chapters for selected subject
+      chaptersBySubject[selectedSubjectId].forEach(function(chapter) {
+        const option = document.createElement('option');
+        option.value = chapter.id;
+        option.textContent = chapter.name;
+        chapterSelect.appendChild(option);
+      });
+    }
+  });
+});
+</script>
