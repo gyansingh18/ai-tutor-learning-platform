@@ -37,7 +37,13 @@ class QuestionsController < ApplicationController
     
     real_grades.each do |grade_number|
       grade = Grade.find_or_create_by(name: "Grade #{grade_number}")
-      puts "DEBUG: Processing grade: #{grade.name}"
+      puts "DEBUG: Processing grade: #{grade.name} (ID: #{grade.id})"
+      
+      # Ensure the grade is saved and has an ID
+      if grade.id.nil?
+        grade.save!
+        puts "DEBUG: Saved grade with ID: #{grade.id}"
+      end
       
       # Get real subjects for this grade from S3
       real_subjects = get_real_subjects_from_s3(grade_number)
@@ -45,7 +51,7 @@ class QuestionsController < ApplicationController
       
       @subjects_by_grade[grade.id] = real_subjects.map { |subject_name| 
         subject = Subject.find_or_create_by(name: subject_name, grade: grade)
-        puts "DEBUG: Created/found subject: #{subject.name} for grade #{grade.name}"
+        puts "DEBUG: Created/found subject: #{subject.name} (ID: #{subject.id}) for grade #{grade.name}"
         { id: subject.id, name: subject.name } 
       }
       
@@ -58,7 +64,7 @@ class QuestionsController < ApplicationController
         puts "DEBUG: Found chapters for #{subject.name}: #{real_chapters.inspect}"
         @chapters_by_subject[subject.id] = real_chapters.map { |chapter_name|
           chapter = Chapter.find_or_create_by(name: chapter_name, subject: subject)
-          puts "DEBUG: Created/found chapter: #{chapter.name} for subject #{subject.name}"
+          puts "DEBUG: Created/found chapter: #{chapter.name} (ID: #{chapter.id}) for subject #{subject.name}"
           { id: chapter.id, name: chapter.name }
         }
       end
