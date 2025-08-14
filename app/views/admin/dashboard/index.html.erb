@@ -107,7 +107,7 @@
                     <h6 class="mb-1"><%= question.display_content.truncate(50) %></h6>
                     <small><%= time_ago_in_words(question.created_at) %> ago</small>
                   </div>
-                  <p class="mb-1">by <%= question.user.display_name %></p>
+                  <p class="mb-1">by <%= question.user&.display_name || 'Unknown' %></p>
                   <small class="text-muted">Chapter: <%= question.chapter&.display_name %></small>
                 </div>
               <% end %>
@@ -133,7 +133,7 @@
                     <h6 class="mb-1"><%= pdf.title %></h6>
                     <small><%= time_ago_in_words(pdf.created_at) %> ago</small>
                   </div>
-                  <p class="mb-1">by <%= pdf.user.display_name %></p>
+                  <p class="mb-1">by <%= pdf.user&.display_name || 'System' %></p>
                   <small class="text-muted">Chapter: <%= pdf.chapter&.display_name %></small>
                 </div>
               <% end %>
