@@ -15,6 +15,45 @@
         </div>
         <%= link_to "Add New Chapter", new_admin_chapter_path, class: "btn btn-primary" %>
       </div>
+
+      <!-- AI Processing Summary -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+              <h5 class="card-title">Total Chapters</h5>
+              <h3><%= @chapters.count %></h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-success text-white">
+            <div class="card-body text-center">
+              <h5 class="card-title">AI Ready</h5>
+              <h3><%= @chapters.joins(:vector_chunks).distinct.count %></h3>
+              <small>Chapters with vector chunks</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+              <h5 class="card-title">AI Pending</h5>
+              <h3><%= @chapters.left_joins(:vector_chunks).where(vector_chunks: { id: nil }).count %></h3>
+              <small>Chapters needing processing</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card bg-info text-white">
+            <div class="card-body text-center">
+              <h5 class="card-title">Total Chunks</h5>
+              <h3><%= VectorChunk.count %></h3>
+              <small>Across all chapters</small>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -36,6 +75,7 @@
                     <th>Description</th>
                     <th>Questions</th>
                     <th>PDFs</th>
+                    <th>AI Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -51,6 +91,17 @@
                       </td>
                       <td>
                         <span class="badge bg-success"><%= chapter.pdf_materials.count %></span>
+                      </td>
+                      <td>
+                        <% if chapter.vector_chunks.any? %>
+                          <span class="badge bg-success" title="<%= chapter.vector_chunks.count %> AI chunks available">
+                            <i class="fas fa-brain"></i> Ready
+                          </span>
+                        <% else %>
+                          <span class="badge bg-warning" title="No AI chunks - processing needed">
+                            <i class="fas fa-clock"></i> Pending
+                          </span>
+                        <% end %>
                       </td>
                       <td>
                         <div class="btn-group" role="group">
