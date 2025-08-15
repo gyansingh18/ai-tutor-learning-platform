@@ -5,7 +5,7 @@ class S3CompletionService
     # Find chapters without vector chunks
     chapters_without_chunks = Chapter.left_joins(:vector_chunks)
                                    .where(vector_chunks: { id: nil })
-                                   .includes(:grade, :subject)
+                                   .includes(:subject)
     
     puts "Found #{chapters_without_chunks.count} chapters without vector chunks"
     
@@ -15,7 +15,7 @@ class S3CompletionService
     end
     
     # Group by grade for better organization
-    chapters_by_grade = chapters_without_chunks.group_by(&:grade)
+    chapters_by_grade = chapters_without_chunks.group_by { |chapter| chapter.subject.grade }
     
     total_created = 0
     
