@@ -563,7 +563,7 @@
     </style>
   </head>
 
-  <body>
+  <body data-user-signed-in="<%= user_signed_in? %>" data-controller="signout">
     <!-- Enhanced Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container">
@@ -634,7 +634,11 @@
               </li>
               <li class="nav-item">
                 <%= link_to destroy_user_session_path,
-                    data: { turbo_method: :delete },
+                    data: { 
+                      turbo: false,
+                      action: "click->signout#signOut"
+                    },
+                    method: :delete,
                     class: "btn btn-outline-light btn-sm" do %>
                   <i class="fas fa-sign-out-alt me-1"></i> Logout
                 <% end %>

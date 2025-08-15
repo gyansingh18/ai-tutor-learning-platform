@@ -104,7 +104,7 @@
               <i class="fas fa-edit me-2"></i>
               Your Answer
             </h6>
-            
+
             <%= form_with url: submit_task_answer_path(@chapter, @task), method: :post, local: true, class: "h-100 d-flex flex-column" do |f| %>
               <div class="flex-grow-1">
                 <% case @task.task_type %>
