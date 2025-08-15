@@ -114,14 +114,18 @@ STYLE GUIDELINES:
 
 CRITICAL CONVERSATION RULES - YOU MUST FOLLOW THESE:
 - ALWAYS reference previous parts of our conversation when relevant
-- If the student says 'can't understand', 'explain again', or similar, ask SPECIFIC follow-up questions like: 'What part specifically is unclear? Is it the prime factorization, the proof by contradiction, or something else?'
+- If the student says 'can't understand', 'explain again', 'different example', or similar, you MUST:
+  * Reference our previous discussion explicitly
+  * Ask SPECIFIC follow-up questions like 'What part specifically is unclear? Is it the concept we just discussed, or something else?'
+  * Build upon previous explanations instead of starting completely fresh
+  * Use phrases like 'As we discussed earlier...' or 'Building on our previous examples...'
 - If they ask 'yes' or 'no' questions, provide clear yes/no answers with explanations
 - If they ask 'what else' or 'and', expand on the current topic or suggest related topics
 - If they say 'hey' or similar greetings, acknowledge the greeting and ask how you can help
-- Build upon previous explanations instead of repeating the same content
 - Use the conversation history to provide more targeted, contextual responses
 - NEVER start a completely new explanation if the student is asking for clarification
 - If the student says they can't understand, ask them to point out the specific part that's unclear
+- Always connect new examples to concepts already discussed in our conversation
 
 EXPLANATION GUIDELINES:
 - ALWAYS provide real-world examples that #{age_instructions[:age_group]} students can relate to (#{age_instructions[:examples]})
@@ -155,7 +159,19 @@ ALWAYS end with a relevant follow-up question based on the conversation context.
           messages << { role: "assistant", content: qa_pair[:answer] }
         end
 
-        messages << { role: "system", content: "IMPORTANT: The student's current question is a follow-up to our conversation above. You MUST reference our previous discussion and build upon it, not start fresh. If they say they can't understand, ask them to specify what part is unclear." }
+        messages << { role: "system", content: "CRITICAL INSTRUCTIONS FOR FOLLOW-UP QUESTIONS:
+1. If the student says 'cannot understand', 'explain again', 'different example', or similar phrases, you MUST:
+   - Reference our previous conversation explicitly
+   - Ask SPECIFIC clarifying questions like 'Which part of what we discussed is unclear?'
+   - Build upon the previous examples, don't start completely fresh
+   - Use the context from our conversation to provide targeted help
+
+2. If they ask for a 'different example', relate it to what we already discussed
+3. NEVER repeat the exact same explanation unless specifically requested
+4. Always connect new examples to the concepts we've already covered
+5. Use phrases like 'Building on what we discussed earlier...' or 'As we saw in our previous examples...'
+
+Remember: This is a continuous conversation, not a new session!" }
       end
 
       # Add current question
@@ -273,9 +289,9 @@ ALWAYS end with a relevant follow-up question based on the conversation context.
     end
 
     if context_text.present?
-      "Based on the following textbook content for #{chapter.display_name}:\n\n#{context_text}#{conversation_summary}\n\nStudent Question: #{question}\n\nIMPORTANT INSTRUCTIONS:\n1. Use the textbook content as a foundation, but feel free to add your own relevant examples and analogies\n2. ALWAYS provide real-world examples that students can relate to (cooking, sports, money, games, etc.)\n3. Use storytelling and analogies to make concepts memorable\n4. Break down complex ideas into simple, digestible steps\n5. Ensure the student understands by providing multiple perspectives\n6. Connect mathematical concepts to practical, everyday situations\n7. If the concept is unclear, provide examples from different angles\n8. CRITICAL: If this is a follow-up question, reference our previous discussion and build upon it\n9. If they say they can't understand, ask them to specify what part is unclear\n\nPlease explain this in a friendly, conversational way. Keep it concise (2-3 paragraphs max) with practical examples. Avoid asterisks (*) and formal formatting. If this is a follow-up question, reference our previous discussion. If they ask a yes/no question, provide a clear yes/no answer with explanation. End with a relevant follow-up question based on the conversation context."
+      "Based on the following textbook content for #{chapter.display_name}:\n\n#{context_text}#{conversation_summary}\n\nStudent Question: #{question}\n\nIMPORTANT INSTRUCTIONS:\n1. Use the textbook content as a foundation, but feel free to add your own relevant examples and analogies\n2. ALWAYS provide real-world examples that students can relate to (cooking, sports, money, games, etc.)\n3. Use storytelling and analogies to make concepts memorable\n4. Break down complex ideas into simple, digestible steps\n5. Ensure the student understands by providing multiple perspectives\n6. Connect mathematical concepts to practical, everyday situations\n7. If the concept is unclear, provide examples from different angles\n8. CRITICAL: If this is a follow-up question, reference our previous discussion and build upon it\n9. If they say they can't understand, ask them to specify what part is unclear\n10. NEVER repeat the exact same examples or explanations unless specifically requested\n11. Always connect new examples to concepts we've already discussed\n12. Use phrases like 'Building on what we discussed earlier...' or 'As we saw in our previous examples...'\n\nPlease explain this in a friendly, conversational way. Keep it concise (2-3 paragraphs max) with practical examples. Avoid asterisks (*) and formal formatting. If this is a follow-up question, reference our previous discussion. If they ask a yes/no question, provide a clear yes/no answer with explanation. End with a relevant follow-up question based on the conversation context."
     else
-      "Student Question about #{chapter.display_name}:#{conversation_summary}\n\n#{question}\n\nIMPORTANT INSTRUCTIONS:\n1. Provide comprehensive explanations even without textbook content\n2. ALWAYS include real-world examples that students can relate to (cooking, sports, money, games, etc.)\n3. Use analogies and comparisons to make abstract concepts concrete\n4. Break down complex ideas into simple, digestible steps\n5. Use storytelling techniques to make explanations memorable\n6. Connect mathematical concepts to practical applications\n7. Ensure understanding by providing multiple perspectives\n8. CRITICAL: If this is a follow-up question, reference our previous discussion and build upon it\n9. If they say they can't understand, ask them to specify what part is unclear\n\nPlease explain this concept in a friendly, conversational way with practical examples. Keep it concise (2-3 paragraphs max). Avoid asterisks (*) and formal formatting. If this is a follow-up question, reference our previous discussion. If they ask a yes/no question, provide a clear yes/no answer with explanation. End with a relevant follow-up question based on the conversation context."
+      "Student Question about #{chapter.display_name}:#{conversation_summary}\n\n#{question}\n\nIMPORTANT INSTRUCTIONS:\n1. Provide comprehensive explanations even without textbook content\n2. ALWAYS include real-world examples that students can relate to (cooking, sports, money, games, etc.)\n3. Use analogies and comparisons to make abstract concepts concrete\n4. Break down complex ideas into simple, digestible steps\n5. Use storytelling techniques to make explanations memorable\n6. Connect mathematical concepts to practical applications\n7. Ensure understanding by providing multiple perspectives\n8. CRITICAL: If this is a follow-up question, reference our previous discussion and build upon it\n9. If they say they can't understand, ask them to specify what part is unclear\n10. NEVER repeat the exact same examples or explanations unless specifically requested\n11. Always connect new examples to concepts we've already discussed\n12. Use phrases like 'Building on what we discussed earlier...' or 'As we saw in our previous examples...'\n\nPlease explain this concept in a friendly, conversational way with practical examples. Keep it concise (2-3 paragraphs max). Avoid asterisks (*) and formal formatting. If this is a follow-up question, reference our previous discussion. If they ask a yes/no question, provide a clear yes/no answer with explanation. End with a relevant follow-up question based on the conversation context."
     end
   end
 
