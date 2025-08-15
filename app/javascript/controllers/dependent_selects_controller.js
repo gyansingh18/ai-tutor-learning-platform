@@ -8,12 +8,21 @@ export default class extends Controller {
   }
 
   connect() {
+    console.log("Dependent Selects Controller connected")
     this.clearSubjects()
     this.clearChapters()
+    
+    // Ensure proper initial state
+    if (this.hasGradeTarget && this.hasSubjectTarget && this.hasChapterTarget) {
+      this.gradeTarget.disabled = false
+      this.subjectTarget.disabled = true
+      this.chapterTarget.disabled = true
+    }
   }
 
   gradeChanged() {
     const gradeId = this.gradeTarget.value
+    console.log("Grade changed to:", gradeId)
 
     this.clearSubjects()
     this.clearChapters()
@@ -25,6 +34,7 @@ export default class extends Controller {
 
   subjectChanged() {
     const subjectId = this.subjectTarget.value
+    console.log("Subject changed to:", subjectId)
 
     this.clearChapters()
 
