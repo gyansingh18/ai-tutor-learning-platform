@@ -4,7 +4,8 @@ class Api::SubjectsController < ApplicationController
 
   def chapters
     @subject = Subject.find(params[:id])
-    @chapters = @subject.chapters.ordered
+    # Only return chapters that have vector chunks available
+    @chapters = @subject.chapters.with_vector_chunks.ordered
     render json: @chapters.map { |chapter| { id: chapter.id, name: chapter.name } }
   end
 end

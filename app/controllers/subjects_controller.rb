@@ -8,9 +8,12 @@ class SubjectsController < ApplicationController
 
     # Get real chapters for this subject from S3
     grade_number = @subject.grade.name.match(/Grade (\d+)/)[1].to_i
-    @chapters = get_real_chapters_from_s3(grade_number, @subject.name).map do |chapter_name|
+    all_chapters = get_real_chapters_from_s3(grade_number, @subject.name).map do |chapter_name|
       Chapter.find_or_create_by(name: chapter_name, subject: @subject)
     end
+    
+    # Only show chapters that have vector chunks available
+    @chapters = all_chapters.select { |chapter| chapter.vector_chunks.any? }
   end
 
   private

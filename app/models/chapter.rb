@@ -13,6 +13,7 @@ class Chapter < ApplicationRecord
 
   # Scopes
   scope :ordered, -> { order(:name) }
+  scope :with_vector_chunks, -> { joins(:vector_chunks).distinct }
 
   # Methods
   def display_name
@@ -41,5 +42,9 @@ class Chapter < ApplicationRecord
 
   def total_tasks
     tasks.count
+  end
+
+  def ready_for_learning?
+    vector_chunks.any?
   end
 end

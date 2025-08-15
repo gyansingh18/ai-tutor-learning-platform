@@ -2,7 +2,8 @@ class ChaptersController < ApplicationController
   skip_before_action :authenticate_user!, only: [:index, :show]
 
   def index
-    @chapters = Chapter.includes(:subject => :grade).ordered
+    # Only show chapters that have vector chunks available
+    @chapters = Chapter.with_vector_chunks.includes(:subject => :grade).ordered
   end
 
   def show

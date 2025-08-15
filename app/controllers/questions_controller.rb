@@ -24,7 +24,8 @@ class QuestionsController < ApplicationController
 
     # Only show user-specific data if authenticated
     if user_signed_in?
-      @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
+      # Only show chapters that have vector chunks available
+      @chapters = Chapter.with_vector_chunks.ordered.includes(:subject => :grade) if params[:grade_id].blank?
     end
 
     # Use cached S3 data instead of scanning on every request
@@ -60,7 +61,8 @@ class QuestionsController < ApplicationController
         format.html { redirect_to @question, notice: 'Question asked successfully!' }
       end
     else
-      @chapters = Chapter.ordered.includes(:subject => :grade) if params[:grade_id].blank?
+      # Only show chapters that have vector chunks available
+      @chapters = Chapter.with_vector_chunks.ordered.includes(:subject => :grade) if params[:grade_id].blank?
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.update(

@@ -168,12 +168,14 @@ class HomeController < ApplicationController
   end
 
   def get_cached_chapters_by_subject
-    Rails.cache.fetch("chapters_by_subject", expires_in: 30.minutes) do
+    Rails.cache.fetch("chapters_by_subject_with_vector_chunks", expires_in: 30.minutes) do
       chapters_by_subject = {}
 
       # Get existing records from database instead of scanning S3
+      # Only include chapters that have vector chunks available
       Subject.includes(:chapters).each do |subject|
-        chapters_by_subject[subject.id.to_s] = subject.chapters.map do |chapter|
+        chapters_with_chunks = subject.chapters.with_vector_chunks
+        chapters_by_subject[subject.id.to_s] = chapters_with_chunks.map do |chapter|
           { id: chapter.id, name: chapter.name }
         end
       end
