@@ -63,7 +63,7 @@
           <p><strong>Current Subject:</strong> <%= @chapter.subject.display_name %></p>
           <p><strong>Questions:</strong> <%= @chapter.questions.count %></p>
           <p><strong>PDF Materials:</strong> <%= @chapter.pdf_materials.count %></p>
-          <p><strong>AI Vector Chunks:</strong> 
+          <p><strong>AI Vector Chunks:</strong>
             <% if @chapter.vector_chunks.any? %>
               <span class="text-success"><%= @chapter.vector_chunks.count %> ✓</span>
             <% else %>
@@ -136,7 +136,7 @@
               </div>
             </div>
             <p class="text-muted small mb-0">
-              <i class="fas fa-info-circle"></i> 
+              <i class="fas fa-info-circle"></i>
               This chapter has been processed for AI tutoring. Students can now ask questions and get answers based on the textbook content.
             </p>
           <% else %>
@@ -150,7 +150,7 @@
               </div>
             </div>
             <p class="text-muted small mb-0">
-              <i class="fas fa-exclamation-triangle"></i> 
+              <i class="fas fa-exclamation-triangle"></i>
               This chapter hasn't been processed for AI tutoring yet. Students won't get context-aware answers.
             </p>
           <% end %>
@@ -207,7 +207,7 @@
             <i class="fas fa-info-circle"></i>
             <strong>AI Processing Summary:</strong> This chapter has been processed into <%= @chapter.vector_chunks.count %> vector chunks for AI tutoring.
           </div>
-          
+
           <div class="row mb-3">
             <div class="col-md-6">
               <div class="card bg-light">
@@ -238,9 +238,9 @@
                       <%= chunk.content_preview.truncate(200) %>
                     </p>
                     <small class="text-muted">
-                      <i class="fas fa-file-pdf"></i> 
+                      <i class="fas fa-file-pdf"></i>
                       <%= chunk.pdf_material&.title || 'Unknown PDF' %> •
-                      <i class="fas fa-calendar"></i> 
+                      <i class="fas fa-calendar"></i>
                       <%= chunk.created_at.strftime("%b %d, %Y") %>
                     </small>
                   </div>
@@ -249,11 +249,11 @@
               </div>
             <% end %>
           </div>
-          
+
           <% if @chapter.vector_chunks.count > 5 %>
             <div class="text-center mt-3">
               <small class="text-muted">
-                Showing 5 of <%= @chapter.vector_chunks.count %> chunks. 
+                Showing 5 of <%= @chapter.vector_chunks.count %> chunks.
                 <i class="fas fa-info-circle"></i> All chunks are available for AI question answering.
               </small>
             </div>
@@ -263,7 +263,7 @@
             <i class="fas fa-exclamation-triangle"></i>
             <strong>No Vector Chunks Found:</strong> This chapter hasn't been processed for AI tutoring yet.
           </div>
-          
+
           <div class="text-center py-4">
             <i class="fas fa-brain fa-3x text-muted mb-3"></i>
             <h5 class="text-muted">AI Processing Required</h5>

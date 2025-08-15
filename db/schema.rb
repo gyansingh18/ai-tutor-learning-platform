@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_04_222105) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_14_212320) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -47,6 +47,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_04_222105) do
     t.bigint "question_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "citations"
+    t.float "confidence"
+    t.string "ai_model"
+    t.integer "prompt_tokens"
+    t.integer "completion_tokens"
+    t.integer "total_tokens"
+    t.boolean "moderation_flag", default: false, null: false
+    t.boolean "helpful"
+    t.string "report_reason"
     t.index ["question_id"], name: "index_answers_on_question_id"
   end
 
@@ -66,10 +75,34 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_04_222105) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "learning_progresses", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "chapter_id", null: false
+    t.datetime "last_study_time"
+    t.float "completion_percentage"
+    t.integer "time_spent"
+    t.integer "confidence_level"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chapter_id"], name: "index_learning_progresses_on_chapter_id"
+    t.index ["user_id"], name: "index_learning_progresses_on_user_id"
+  end
+
+  create_table "notes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "answer_id", null: false
+    t.text "snippet", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["answer_id"], name: "index_notes_on_answer_id"
+    t.index ["user_id", "created_at"], name: "index_notes_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_notes_on_user_id"
+  end
+
   create_table "pdf_materials", force: :cascade do |t|
     t.string "title"
     t.bigint "chapter_id", null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "file_path"
@@ -118,6 +151,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_04_222105) do
     t.index ["chapter_id"], name: "index_tasks_on_chapter_id"
   end
 
+  create_table "token_usages", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "model"
+    t.integer "prompt_tokens", default: 0, null: false
+    t.integer "completion_tokens", default: 0, null: false
+    t.integer "total_tokens", default: 0, null: false
+    t.string "context", comment: "chat, question, etc."
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "created_at"], name: "index_token_usages_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_token_usages_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -138,6 +184,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_04_222105) do
     t.bigint "pdf_material_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "chunk_index"
     t.index ["chapter_id"], name: "index_vector_chunks_on_chapter_id"
     t.index ["pdf_material_id"], name: "index_vector_chunks_on_pdf_material_id"
   end
@@ -146,6 +193,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_04_222105) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "answers", "questions"
   add_foreign_key "chapters", "subjects"
+  add_foreign_key "learning_progresses", "chapters"
+  add_foreign_key "learning_progresses", "users"
+  add_foreign_key "notes", "answers"
+  add_foreign_key "notes", "users"
   add_foreign_key "pdf_materials", "chapters"
   add_foreign_key "pdf_materials", "users"
   add_foreign_key "questions", "chapters"
@@ -154,6 +205,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_04_222105) do
   add_foreign_key "student_answers", "users"
   add_foreign_key "subjects", "grades"
   add_foreign_key "tasks", "chapters"
+  add_foreign_key "token_usages", "users"
   add_foreign_key "vector_chunks", "chapters"
   add_foreign_key "vector_chunks", "pdf_materials"
 end

@@ -18,51 +18,51 @@ orphaned_chunks = VectorChunk.left_joins(:chapter).where(chapters: { id: nil })
 
 if orphaned_chunks.any?
   puts "Found #{orphaned_chunks.count} orphaned vector chunks"
-  
+
   # Group chunks by PDF material to understand what chapters we need
   chunks_by_pdf = orphaned_chunks.joins(:pdf_material).group(:pdf_material_id)
-  
+
   puts "\n📚 PDF Materials with Orphaned Chunks:"
   chunks_by_pdf.each do |pdf_id, count|
     pdf = PdfMaterial.find(pdf_id)
     puts "  - #{pdf.title}: #{count} chunks (Chapter: #{pdf.chapter&.name || 'MISSING!'})"
   end
-  
+
   # Step 2: Restore missing chapters based on PDF materials
   puts "\n🔧 Step 2: Restoring Missing Chapters..."
-  
+
   chunks_by_pdf.each do |pdf_id, count|
     pdf = PdfMaterial.find(pdf_id)
-    
+
     if pdf.chapter.nil?
       # Create missing chapter based on PDF material
       chapter_name = pdf.title.gsub(/\.pdf$/, '').gsub(/_/, ' ').titleize
-      
+
       # Find or create subject based on PDF path or naming
       subject_name = extract_subject_from_pdf(pdf)
       grade_name = extract_grade_from_pdf(pdf)
-      
+
       # Find or create grade
       grade = Grade.find_or_create_by(name: grade_name)
-      
+
       # Find or create subject
       subject = Subject.find_or_create_by(name: subject_name, grade: grade)
-      
+
       # Create chapter
       chapter = Chapter.create!(
         name: chapter_name,
         description: "#{chapter_name} chapter from #{subject_name}",
         subject: subject
       )
-      
+
       puts "  ✅ Created chapter: #{chapter.name} (Subject: #{subject.name}, Grade: #{grade.name})"
-      
+
       # Reconnect PDF material to new chapter
       pdf.update!(chapter: chapter)
-      
+
       # Reconnect vector chunks to new chapter
       orphaned_chunks.where(pdf_material_id: pdf_id).update_all(chapter_id: chapter.id)
-      
+
       puts "    → Reconnected #{count} vector chunks"
     end
   end
@@ -96,7 +96,7 @@ private
 def extract_subject_from_pdf(pdf)
   # Extract subject from PDF title or path
   title = pdf.title.downcase
-  
+
   if title.include?('math') || title.include?('mathematics')
     'Mathematics'
   elsif title.include?('english') || title.include?('eng')
@@ -127,7 +127,7 @@ end
 def extract_grade_from_pdf(pdf)
   # Extract grade from PDF title or path
   title = pdf.title.downcase
-  
+
   if title.include?('6') || title.include?('sixth')
     'Grade 6'
   elsif title.include?('7') || title.include?('seventh')
@@ -174,17 +174,17 @@ end
 
 def create_missing_chapters_from_structure
   puts "\n🔧 Creating missing chapters based on structure..."
-  
+
   Grade.all.each do |grade|
     grade.subjects.each do |subject|
       current_chapters = subject.chapters.count
       expected_chapters = estimate_chapters_for_subject(subject)
-      
+
       if current_chapters < expected_chapters
         missing_count = expected_chapters - current_chapters
-        
+
         puts "  Creating #{missing_count} chapters for #{subject.name} (#{grade.name})"
-        
+
         (1..missing_count).each do |i|
           chapter_name = "#{subject.name}_chapter_#{i}"
           Chapter.create!(
@@ -215,4 +215,4 @@ def estimate_chapters_for_subject(subject)
   else
     10
   end
-end 
+end

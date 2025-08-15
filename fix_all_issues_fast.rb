@@ -22,7 +22,7 @@ if duplicate_chapters.any?
     # Find the corresponding chapter without spaces
     clean_name = chapter.name.gsub(' ', '')
     clean_chapter = Chapter.find_by(name: clean_name)
-    
+
     if clean_chapter
       puts "  - Removing duplicate: '#{chapter.name}' (keeping '#{clean_name}')"
       # Transfer any data before deletion
@@ -88,16 +88,16 @@ puts "Found #{chapters_needing_chunks.count} chapters with PDFs but no vector ch
 
 if chapters_needing_chunks.any?
   puts "\n🔄 Processing PDFs to generate vector chunks..."
-  
+
   chapters_needing_chunks.each_with_index do |chapter, index|
     puts "  [#{index + 1}/#{chapters_needing_chunks.count}] Processing: #{chapter.name}"
-    
+
     begin
       # Use the existing PDF processor service
       chapter.pdf_materials.each do |pdf|
         if pdf.pdf_file.attached?
           puts "    → Processing PDF: #{pdf.title}"
-          
+
           # Create vector chunks for this PDF
           content = pdf.extract_text_content
           if content.present?
@@ -132,4 +132,4 @@ puts "Chapters cleaned up: #{initial_chapters - final_chapters}"
 puts "Vector chunks added: #{final_chunks - initial_chunks}"
 puts "AI-ready chapters: #{Chapter.joins(:vector_chunks).distinct.count}"
 
-puts "\n✅ All issues fixed! Your AI tutor should now work properly with PDF references." 
+puts "\n✅ All issues fixed! Your AI tutor should now work properly with PDF references."
