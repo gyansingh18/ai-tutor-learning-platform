@@ -37,6 +37,20 @@ class RagService
       return "❌ This chapter is not ready for AI learning yet. Please select a different chapter or contact your teacher."
     end
 
+    # Log conversation context for debugging
+    Rails.logger.info "=== RAG Service Debug ==="
+    Rails.logger.info "Question: #{question}"
+    Rails.logger.info "Chapter: #{@chapter.display_name}"
+    Rails.logger.info "Conversation History Count: #{conversation_history.length}"
+    if conversation_history.any?
+      Rails.logger.info "Previous Q&A:"
+      conversation_history.each_with_index do |qa, index|
+        Rails.logger.info "  #{index + 1}. Q: #{qa[:question][0..100]}..."
+        Rails.logger.info "     A: #{qa[:answer][0..100]}..."
+      end
+    end
+    Rails.logger.info "========================"
+
     # Find relevant chunks
     relevant_chunks = find_relevant_chunks(question)
 
