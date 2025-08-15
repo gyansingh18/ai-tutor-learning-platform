@@ -51,8 +51,8 @@ class S3CompletionService
   
   def create_vector_chunks_for_chapter(chapter, pdf_material)
     # Use the existing S3PdfProcessorService to create chunks
-    processor = S3PdfProcessorService.new
-    processor.process(pdf_material)
+    processor = S3PdfProcessorService.new(pdf_material)
+    processor.process
     
     # Return the count of chunks created
     chapter.reload.vector_chunks.count
