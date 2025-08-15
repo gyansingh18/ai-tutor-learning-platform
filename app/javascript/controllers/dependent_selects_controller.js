@@ -11,14 +11,14 @@ export default class extends Controller {
     console.log("Dependent Selects Controller connected")
     this.clearSubjects()
     this.clearChapters()
-    
+
     // Ensure proper initial state
     if (this.hasGradeTarget && this.hasSubjectTarget && this.hasChapterTarget) {
       this.gradeTarget.disabled = false
       this.subjectTarget.disabled = true
       this.chapterTarget.disabled = true
     }
-    
+
     // Update Start Learning button state
     this.updateStartLearningButton()
   }
@@ -33,7 +33,7 @@ export default class extends Controller {
     if (gradeId && this.subjectsValue[gradeId]) {
       this.loadSubjects(gradeId)
     }
-    
+
     // Update Start Learning button state
     this.updateStartLearningButton()
   }
@@ -47,11 +47,11 @@ export default class extends Controller {
     if (subjectId && this.chaptersValue[subjectId]) {
       this.loadChapters(subjectId)
     }
-    
+
     // Update Start Learning button state
     this.updateStartLearningButton()
   }
-  
+
   chapterChanged() {
     console.log("Chapter changed to:", this.chapterTarget.value)
     // Update Start Learning button state
@@ -90,7 +90,7 @@ export default class extends Controller {
     this.chapterTarget.innerHTML = '<option value="">Select a chapter</option>'
     this.chapterTarget.disabled = true
   }
-  
+
   updateStartLearningButton() {
     const startLearningBtn = document.getElementById('startLearningBtn')
     if (startLearningBtn) {
