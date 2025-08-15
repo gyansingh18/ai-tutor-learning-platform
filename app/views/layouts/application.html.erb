@@ -633,12 +633,8 @@
                 <% end %>
               </li>
               <li class="nav-item">
-                <%= button_to destroy_user_session_path,
-                    method: :delete,
-                    data: { turbo: false },
-                    class: "btn btn-outline-light btn-sm",
-                    form: { data: { turbo: false } } do %>
-                  <i class="fas fa-sign-out-alt me-1"></i> Logout
+                <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false }, class: "d-inline" do |f| %>
+                  <%= f.submit "Logout", class: "btn btn-outline-light btn-sm" %>
                 <% end %>
               </li>
             <% else %>
