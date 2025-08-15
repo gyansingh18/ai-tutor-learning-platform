@@ -476,69 +476,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const gradeSelect = document.getElementById('grade-select');
-  const subjectSelect = document.getElementById('subject-select');
-  const chapterSelect = document.getElementById('chapter-select');
-  const startLearningBtn = document.getElementById('startLearningBtn');
-
-    // Embedded data from server
-  const subjectsByGrade = <%= raw @subjects_by_grade.to_json %>;
-  const chaptersBySubject = <%= raw @chapters_by_subject.to_json %>;
-
-  if (gradeSelect) {
-    gradeSelect.addEventListener('change', function() {
-      const gradeId = this.value;
-      if (gradeId) {
-        // Load subjects for selected grade
-        const subjects = subjectsByGrade[gradeId] || [];
-        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-        subjects.forEach(subject => {
-          const option = document.createElement('option');
-          option.value = subject.id;
-          option.textContent = subject.name;
-          subjectSelect.appendChild(option);
-        });
-        subjectSelect.disabled = false;
-
-        // Reset chapter select
-        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-        chapterSelect.disabled = true;
-        startLearningBtn.disabled = true;
-      } else {
-        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-        subjectSelect.disabled = true;
-        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-        chapterSelect.disabled = true;
-        startLearningBtn.disabled = true;
-      }
-    });
-
-    subjectSelect.addEventListener('change', function() {
-      const subjectId = this.value;
-      if (subjectId) {
-        // Load chapters for selected subject
-        const chapters = chaptersBySubject[subjectId] || [];
-        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-        chapters.forEach(chapter => {
-          const option = document.createElement('option');
-          option.value = chapter.id;
-          option.textContent = chapter.name;
-          chapterSelect.appendChild(option);
-        });
-        chapterSelect.disabled = false;
-        startLearningBtn.disabled = true;
-      } else {
-        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
-        chapterSelect.disabled = true;
-        startLearningBtn.disabled = true;
-      }
-    });
-
-    chapterSelect.addEventListener('change', function() {
-      startLearningBtn.disabled = !this.value;
-    });
-  }
-
   // Enhanced animations for landing page
   if (!document.querySelector('.dashboard-hero')) {
     // Landing page specific animations

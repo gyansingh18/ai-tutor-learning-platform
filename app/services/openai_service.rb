@@ -149,12 +149,12 @@ ALWAYS end with a relevant follow-up question based on the conversation context.
       # Add conversation history to messages with clear context
       if conversation_history.any?
         messages << { role: "system", content: "CONVERSATION CONTEXT: We have been discussing #{chapter.display_name}. Here is our conversation history:" }
-        
+
         conversation_history.each do |qa_pair|
           messages << { role: "user", content: qa_pair[:question] }
           messages << { role: "assistant", content: qa_pair[:answer] }
         end
-        
+
         messages << { role: "system", content: "IMPORTANT: The student's current question is a follow-up to our conversation above. You MUST reference our previous discussion and build upon it, not start fresh. If they say they can't understand, ask them to specify what part is unclear." }
       end
 
