@@ -39,7 +39,7 @@ class RagService
 
     # Find relevant chunks
     relevant_chunks = find_relevant_chunks(question)
-    
+
     # Check if we found any relevant chunks
     if relevant_chunks.empty?
       return "❌ Unable to find relevant information for your question. Please try rephrasing or ask about a different topic."

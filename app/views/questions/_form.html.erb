@@ -28,166 +28,109 @@
       "dependent-selects-subjects-value": @subjects_by_grade.to_json,
       "dependent-selects-chapters-value": @chapters_by_subject.to_json
     }, class: "needs-validation", novalidate: true do |form| %>
-      <div class="mb-4">
-        <label class="form-label fw-bold">
-          <i class="fas fa-question-circle me-2"></i>
-          What would you like to ask?
-        </label>
-        <%= form.text_area :content,
-            class: "form-control #{'is-invalid' if question.errors[:content].any?}",
-            rows: 4,
-            placeholder: "Describe your question in detail...",
-            required: true %>
-        <% if question.errors[:content].any? %>
-          <div class="invalid-feedback">
-            <%= question.errors[:content].join(", ") %>
-          </div>
-        <% end %>
-        <div class="form-text">
-          <i class="fas fa-lightbulb me-1"></i>
-          Be specific! The more details you provide, the better the answer will be.
-        </div>
-      </div>
+      <div class="row g-3" id="question-form"
+           data-controller="dependent-selects"
+           data-dependent-selects-subjects-value="<%= @subjects_by_grade.to_json %>"
+           data-dependent-selects-chapters-value="<%= @chapters_by_subject.to_json %>">
 
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <label class="form-label fw-bold">
+        <div class="col-12">
+          <div class="form-group">
+            <label for="question-content" class="form-label">
+              <i class="fas fa-pencil-alt me-2"></i>
+              <strong>Your Question</strong>
+            </label>
+            <%= form.text_area :content,
+                placeholder: "Describe your question in detail...",
+                class: "form-control #{'is-invalid' if question.errors[:content].any?}",
+                id: "question-content",
+                rows: 4,
+                required: true %>
+            <% if question.errors[:content].any? %>
+              <div class="invalid-feedback">
+                <%= question.errors[:content].join(", ") %>
+              </div>
+            <% end %>
+            <div class="form-text">
+              <i class="fas fa-info-circle me-1"></i>
+              Be specific! The more details you provide, the better the answer will be.
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="ask-grade-select" class="form-label">
             <i class="fas fa-graduation-cap me-2"></i>
             Grade Level
           </label>
-          <%= form.select :grade_id,
-              options_for_select(@subjects_by_grade.keys.map { |grade_id|
-                grade = Grade.find(grade_id)
-                [grade.name, grade_id]
-              }.unshift(["Select a grade", ""])),
-              {},
-              { class: "form-select #{'is-invalid' if question.errors[:grade_id].any?}",
-                id: "ask-grade-select",
-                required: true } %>
-          <% if question.errors[:grade_id].any? %>
-            <div class="invalid-feedback">
-              <%= question.errors[:grade_id].join(", ") %>
-            </div>
-          <% end %>
+          <select id="ask-grade-select" class="form-select"
+                  data-dependent-selects-target="grade"
+                  data-action="change->dependent-selects#gradeChanged">
+            <option value="">Select a grade</option>
+            <% if @subjects_by_grade %>
+              <% @subjects_by_grade.keys.each do |grade_id| %>
+                <% grade = Grade.find(grade_id) %>
+                <option value="<%= grade_id %>"><%= grade.name %></option>
+              <% end %>
+            <% end %>
+          </select>
         </div>
-        <div class="col-md-6">
-          <label class="form-label fw-bold">
+
+        <div class="col-12 col-md-4">
+          <label for="ask-subject-select" class="form-label">
             <i class="fas fa-book me-2"></i>
             Subject
           </label>
-          <%= form.select :subject_id, options_for_select([["Select a subject", ""]]),
+          <select id="ask-subject-select" class="form-select"
+                  data-dependent-selects-target="subject"
+                  data-action="change->dependent-selects#subjectChanged"
+                  disabled>
+            <option value="">Select a subject</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label for="ask-chapter-select" class="form-label">
+            <i class="fas fa-file-alt me-2"></i>
+            Chapter
+          </label>
+          <%= form.select :chapter_id, options_for_select([["Select a chapter", ""]]),
               {},
-              { class: "form-select #{'is-invalid' if question.errors[:subject_id].any?}",
-                id: "ask-subject-select",
+              { class: "form-select #{'is-invalid' if question.errors[:chapter_id].any?}",
+                id: "ask-chapter-select",
+                "data-dependent-selects-target": "chapter",
                 required: true,
                 disabled: true } %>
-          <% if question.errors[:subject_id].any? %>
+          <% if question.errors[:chapter_id].any? %>
             <div class="invalid-feedback">
-              <%= question.errors[:subject_id].join(", ") %>
+              <%= question.errors[:chapter_id].join(", ") %>
             </div>
           <% end %>
+          <div class="form-text">
+            <i class="fas fa-info-circle me-1"></i>
+            Selecting a chapter helps provide more targeted answers.
+          </div>
         </div>
-      </div>
 
-      <div class="mb-4">
-        <label class="form-label fw-bold">
-          <i class="fas fa-list-ol me-2"></i>
-          Chapter
-        </label>
-        <%= form.select :chapter_id, options_for_select([["Select a chapter", ""]]),
-            {},
-            { class: "form-select #{'is-invalid' if question.errors[:chapter_id].any?}",
-              id: "ask-chapter-select",
-              required: true,
-              disabled: true } %>
-        <% if question.errors[:chapter_id].any? %>
-          <div class="invalid-feedback">
-            <%= question.errors[:chapter_id].join(", ") %>
+        <% if @selected_chapter %>
+          <div class="alert alert-warning mb-4">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Follow-up Question:</strong> You're asking about <%= @selected_chapter.display_name %>
           </div>
         <% end %>
-        <div class="form-text">
-          <i class="fas fa-info-circle me-1"></i>
-          Selecting a chapter helps provide more targeted answers.
-        </div>
-      </div>
 
-      <% if @selected_chapter %>
-        <div class="alert alert-warning mb-4">
-          <i class="fas fa-exclamation-triangle me-2"></i>
-          <strong>Follow-up Question:</strong> You're asking about <%= @selected_chapter.display_name %>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <%= link_to questions_path, class: "btn btn-outline-secondary me-md-2" do %>
+            <i class="fas fa-arrow-left me-2"></i>
+            Back to Questions
+          <% end %>
+          <%= form.submit "Ask Question",
+              class: "btn btn-primary btn-lg #{'disabled' unless user_signed_in?}",
+              disabled: !user_signed_in? do %>
+            <i class="fas fa-paper-plane me-2"></i>
+            <%= user_signed_in? ? "Ask Question" : "Sign In to Ask Question" %>
+          <% end %>
         </div>
-      <% end %>
-
-      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <%= link_to questions_path, class: "btn btn-outline-secondary me-md-2" do %>
-          <i class="fas fa-arrow-left me-2"></i>
-          Back to Questions
-        <% end %>
-        <%= form.submit "Ask Question",
-            class: "btn btn-primary btn-lg #{'disabled' unless user_signed_in?}",
-            disabled: !user_signed_in? do %>
-          <i class="fas fa-paper-plane me-2"></i>
-          <%= user_signed_in? ? "Ask Question" : "Sign In to Ask Question" %>
-        <% end %>
       </div>
     <% end %>
   </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Embedded data from server
-  const subjectsByGrade = <%= raw @subjects_by_grade.to_json %>;
-  const chaptersBySubject = <%= raw @chapters_by_subject.to_json %>;
-
-  // Get form elements
-  const gradeSelect = document.getElementById('ask-grade-select');
-  const subjectSelect = document.getElementById('ask-subject-select');
-  const chapterSelect = document.getElementById('ask-chapter-select');
-
-  if (!gradeSelect || !subjectSelect || !chapterSelect) {
-    console.log('Ask Question form elements not found');
-    return;
-  }
-
-  // Grade change handler
-  gradeSelect.addEventListener('change', function() {
-    const selectedGradeId = this.value;
-
-    // Clear and disable subject and chapter selects
-    subjectSelect.innerHTML = '<option value="">Select a subject</option>';
-    subjectSelect.disabled = !selectedGradeId;
-    chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
-    chapterSelect.disabled = true;
-
-    if (selectedGradeId && subjectsByGrade[selectedGradeId]) {
-      // Populate subjects for selected grade
-      subjectsByGrade[selectedGradeId].forEach(function(subject) {
-        const option = document.createElement('option');
-        option.value = subject.id;
-        option.textContent = subject.name;
-        subjectSelect.appendChild(option);
-      });
-    }
-  });
-
-  // Subject change handler
-  subjectSelect.addEventListener('change', function() {
-    const selectedSubjectId = this.value;
-
-    // Clear and disable chapter select
-    chapterSelect.innerHTML = '<option value="">Select a chapter</option>';
-    chapterSelect.disabled = !selectedSubjectId;
-
-    if (selectedSubjectId && chaptersBySubject[selectedSubjectId]) {
-      // Populate chapters for selected subject
-      chaptersBySubject[selectedSubjectId].forEach(function(chapter) {
-        const option = document.createElement('option');
-        option.value = chapter.id;
-        option.textContent = chapter.name;
-        chapterSelect.appendChild(option);
-      });
-    }
-  });
-});
-</script>
