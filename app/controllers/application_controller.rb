@@ -12,6 +12,7 @@ class ApplicationController < ActionController::Base
 
   # Custom redirect after sign out
   def after_sign_out_path_for(resource_or_scope)
-    root_path
+    # Force a full page reload by redirecting to root with a cache-busting parameter
+    root_path(v: Time.current.to_i)
   end
 end
