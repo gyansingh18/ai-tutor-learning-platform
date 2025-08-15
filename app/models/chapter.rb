@@ -47,14 +47,14 @@ class Chapter < ApplicationRecord
   def ready_for_learning?
     vector_chunks.any?
   end
-  
+
   def all_tasks_completed?(user)
     return false if tasks.empty?
-    
+
     completed_tasks = tasks.joins(:student_answers)
                           .where(student_answers: { user: user })
                           .distinct.count
-    
+
     completed_tasks >= tasks.count
   end
 end
