@@ -11,7 +11,7 @@ export default class extends Controller {
     console.log("Dependent Selects Controller connected")
     this.clearSubjects()
     this.clearChapters()
-    
+
     // Ensure proper initial state
     if (this.hasGradeTarget && this.hasSubjectTarget && this.hasChapterTarget) {
       this.gradeTarget.disabled = false
