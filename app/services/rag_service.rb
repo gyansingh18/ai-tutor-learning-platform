@@ -5,6 +5,11 @@ class RagService
   end
 
   def find_relevant_chunks(question, limit = 5)
+    # Check if chapter has vector chunks
+    unless @chapter.vector_chunks.any?
+      return []
+    end
+
     # Generate embedding for the question
     question_embedding = @openai_service.generate_embedding(question)
     return [] unless question_embedding
@@ -27,8 +32,18 @@ class RagService
   end
 
   def answer_question(question, conversation_history = [])
+    # Check if chapter has vector chunks available
+    unless @chapter.vector_chunks.any?
+      return "❌ This chapter is not ready for AI learning yet. Please select a different chapter or contact your teacher."
+    end
+
     # Find relevant chunks
     relevant_chunks = find_relevant_chunks(question)
+    
+    # Check if we found any relevant chunks
+    if relevant_chunks.empty?
+      return "❌ Unable to find relevant information for your question. Please try rephrasing or ask about a different topic."
+    end
 
     # Generate answer using OpenAI with conversation history
     @openai_service.generate_answer_with_history(question, @chapter, relevant_chunks, conversation_history)
