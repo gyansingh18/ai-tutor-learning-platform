@@ -21,26 +21,16 @@
             </p>
           </div>
 
-          <div class="mb-4">
-            <h6 class="text-success mb-2">
-              <i class="fas fa-question-circle me-2"></i>
-              Question
-            </h6>
-            <div class="task-content p-3 bg-light rounded">
-              <%= @task.content %>
-            </div>
-          </div>
-
           <!-- Progress Bar -->
           <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <span class="text-muted">Progress</span>
-              <span class="text-primary fw-bold"><%= @progress_percentage %>%</span>
+              <span class="text-primary fw-bold"><%= @progress %>%</span>
             </div>
             <div class="progress" style="height: 10px;">
               <div class="progress-bar bg-primary" role="progressbar"
-                   style="width: <%= @progress_percentage %>%"
-                   aria-valuenow="<%= @progress_percentage %>"
+                   style="width: <%= @progress %>%"
+                   aria-valuenow="<%= @progress %>"
                    aria-valuemin="0"
                    aria-valuemax="100"></div>
             </div>
@@ -66,112 +56,136 @@
       </div>
     </div>
 
-    <!-- Center Panel - Answer Input -->
+    <!-- Center Panel - Question and Answer Input -->
     <div class="col-md-4">
       <div class="card h-100 fade-in">
         <div class="card-header">
           <h5 class="mb-0">
-            <i class="fas fa-edit me-2"></i>
-            Your Answer
+            <i class="fas fa-question-circle me-2"></i>
+            Question
           </h5>
         </div>
         <div class="card-body">
-          <%= form_with url: submit_task_answer_path(@chapter, @task), method: :post, local: true, class: "h-100 d-flex flex-column" do |f| %>
-            <div class="flex-grow-1">
-              <% case @task.task_type %>
-              <% when 'multiple_choice' %>
-                <div class="mb-3">
-                  <label class="form-label fw-bold">
-                    <i class="fas fa-list-ul me-2"></i>
-                    Select the correct answer:
-                  </label>
-                  <% LearningHelper.extract_options(@task.content).each_with_index do |option, index| %>
-                    <div class="form-check mb-2">
-                      <%= f.radio_button :answer, option, class: "form-check-input", 
-                          checked: @student_answer&.answer == option,
-                          disabled: @student_answer.present? %>
-                      <%= f.label "answer_#{index}", option, class: "form-check-label" %>
-                    </div>
-                  <% end %>
-                </div>
-              <% when 'fill_in_blank' %>
-                <div class="mb-3">
-                  <label class="form-label fw-bold">
-                    <i class="fas fa-pencil me-2"></i>
-                    Fill in the blank:
-                  </label>
-                  <%= f.text_field :answer, class: "form-control", 
-                      placeholder: "Enter your answer here...",
-                      value: @student_answer&.answer,
-                      readonly: @student_answer.present? %>
-                </div>
-              <% when 'true_false' %>
-                <div class="mb-3">
-                  <label class="form-label fw-bold">
-                    <i class="fas fa-check-circle me-2"></i>
-                    Select True or False:
-                  </label>
-                  <div class="form-check mb-2">
-                    <%= f.radio_button :answer, "True", class: "form-check-input", 
-                        checked: @student_answer&.answer == "True",
-                        disabled: @student_answer.present? %>
-                    <%= f.label "answer_true", "True", class: "form-check-label" %>
-                  </div>
-                  <div class="form-check mb-2">
-                    <%= f.radio_button :answer, "False", class: "form-check-input", 
-                        checked: @student_answer&.answer == "False",
-                        disabled: @student_answer.present? %>
-                    <%= f.label "answer_false", "False", class: "form-check-label" %>
-                  </div>
-                </div>
-              <% when 'short_answer' %>
-                <div class="mb-3">
-                  <label class="form-label fw-bold">
-                    <i class="fas fa-comment me-2"></i>
-                    Write your answer:
-                  </label>
-                  <%= f.text_area :answer, class: "form-control", 
-                      rows: 4, placeholder: "Enter your answer here...",
-                      value: @student_answer&.answer,
-                      readonly: @student_answer.present? %>
-                </div>
-              <% when 'coding' %>
-                <div class="mb-3">
-                  <label class="form-label fw-bold">
-                    <i class="fas fa-code me-2"></i>
-                    Write your code:
-                  </label>
-                  <%= f.text_area :answer, class: "form-control", 
-                      rows: 8, placeholder: "Enter your code here...", 
-                      style: "font-family: 'Roboto Mono', monospace;",
-                      value: @student_answer&.answer,
-                      readonly: @student_answer.present? %>
-                </div>
+          <!-- Question Content (without correct answer) -->
+          <div class="mb-4">
+            <div class="task-content p-3 bg-light rounded">
+              <% if @task.task_type == 'multiple_choice' %>
+                <% question_content = LearningHelper.extract_question(@task.content) %>
+                <% if question_content %>
+                  <%= question_content %>
+                <% else %>
+                  <%= @task.content %>
+                <% end %>
               <% else %>
-                <div class="mb-3">
-                  <label class="form-label fw-bold">
-                    <i class="fas fa-edit me-2"></i>
-                    Your answer:
-                  </label>
-                  <%= f.text_area :answer, class: "form-control", 
-                      rows: 4, placeholder: "Enter your answer here...",
-                      value: @student_answer&.answer,
-                      readonly: @student_answer.present? %>
-                </div>
+                <%= @task.content %>
               <% end %>
             </div>
+          </div>
 
-            <div class="mt-auto">
-              <% if @student_answer.present? %>
-                <div class="alert alert-info text-center mb-3">
-                  <i class="fas fa-info-circle me-2"></i>
-                  Answer submitted. You cannot change your answer for this task.
-                </div>
-              <% else %>
-                <%= f.submit "Submit Answer", class: "btn btn-primary btn-lg w-100" %>
-              <% end %>
-            </div>
-          <% end %>
+          <!-- Answer Form -->
+          <div class="mt-4">
+            <h6 class="text-primary mb-3">
+              <i class="fas fa-edit me-2"></i>
+              Your Answer
+            </h6>
+            
+            <%= form_with url: submit_task_answer_path(@chapter, @task), method: :post, local: true, class: "h-100 d-flex flex-column" do |f| %>
+              <div class="flex-grow-1">
+                <% case @task.task_type %>
+                <% when 'multiple_choice' %>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">
+                      <i class="fas fa-list-ul me-2"></i>
+                      Select the correct answer:
+                    </label>
+                    <% LearningHelper.extract_options(@task.content).each_with_index do |option, index| %>
+                      <div class="form-check mb-2">
+                        <%= f.radio_button :answer, option, class: "form-check-input",
+                            checked: @student_answer&.answer == option,
+                            disabled: @student_answer.present? %>
+                        <%= f.label "answer_#{index}", option, class: "form-check-label" %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% when 'fill_in_blank' %>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">
+                      <i class="fas fa-pencil me-2"></i>
+                      Fill in the blank:
+                    </label>
+                    <%= f.text_field :answer, class: "form-control",
+                        placeholder: "Enter your answer here...",
+                        value: @student_answer&.answer,
+                        readonly: @student_answer.present? %>
+                  </div>
+                <% when 'true_false' %>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">
+                      <i class="fas fa-check-circle me-2"></i>
+                      Select True or False:
+                    </label>
+                    <div class="form-check mb-2">
+                      <%= f.radio_button :answer, "True", class: "form-check-input",
+                          checked: @student_answer&.answer == "True",
+                          disabled: @student_answer.present? %>
+                      <%= f.label "answer_true", "True", class: "form-check-label" %>
+                    </div>
+                    <div class="form-check mb-2">
+                      <%= f.radio_button :answer, "False", class: "form-check-input",
+                          checked: @student_answer&.answer == "False",
+                          disabled: @student_answer.present? %>
+                      <%= f.label "answer_false", "False", class: "form-check-label" %>
+                    </div>
+                  </div>
+                <% when 'short_answer' %>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">
+                      <i class="fas fa-comment me-2"></i>
+                      Write your answer:
+                    </label>
+                    <%= f.text_area :answer, class: "form-control",
+                        rows: 4, placeholder: "Enter your answer here...",
+                        value: @student_answer&.answer,
+                        readonly: @student_answer.present? %>
+                  </div>
+                <% when 'coding' %>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">
+                      <i class="fas fa-code me-2"></i>
+                      Write your code:
+                    </label>
+                    <%= f.text_area :answer, class: "form-control",
+                        rows: 8, placeholder: "Enter your code here...",
+                        style: "font-family: 'Roboto Mono', monospace;",
+                        value: @student_answer&.answer,
+                        readonly: @student_answer.present? %>
+                  </div>
+                <% else %>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">
+                      <i class="fas fa-edit me-2"></i>
+                      Your answer:
+                    </label>
+                    <%= f.text_area :answer, class: "form-control",
+                        rows: 4, placeholder: "Enter your answer here...",
+                        value: @student_answer&.answer,
+                        readonly: @student_answer.present? %>
+                  </div>
+                <% end %>
+              </div>
+
+              <div class="mt-auto">
+                <% if @student_answer.present? %>
+                  <div class="alert alert-info text-center mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Answer submitted. You cannot change your answer for this task.
+                  </div>
+                <% else %>
+                  <%= f.submit "Submit Answer", class: "btn btn-primary btn-lg w-100" %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
