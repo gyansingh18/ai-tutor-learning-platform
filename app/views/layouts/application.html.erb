@@ -759,6 +759,30 @@
           this.style.transform = 'translateY(0)';
         });
       });
+
+      // Fix for homepage reload issue after sign out
+      // Check if we're on the homepage and user is signed out
+      if (window.location.pathname === '/' && !document.body.dataset.userSignedIn) {
+        // Force a full page reload to ensure proper rendering
+        if (performance.navigation.type === 1) {
+          // This is a page reload, don't reload again
+        } else {
+          // This is a navigation, force reload
+          window.location.reload();
+        }
+      }
+
+      // Listen for Turbo events to handle sign out properly
+      document.addEventListener('turbo:before-render', function(event) {
+        // If we're being redirected to root after sign out, force a full page reload
+        if (event.detail.url === '/' || event.detail.url.endsWith('/')) {
+          // Check if user is signed out
+          if (!document.body.dataset.userSignedIn) {
+            event.preventDefault();
+            window.location.href = '/';
+          }
+        }
+      });
     </script>
 
     <!-- Mobile Quick Actions Bar (Sticky Bottom) -->
