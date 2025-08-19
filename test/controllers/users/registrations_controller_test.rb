@@ -13,7 +13,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    
+
     user = User.last
     assert_equal 'student', user.role
     assert_equal 'student@example.com', user.email
@@ -31,7 +31,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    
+
     user = User.last
     assert_equal 'admin', user.role
     assert_equal 'admin@example.com', user.email
@@ -49,7 +49,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    
+
     assert_response :success
   end
 
@@ -65,7 +65,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    
+
     assert_response :success
   end
 end

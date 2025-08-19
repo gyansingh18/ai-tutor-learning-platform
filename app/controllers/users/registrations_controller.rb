@@ -10,7 +10,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     # Set the role based on access code validation
     params[:user][:role] = determine_role_from_access_code(params[:user][:access_code])
-    
+
     super
   end
 
