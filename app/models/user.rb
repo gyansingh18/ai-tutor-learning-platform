@@ -4,6 +4,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  # Virtual attribute for access code (not stored in database after validation)
+  attr_accessor :access_code
+
   # Enums
   enum role: { student: 0, admin: 1 }
 
@@ -14,6 +17,7 @@ class User < ApplicationRecord
   # Validations
   validates :email, presence: true, uniqueness: true
   validates :role, presence: true
+  validates :access_code, presence: true, on: :create
 
   # Scopes
   scope :students, -> { where(role: :student) }
