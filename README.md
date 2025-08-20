@@ -26,7 +26,7 @@ A comprehensive AI-powered learning platform built with Ruby on Rails that provi
 - **Backend**: Ruby on Rails 7.1
 - **Database**: PostgreSQL with PgVector for vector storage
 - **Authentication**: Devise
-- **AI Integration**: OpenAI GPT-3.5-turbo + text-embedding-3-small
+- **AI Integration**: OpenAI gpt-4o-mini + text-embedding-3-small
 - **File Storage**: Active Storage (local/S3)
 - **Background Jobs**: Sidekiq
 - **Frontend**: Bootstrap 5 + Hotwire
@@ -133,7 +133,7 @@ After running seeds, you'll have these default users:
 ### OpenAI API
 - Get your API key from [OpenAI Platform](https://platform.openai.com/)
 - Add it to your `.env` file
-- The app uses GPT-3.5-turbo for answers and text-embedding-3-small for embeddings
+- The app uses -gpt-4o-minifor answers and text-embedding-3-small for embeddings
 
 ### File Storage
 - Development: Local storage

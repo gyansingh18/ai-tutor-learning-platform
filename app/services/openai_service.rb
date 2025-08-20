@@ -28,7 +28,7 @@ class OpenaiService
     begin
       response = @client.chat(
         parameters: {
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o-mini",
           messages: [
             { role: "system", content: "You are a friendly, patient teacher who explains concepts in simple, engaging ways. Use conversational language and provide clear, helpful explanations." },
             { role: "user", content: prompt }
@@ -53,7 +53,7 @@ class OpenaiService
     begin
       response = @client.chat(
         parameters: {
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o-mini",
           messages: [
             { role: "system", content: "You are a friendly, patient math tutor who explains concepts in simple, engaging ways.
 
@@ -179,7 +179,7 @@ Remember: This is a continuous conversation, not a new session!" }
 
       response = @client.chat(
         parameters: {
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o-mini",
           messages: messages,
           max_tokens: 1000,
           temperature: 0.8
@@ -231,7 +231,7 @@ Remember: This is a continuous conversation, not a new session!" }
 
     response = @client.chat(
       parameters: {
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: "You are an enthusiastic, friendly teacher who makes learning fun and accessible. Use conversational language, include relatable examples, and make students excited about learning. Keep responses concise and end with follow-up questions." },
           { role: "user", content: prompt }
