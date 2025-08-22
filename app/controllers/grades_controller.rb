@@ -1,62 +1,45 @@
 class GradesController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:index, :show]
+  # before_action :authenticate_user!  # Now handled globally
 
   def index
-    # Get real grades from S3 bucket structure
-    @grades = get_real_grades_from_s3.map do |grade_number|
-      Grade.find_or_create_by(name: "Grade #{grade_number}")
-    end
+    @grades = if current_user.admin?
+                Grade.ordered
+              elsif current_user.allowed_grade.present?
+                # User can only access specific grade
+                Grade.where(name: "Grade #{current_user.allowed_grade}").ordered
+              else
+                # User can access all grades
+                Grade.ordered
+              end
   end
 
   def show
     @grade = Grade.find(params[:id])
+    
+    # Check if user has access to this grade
+    unless current_user.can_access_grade?(@grade.name.match(/Grade (\d+)/)[1])
+      redirect_to grades_path, alert: "You don't have access to #{@grade.display_name}. #{current_user.grade_restriction_message}"
+      return
+    end
 
-    # Get real subjects for this grade from S3
-    grade_number = @grade.name.match(/Grade (\d+)/)[1].to_i
-    @subjects = get_real_subjects_from_s3(grade_number).map do |subject_name|
-      Subject.find_or_create_by(name: subject_name, grade: @grade)
+    @subjects = @grade.subjects.ordered
+    @pdf_materials = @grade.pdf_materials.recent.limit(5)
+
+    # Get S3 PDF files for this grade
+    begin
+      grade_number = @grade.name.match(/Grade (\d+)/)[1]
+      prefix = "pdfs/class_#{grade_number}/"
+      
+      @s3_pdfs = S3ListService.new.list_pdfs(prefix: prefix)
+    rescue => e
+      Rails.logger.error "Error fetching S3 PDFs for grade #{@grade.name}: #{e.message}"
+      @s3_pdfs = []
     end
   end
 
   private
 
-  # Get real grades from S3 bucket structure
-  def get_real_grades_from_s3
-    begin
-      # List all objects in bucket to find class folders
-      resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, delimiter: '/')
-      grades = []
-
-      resp.common_prefixes.each do |prefix|
-        if prefix.prefix.match(/pdfs\/class_(\d+)\//)
-          grades << $1.to_i
-        end
-      end
-
-      grades.sort
-    rescue => e
-      Rails.logger.error "Error getting grades from S3: #{e.message}"
-      []
-    end
-  end
-
-  # Get real subjects for a grade from S3
-  def get_real_subjects_from_s3(grade_number)
-    begin
-      prefix = "pdfs/class_#{grade_number}/"
-      resp = S3_CLIENT.list_objects_v2(bucket: S3_BUCKET, prefix: prefix, delimiter: '/')
-      subjects = []
-
-      resp.common_prefixes.each do |prefix_obj|
-        if prefix_obj.prefix.match(/pdfs\/class_\d+\/([^\/]+)\//)
-          subjects << $1.humanize
-        end
-      end
-
-      subjects.sort
-    rescue => e
-      Rails.logger.error "Error getting subjects from S3: #{e.message}"
-      []
-    end
+  def set_grade
+    @grade = Grade.find(params[:id])
   end
 end

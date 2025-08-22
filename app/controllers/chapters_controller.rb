@@ -1,50 +1,49 @@
 class ChaptersController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:index, :show]
+  # before_action :authenticate_user!  # Now handled globally
+  before_action :set_grade_and_subject_and_chapter
+  before_action :check_grade_access
 
   def index
-    # Only show chapters that have vector chunks available
-    @chapters = Chapter.with_vector_chunks.includes(:subject => :grade).ordered
+    @chapters = @subject.chapters.ordered
   end
 
   def show
-    @chapter = Chapter.find(params[:id])
+    @chapter = @subject.chapters.find(params[:id])
+    @tasks = @chapter.tasks.ordered
+    @pdf_materials = @chapter.pdf_materials.recent.limit(5)
 
-    # Get real PDF files for this chapter from S3
-    grade_number = @chapter.subject.grade.name.match(/Grade (\d+)/)[1].to_i
-    @pdf_files = get_real_pdf_files_from_s3(grade_number, @chapter.subject.name, @chapter.name)
+    # Get S3 PDF files for this chapter
+    begin
+      grade_number = @grade.name.match(/Grade (\d+)/)[1]
+      subject_name = @subject.name
+      chapter_num = @chapter.name.match(/Chapter (\d+)/)[1]
+      
+      # Try different possible PDF filename patterns
+      possible_paths = [
+        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/jeff#{chapter_num}.pdf",
+        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/chapter_#{chapter_num}.pdf",
+        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/#{chapter_num}.pdf",
+        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/#{@chapter.name.to_s.parameterize}.pdf"
+      ]
+      
+      @s3_pdfs = S3ListService.new.list_pdfs(prefix: "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/")
+    rescue => e
+      Rails.logger.error "Error fetching S3 PDFs for chapter #{@chapter.name}: #{e.message}"
+      @s3_pdfs = []
+    end
   end
 
   private
 
-  # Get real PDF files for a chapter from S3
-  def get_real_pdf_files_from_s3(grade_number, subject_name, chapter_name)
-    begin
-      # Extract chapter number from chapter name
-      chapter_num = chapter_name.match(/\d+/).to_s.to_i
+  def set_grade_and_subject_and_chapter
+    @grade = Grade.find(params[:grade_id])
+    @subject = @grade.subjects.find(params[:subject_id])
+    @chapter = @subject.chapters.find(params[:id]) if params[:id].present?
+  end
 
-      # Try different possible filename patterns based on actual S3 structure
-      possible_keys = [
-        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/jeff#{chapter_num}.pdf",
-        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/chapter_#{chapter_num}.pdf",
-        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/#{chapter_num}.pdf",
-        "pdfs/class_#{grade_number}/#{subject_name.to_s.parameterize}/#{chapter_name.to_s.parameterize}.pdf"
-      ]
-
-      pdf_files = []
-      possible_keys.each do |key|
-        if S3_CLIENT.head_object(bucket: S3_BUCKET, key: key)
-          pdf_files << {
-            key: key,
-            url: s3_signed_url(key),
-            filename: File.basename(key)
-          }
-        end
-      end
-
-      pdf_files
-    rescue => e
-      Rails.logger.error "Error getting PDF files from S3: #{e.message}"
-      []
+  def check_grade_access
+    unless current_user.can_access_grade?(@grade.name.match(/Grade (\d+)/)[1])
+      redirect_to grades_path, alert: "You don't have access to #{@grade.display_name}. #{current_user.grade_restriction_message}"
     end
   end
 end

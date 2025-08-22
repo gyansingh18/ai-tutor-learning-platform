@@ -35,4 +35,20 @@ class User < ApplicationRecord
   def display_name
     email.split('@').first.titleize
   end
+
+  # Check if user has access to a specific grade
+  def can_access_grade?(grade)
+    return true if admin? # Admins can access all grades
+    return true if allowed_grade.blank? # No grade restriction
+    allowed_grade.to_s == grade.to_s
+  end
+
+  # Get the grade restriction message
+  def grade_restriction_message
+    if allowed_grade.present?
+      "You can only access Grade #{allowed_grade} content."
+    else
+      "You have access to all grades."
+    end
+  end
 end
